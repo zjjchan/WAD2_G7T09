@@ -4,6 +4,6 @@
 
 <template>
     <div class="container-fluid">
-        Homepage
+        Profile
     </div>
 </template>

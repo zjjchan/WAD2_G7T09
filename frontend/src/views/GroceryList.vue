@@ -4,6 +4,6 @@
 
 <template>
     <div class="container-fluid">
-        Homepage
+        Grocery List
     </div>
 </template>
