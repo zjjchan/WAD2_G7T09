@@ -13,13 +13,48 @@
     margin-right: 10px;
 }
 
+@keyframes expand-down {
+    from {
+        height: 0;
+    }
+    to {
+        height: 114px;
+    }
+}
+
+@keyframes expand-down-items {
+    from {
+        height: 0;
+    }
+    to {
+        height: 32px;
+    }
+}
+
+.pfp ul.show {
+    transform:translate(-105px, -5px);
+    animation: 0.3s expand-down;
+    height: 114px;
+}
+
+.pfp ul.show li {
+    animation: 0.3s expand-down-items;
+}
+
+.pfp ul {
+    animation: 0.3s expand-up;
+}
+
 .lily-script-one-regular {
-    font-family: "Lily Script One", system-ui;
+    font-family: "Lily Script One", Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 24px;
+}
+
+.nav-logo {
     width: 100px;
-  }
+    font-size: 24px;
+}
 
 .active {
     color: black !important;

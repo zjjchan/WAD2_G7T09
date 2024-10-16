@@ -17,7 +17,7 @@ const isActiveLink = (routePath) => {
     <nav class="main-navbar navbar sticky-top navbar-expand-lg navbar-light">
         <div class="main-nav-items container-fluid col-11">
             <!-- Navbar brand -->
-            <RouterLink to="/" class="lily-script-one-regular navbar-brand text-light col col-lg-1 order-lg-0 order-1 text-lg-start text-center">
+            <RouterLink to="/" class="nav-logo lily-script-one-regular navbar-brand text-light col col-lg-1 order-lg-0 order-1 text-lg-start text-center">
                 Mealmate
             </RouterLink>
             <!-- Navbar toggle button -->
@@ -50,7 +50,7 @@ const isActiveLink = (routePath) => {
             </div>
         </div>
         <div class="pfp col-1 d-flex justify-content-end">
-            <div class="btn-group dropstart">
+            <div class="dropdown">
                 <button class="btn border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img :src="profilepic" alt="Profile Picture">
                 </button>
@@ -69,7 +69,7 @@ const isActiveLink = (routePath) => {
         <div class="offcanvas-header">
             <button type="button" 
                     class="btn-close text-reset" 
-                    data-bs-dismiss="offcanvas" 
+                    data-bs-dismiss="offcanvas"
                     aria-label="Close">
             </button>
         </div>

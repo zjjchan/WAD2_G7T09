@@ -114,7 +114,7 @@
   }
   
   .auth-title {
-    font-family: 'Lily Script One', cursive;
+    font-family: 'Lily Script One', Verdana, Geneva, Tahoma, sans-serif;
     font-size: 3rem;
     color: #85ca6a;
     margin-bottom: 0.5rem;
