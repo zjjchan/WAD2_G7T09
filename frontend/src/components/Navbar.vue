@@ -15,13 +15,13 @@ const isActiveLink = (routePath) => {
 
 <template>
     <nav class="main-navbar navbar sticky-top navbar-expand-lg navbar-light">
-        <div class="container-fluid col-11">
+        <div class="main-nav-items container-fluid col-11">
             <!-- Navbar brand -->
-            <RouterLink to="/" class="lily-script-one-regular navbar-brand text-light">
+            <RouterLink to="/" class="lily-script-one-regular navbar-brand text-light col col-lg-1 order-lg-0 order-1 text-lg-start text-center">
                 Mealmate
             </RouterLink>
             <!-- Navbar toggle button -->
-            <button class="navbar-toggler" 
+            <button class="main-navbar-toggler navbar-toggler col-1 col-lg-10 order-lg-1 order-0" 
                     type="button" 
                     data-bs-toggle="offcanvas" 
                     data-bs-target="#sidebar"
@@ -49,7 +49,7 @@ const isActiveLink = (routePath) => {
                 </ul>
             </div>
         </div>
-        <div class="pfp col-1 d-flex justify-content-center">
+        <div class="pfp col-1 d-flex justify-content-end">
             <div class="btn-group dropstart">
                 <button class="btn border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img :src="profilepic" alt="Profile Picture">
@@ -74,7 +74,12 @@ const isActiveLink = (routePath) => {
             </button>
         </div>
         <div class="offcanvas-body">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav" data-bs-dismiss="offcanvas" >
+                <li class="nav-item">
+                    <RouterLink to="/" class="nav-link text-light" :class="{ 'active': isActiveLink('/') }">
+                        Home
+                    </RouterLink>
+                </li>
                 <li class="nav-item">
                     <RouterLink to="/recipes" class="nav-link text-light" :class="{ 'active': isActiveLink('/recipes') }">
                         Recipes
