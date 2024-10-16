@@ -5,6 +5,5 @@ import Navbar from "@/components/Navbar.vue";
 <template>
     <Navbar/>
     <div class="container-fluid">
-
     </div>
 </template>

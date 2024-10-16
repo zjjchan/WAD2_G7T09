@@ -52,7 +52,16 @@ const isActiveLink = (routepath) => {
             </div>
         </div>
         <div class=" pfp col-1 d-flex justify-content-center">
-            <img :src="profilepic">
+            <div class="btn-group dropstart">
+                <button class="btn border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img :src="profilepic">
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">My Profile</a></li>
+                    <li><a class="dropdown-item" href="#">Meal Preferences</a></li>
+                    <li><a class="dropdown-item" href="#">Profile Settings</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
 
