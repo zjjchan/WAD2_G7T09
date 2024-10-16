@@ -1,0 +1,20 @@
+.main-navbar {
+    background-color: #8FB17F;
+}
+
+.pfp img {
+    width: 30px;
+    height: auto;
+    border-radius: 50%;
+}
+
+.main-sidebar {
+    background-color: #8FB17F;
+}
+
+.lily-script-one-regular {
+    font-family: "Lily Script One", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+  }
