@@ -3,15 +3,15 @@
     <div class="container-fluid">
         Nutrition
     </div>
-
+    <br>
     <div>
         Show Days of the Week (Mon-Sun)
     </div>
-
+    <br>
     <div>
         Show Meals eaten each day
     </div>
-
+    <br>
     <div>
         <table>
             <tr>
@@ -72,7 +72,7 @@
             </tr>
         </table>
     </div>
-
+    <br>
     <div>
         Show Charts/Visuals of each meal eaten every day of the week
     </div>
@@ -82,3 +82,11 @@
 <script setup>
 import Navbar from "@/components/Navbar.vue";
 </script>
+
+<style>
+table,
+th,
+td {
+    border: 1px black solid;
+}
+</style>
