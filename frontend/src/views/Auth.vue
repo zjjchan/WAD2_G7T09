@@ -49,6 +49,8 @@ import { useRouter } from 'vue-router';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import bcrypt from 'bcryptjs'; 
+
 const router = useRouter();
 const auth = getAuth();
 
@@ -73,11 +75,13 @@ const handleSubmit = async () => {
     } else {
       const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
       const userId = userCredential.user.uid;
+      const hashedPassword = bcrypt.hashSync(password.value, 10);
+
 
       const userData = {
         email: email.value,
         username: email.value.split('@')[0],
-        password: password.value,
+        password: hashedPassword,
         profilePicture: "", 
         dietaryPreferences: [],
         healthGoals: [],
