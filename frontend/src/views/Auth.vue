@@ -3,11 +3,12 @@
     <div class="auth-card">
       <div class="auth-image">
         <img 
-          :src="isLogin ? '' : ''" sssa
+          :src="isLogin ? '' : ''"
           alt="Authentication background" 
           class="img-fluid h-100 object-fit-cover" 
         />
       </div>
+
       <div class="auth-form">
         <h1 class="auth-title">MealMate</h1>
         <h2 class="auth-subtitle">{{ isLogin ? 'Welcome Back!' : 'Join Us Today' }}</h2>
@@ -46,7 +47,8 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 const router = useRouter();
 const auth = getAuth();
 
@@ -69,7 +71,19 @@ const handleSubmit = async () => {
     if (isLogin.value) {
       await signInWithEmailAndPassword(auth, email.value, password.value);
     } else {
-      await createUserWithEmailAndPassword(auth, email.value, password.value);
+      const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+      const userId = userCredential.user.uid;
+
+      const userData = {
+        email: email.value,
+        username: email.value.split('@')[0],
+        password: password.value,
+        profilePicture: "", 
+        dietaryPreferences: [],
+        healthGoals: [],
+        favoritedRecipes: []
+      };
+      await setDoc(doc(db, 'users', userId), userData);
     }
     router.push('/');
   } catch (error) {
@@ -92,7 +106,17 @@ const handleSubmit = async () => {
 const handleGoogleSignIn = async () => {
   try {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    const userCredential = await signInWithPopup(auth, provider);
+    const userId = userCredential.user.uid;
+    const userRef = doc(db, "users", userId);
+    await setDoc(userRef, {
+      email: userCredential.user.email,
+      username: userCredential.user.displayName || "",
+      profilePicture: userCredential.user.photoURL || "",
+      dietaryPreferences: [],
+      healthGoals: [],
+      favoritedRecipes: []
+    }, { merge: true });
     router.push('/');
   } catch (error) {
     console.error('Google sign-in error:', error);
