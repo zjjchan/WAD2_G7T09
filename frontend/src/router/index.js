@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Homepage from '../views/Homepage.vue';
-import Recipes from '../views/Recipes.vue';
+import SearchRecipes from '../views/SearchRecipes.vue';
+import Recipe from '../views/Recipe.vue';
 import GroceryList from '../views/GroceryList.vue';
 import Nutrition from '../views/Nutrition.vue';
 import Auth from '../views/Auth.vue';
@@ -17,9 +18,15 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/recipes',
-      name: 'recipes',
-      component: Recipes,
+      path: '/search-recipes',
+      name: 'searchRecipes',
+      component: SearchRecipes,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/recipe',
+      name: 'recipe',
+      component: Recipe,
       meta: { requiresAuth: true }
     },
     {

@@ -1,7 +1,7 @@
 <template>
     <Navbar />
     <div class="container-fluid">
-        Recipes
+        Search Recipes
     </div>
     <div>
     <!-- search -->
@@ -19,7 +19,10 @@
           <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
           <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
           <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
-          <a href="#" class="btn btn-primary">More Info</a>
+          
+          <RouterLink :to="'/recipe/'" class="btn btn-primary" :class="{ 'active': isActiveLink('/recipe') }">
+            More Info
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -35,8 +38,17 @@
 
 import Navbar from "@/components/Navbar.vue";
 import axios from "axios";
+import { RouterLink, useRoute } from 'vue-router';
+const route = useRoute();
+
+const isActiveLink = (routePath) => {
+    return route.path === routePath;
+}
 </script>
-<script>export default {
+<script>
+
+
+export default {
     data() {
       return {
         query: '', // Holds the user's search query
