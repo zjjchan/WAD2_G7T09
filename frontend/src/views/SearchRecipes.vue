@@ -20,7 +20,11 @@
           <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
           <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
           
-          <RouterLink :to="'/recipe/'" class="btn btn-primary" :class="{ 'active': isActiveLink('/recipe') }">
+          <RouterLink
+            :to="{ name: 'recipe', params: { label: recipe.label } }"
+            class="btn btn-primary"
+            @click.native="saveSelectedRecipe(recipe)" >
+          
             More Info
           </RouterLink>
         </div>
@@ -110,7 +114,11 @@ export default {
       loadMore() {
         this.from += this.to; // Increment the starting index for pagination
         this.getData(this.query); // Fetch more data
-      }
+      },
+      saveSelectedRecipe(recipe) {
+      // Save the selected recipe to localStorage or Vuex to access in Recipe.vue
+      localStorage.setItem('selectedRecipe', JSON.stringify(recipe));
+    }
     }
   };</script>
 
