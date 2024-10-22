@@ -1,19 +1,22 @@
 <template>
     <Navbar />
     <div class="container-fluid">
-        Search Recipes
+      
     </div>
     <div>
     <!-- search -->
-    Search Recipe:
-    <input v-model="query" placeholder="Enter a dish name..." />
+    
+    <div id="searchbar">
+      <img id="search_img" src="../assets/images/search.png" alt="search">
+      <input v-model="query" placeholder="Search Recipe" />
+    </div>
     <br><br>
 
     <!-- Display results -->
     <div class="container-fluid" v-for="(recipe, index) in filteredRecipes" :key="index">
       <div class="card col-5">
         <h5 class="card-title">{{ recipe.label }}</h5>
-        <img :src="recipe.image" alt="Recipe Image" />
+        <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
         <div class="card-body">
           <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
           <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
@@ -123,7 +126,10 @@ export default {
   };</script>
 
 <style scoped>
-img {
+#search_img{
+  width: 1%
+}
+#recipe_img {
   width: 200px;
   height: 200px;
 }
@@ -131,4 +137,12 @@ img {
 .card {
   background-color: #8fb17f;
 }
+#searchbar{
+  border: solid 1px;
+  border-radius: 30px;
+}
+input{
+  border: none
+}
 </style>
+
