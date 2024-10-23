@@ -13,7 +13,7 @@ import Navbar from "@/components/Navbar.vue";
 import { db } from '../firebase'; // Import your Firebase configuration
 import { collection, getDocs } from 'firebase/firestore';
 
-const querySnapshot = await getDocs(collection(db, 'weekly_meals'));
+const querySnapshot = await getDocs(collection(db, 'mealsfortheweek'));
 console.log(querySnapshot);
 
 </script>
