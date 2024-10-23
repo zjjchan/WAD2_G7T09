@@ -3,7 +3,7 @@
     <div class="auth-card">
       <div class="auth-image">
         <img 
-          :src="isLogin ? '' : ''"
+          :src="isLogin ? 'images/login.gif' : 'images/join.gif'"
           alt="Authentication background" 
           class="img-fluid h-100 object-fit-cover" 
         />
@@ -11,18 +11,21 @@
 
       <div class="auth-form">
         <h1 class="auth-title">MealMate</h1>
-        <h2 class="auth-subtitle">{{ isLogin ? 'Welcome Back!' : 'Join Us Today' }}</h2>
+        <h2 class="auth-subtitle">{{ isLogin ? 'Welcome Back!' : 'Join Us Today!' }}</h2>
+        <VueTyper text='Hello World! I was registered globally!'></VueTyper>
         <form @submit.prevent="handleSubmit">
-          <div class="mb-3">
+
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" v-model="email" placeholder="name@example.com" required>
             <label for="email" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="email" v-model="email" required>
             <p v-if="emailError" class="error-message">{{ emailError }}</p>
           </div>
-          <div class="mb-3">
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" v-model="password" placeholder="Password" required>
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" v-model="password" required>
             <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
           </div>
+
           <button type="submit" class="btn btn-success w-100 mb-3">
             {{ isLogin ? 'Login' : 'Sign Up' }}
           </button>
@@ -127,11 +130,11 @@ const handleGoogleSignIn = async () => {
     emailError.value = error.message;
   }
 };
+
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&family=Poppins:wght@300;400;600&display=swap');
 .auth-container {
   min-height: 100vh;
   display: flex;
