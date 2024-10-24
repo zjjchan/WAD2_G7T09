@@ -4,12 +4,17 @@
         <div class="container-fluid p-3" id="nutritionoverview">
 
             <!-- Overview Chart -->
-            <div>Chart</div>
-            <canvas id="overviewchart" style="width:100%;max-width:700px"></canvas>
-
-            <br>
-            <!-- Start of list -->
             <div>
+                <strong>
+                    Overview Chart
+                </strong>
+            </div>
+            <div id="firstchart" class="row justify-content-center">
+                <canvas class="targetchart" id="overviewchart" style="width:100%; max-width:1000px"></canvas>
+            </div>
+
+            <!-- Start of list -->
+            <!-- <div>
                 <div v-for="(meals, day) in nutritionData" :key="day">
                     <h2>{{ day.charAt(0).toUpperCase() + day.slice(1) }}</h2>
                     <ul>
@@ -27,7 +32,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
             <!-- End of list -->
 
         </div>
@@ -123,6 +128,8 @@ export default {
                         }]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
                         legend: { display: true },
                         title: {
                             display: true,
@@ -130,7 +137,7 @@ export default {
                         }
                     }
                 });
-            }, 100);
+            }, 300);
 
         });
 
@@ -145,4 +152,10 @@ export default {
 
 </script>
 
-<style></style>
+<style scoped>
+/* doesnt work for now zzz... */
+/* #firstchart {
+        width: 50%;
+        height: 300px;
+    } */
+</style>
