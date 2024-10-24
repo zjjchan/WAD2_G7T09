@@ -45,22 +45,24 @@
     animation: 0.3s expand-up;
 }
 
-.lily-script-one-regular {
+/* .lily-script-one-regular {
     font-family: "Lily Script One", Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 400;
     font-style: normal;
-}
-
+} */
+/* 
 .nav-logo {
     width: 100px;
     font-size: 24px;
-}
+} */
 
 .active {
-    color: black !important;
+    color: rgb(24, 146, 10) !important;
     font-weight: bold;
+    font-size: 19px;
+    text-decoration: underline;
 }
 
-.main-sidebar {
+/* .main-sidebar {
     width: 250px !important;
-}
+} */

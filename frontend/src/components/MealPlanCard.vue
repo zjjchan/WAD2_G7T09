@@ -58,10 +58,8 @@
   </script>
   
   <style scoped>
-  /* Google Fonts */
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
   
-  /* Global Styles */
   body {
     font-family: 'Poppins', sans-serif;
     background-color: #f7f9fc;
@@ -91,7 +89,6 @@
     color: #333;
   }
   
-  /* Scroll & Grid Styling */
   .scroll-container {
     overflow-x: auto;
     padding-bottom: 1rem;
@@ -114,7 +111,6 @@
     min-width: max-content;
   }
   
-  /* Day Column Styling */
   .day-column {
     background: linear-gradient(135deg, #e3f2fd, #e1f5fe);
     border-radius: 12px;
@@ -136,7 +132,6 @@
     color: #1e88e5;
   }
   
-  /* Meal Slot & Items */
   .meal-slot {
     margin-bottom: 1rem;
   }
@@ -197,7 +192,6 @@
     color: #757575;
   }
   
-  /* Button Styling */
   .remove-btn {
     background-color: #e53935;
     color: #ffffff;

@@ -25,7 +25,6 @@
   <style scoped>
   .home-page {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f4f8;
     min-height: 100vh;
   }
   
