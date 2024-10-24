@@ -19,10 +19,10 @@ const mondaymealdata = async () => {
         const mondaycollection = await getDocs(collection(db, 'mondaymeals'));
 
         for (const days of mondaycollection.docs) {
-            console.log(days.id);
+//            console.log(days.id);
             let prtDocRef = doc(db, 'mondaymeals', days.id);
             const abc = await getDoc(prtDocRef);
-            console.log(abc.data());
+//            console.log(abc.data());
         }
 
         // hard coding the documents data
