@@ -9,8 +9,11 @@
                     Overview Chart
                 </strong>
             </div>
-            <div id="firstchart" class="row justify-content-center">
-                <canvas class="targetchart" id="overviewchart" style="width:100%; max-width:1000px"></canvas>
+            <div id="firstchart" class="row">
+                <div class="col-lg-6 col-m-12 p-2">
+                    <canvas class="targetchart" id="overviewchart" style="width:100%; max-width:1000px"></canvas>
+                </div>
+                <div class="col-lg-6 d-none d-md-block bg-dark p-2 text-light"> <strong> Another chart will be here </strong></div>
             </div>
 
             <!-- Start of list -->
@@ -95,36 +98,18 @@ export default {
 
             // Script for Overview Chart
             const xValues = daysOfWeek.map(day => day.charAt(0).toUpperCase() + day.slice(1)); // Capitalize day names
-            // const yValues = [];
-            // const barColors = ["red", "green", "blue", "orange", "brown"];
 
-            // const overviewchart = new Chart("overviewchart", {
-            //     type: "bar",
-            //     data: {
-            //         labels: xValues,
-            //         datasets: [{
-            //             backgroundColor: barColors,
-            //             data: yValues
-            //         }]
-            //     },
-            //     options: {
-            //         legend: { display: true },
-            //         title: {
-            //             display: true,
-            //             text: "Nutrional Overview"
-            //         }
-            //     }
-            // });
-            // Use setTimeout to ensure totalCalories is filled before chart initialization
             setTimeout(() => {
                 const overviewchart = new Chart("overviewchart", {
                     type: "bar",
                     data: {
                         labels: xValues,
                         datasets: [{
-                            label: 'Total Calories',
-                            backgroundColor: ['green', 'grey'],
-                            data: totalCalories.value
+                            label: 'Daily Calories',
+                            data: totalCalories.value,
+                            borderRadius: 5,
+                            backgroundColor: "rgba(1, 150, 1, 0.5)",
+                            border: "3px"
                         }]
                     },
                     options: {
@@ -153,9 +138,4 @@ export default {
 </script>
 
 <style scoped>
-/* doesnt work for now zzz... */
-/* #firstchart {
-        width: 50%;
-        height: 300px;
-    } */
 </style>
