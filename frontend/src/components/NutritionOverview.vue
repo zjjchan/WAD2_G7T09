@@ -9,11 +9,8 @@
                     Overview Chart
                 </strong>
             </div>
-            <div id="firstchart" class="row">
-                <div class="col-lg-6 col-m-12 p-2">
-                    <canvas class="targetchart" id="overviewchart" style="width:100%; max-width:1000px"></canvas>
-                </div>
-                <div class="col-lg-6 d-none d-md-block bg-dark p-2 text-light"> <strong> Another chart will be here </strong></div>
+            <div>
+                <canvas class="targetchart" id="overviewchart" style="width:100%; max-width:1000px"></canvas>
             </div>
 
             <!-- Start of list -->
@@ -90,7 +87,7 @@ export default {
         const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
         const mealtypes = ['Breakfast', 'Lunch', 'Dinner', 'Supper'];
 
-        // Fetch the data when the component is mounted
+        // Fetch the data when component is mounted
         onMounted(() => {
             daysOfWeek.forEach(async (day) => {
                 await fetchNutritionData(day);
@@ -104,21 +101,62 @@ export default {
                     type: "bar",
                     data: {
                         labels: xValues,
-                        datasets: [{
-                            label: 'Daily Calories',
-                            data: totalCalories.value,
-                            borderRadius: 5,
-                            backgroundColor: "rgba(1, 150, 1, 0.5)",
-                            border: "3px"
-                        }]
+                        datasets: [
+                            {
+                                label: 'Breakfast',
+                                data: daysOfWeek.map(day => nutritionData.value[day].breakfast.reduce((sum, meal) => sum + meal.calories, 0)),
+                                backgroundColor: "rgba(255, 99, 132, 0.5)",
+                                borderWidth: 1,
+                                borderColor: "grey"
+                            },
+                            {
+                                label: 'Lunch',
+                                data: daysOfWeek.map(day => nutritionData.value[day].lunch.reduce((sum, meal) => sum + meal.calories, 0)),
+                                backgroundColor: "rgba(54, 162, 235, 0.5)",
+                                borderWidth: 1,
+                                borderColor: "grey"
+                            },
+                            {
+                                label: 'Dinner',
+                                data: daysOfWeek.map(day => nutritionData.value[day].dinner.reduce((sum, meal) => sum + meal.calories, 0)),
+                                backgroundColor: "rgba(255, 206, 86, 0.5)",
+                                borderWidth: 1,
+                                borderColor: "grey"
+                            },
+                            {
+                                label: 'Supper',
+                                data: daysOfWeek.map(day => nutritionData.value[day].supper.reduce((sum, meal) => sum + meal.calories, 0)),
+                                backgroundColor: "rgba(75, 192, 192, 0.5)",
+                                borderWidth: 1,
+                                borderColor: "grey"
+                            }
+                        ],
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        legend: { display: true },
-                        title: {
-                            display: true,
-                            text: ""
+                        scales: {
+                            x: {
+                                stacked: true
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Calories'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Calorie Breakdown per Meal'
+                            }
                         }
                     }
                 });
@@ -127,7 +165,7 @@ export default {
         });
 
         return {
-            nutritionData, // Expose the nutrition data to the template
+            nutritionData, // Expose nutrition data to template
             mealtypes,
             totalCalories
         };
@@ -137,5 +175,4 @@ export default {
 
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
