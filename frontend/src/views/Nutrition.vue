@@ -1,16 +1,13 @@
 <template>
     <Navbar />
-    <div class="container-fluid">
-        Nutrition
-    </div>
-
-    <div>
-
-    </div>
+    <MealPlanCard />
+    <NutritionOverview />
 </template>
 
 <script setup>
 import Navbar from "@/components/Navbar.vue";
+import MealPlanCard from "@/components/MealPlanCard.vue";
+import NutritionOverview from "@/components/NutritionOverview.vue";
 </script>
 
 <script>
@@ -19,9 +16,9 @@ import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 
 const mondaymealdata = async () => {
     try {
-        const querySnapshot = await getDocs(collection(db, 'mondaymeals'));
+        const mondaycollection = await getDocs(collection(db, 'mondaymeals'));
 
-        for (const days of querySnapshot.docs) {
+        for (const days of mondaycollection.docs) {
             console.log(days.id);
             let prtDocRef = doc(db, 'mondaymeals', days.id);
             const abc = await getDoc(prtDocRef);
