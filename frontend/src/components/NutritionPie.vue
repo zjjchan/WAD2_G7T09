@@ -2,7 +2,7 @@
     <!-- <div class="container-fluid"> -->
         <!-- <div class="container-fluid p-3" id="nutritionoverview"> -->
             <!-- <div id="polarAreaChartWrapper" class="row"> -->
-                <canvas id="polarAreaChart" style="width:100%; max-width:800px; max-height: 600px"></canvas>
+                <canvas id="polarAreaChart" style="width:100%; max-width:800px; max-height: 800px"></canvas>
             <!-- </div> -->
         <!-- </div> -->
     <!-- </div> -->

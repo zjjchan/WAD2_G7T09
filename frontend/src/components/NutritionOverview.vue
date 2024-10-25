@@ -7,28 +7,6 @@
                 <canvas class="targetchart" id="overviewchart" style="width:100%; max-width:800px"></canvas>
             <!-- </div> -->
 
-            <!-- Start of list -->
-            <!-- <div>
-                <div v-for="(meals, day) in nutritionData" :key="day">
-                    <h2>{{ day.charAt(0).toUpperCase() + day.slice(1) }}</h2>
-                    <ul>
-                        <li v-for="(mealType, index) in mealtypes" :key="index">
-                            <strong>{{ mealType }}:</strong>
-                            <ul>
-                                <li v-for="(meal, mealIndex) in meals[mealType.toLowerCase()]" :key="mealIndex">
-                                    {{ meal.name }}
-                                    <ul>
-                                        <li>{{ meal.calories }} kcal</li>
-                                        <li>{{ meal.protein }} g</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div> -->
-            <!-- End of list -->
-
         <!-- </div>
     </div> -->
 </template>
