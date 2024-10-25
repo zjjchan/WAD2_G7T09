@@ -33,10 +33,19 @@
     <p>Recipe not found. Please go back and try again.</p>
   </div>
 
+  <!-- START: Ignore this chunk Yi Ting, I making the visuals, can leave at the bottom for now -->
+ 
+  <PieIndivRecipe v-if="recipe" :recipe="recipe" />
+ <!-- Template for loading visual only after page load -->
+ <!-- <componentnamehere v-if="variablename" :variablename="variablename" /> -->
+
+ <!-- END -->
+
 </template>
 
 <script setup>
 import Navbar from "@/components/Navbar.vue";
+import PieIndivRecipe from "@/components/PieIndivRecipe.vue";
 </script>
 
 <script>
