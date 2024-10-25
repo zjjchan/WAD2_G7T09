@@ -27,7 +27,7 @@
 
 <script setup>
 import Navbar from "@/components/Navbar.vue";
-import MealPlanCard from "@/components/MealPlanCard.vue";
+import MealPlanCard from "@/components/Homepage Components/MealPlanCard.vue";
 import NutritionOverview from "@/components/NutritionOverview.vue";
 </script>
 

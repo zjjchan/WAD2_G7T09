@@ -1,31 +1,26 @@
 <template>
-    <div class="saved-recipes-container" style="overflow:scroll; height:400px;">
-      <h2 class="mb-3">Saved Recipes (hardcoded for now)</h2>
-      <Draggable 
-        v-model="savedRecipes" 
-        :group="{ name: 'recipes', pull: 'clone', put: true }"
-        :sort="true"
-        item-key="id"
-        :clone="cloneItem"
-        class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"
-      >
-        <template #item="{ element }">
-          <div class="col">
-            <div class="card h-100 recipe-card">
-              <img :src="element.image" class="card-img-top" :alt="element.name">
-              <div class="card-body">
-                <h5 class="card-title">{{ element.name }}</h5>
-                <p class="card-text"><small class="text-muted">Calories: {{ element.calories }}</small></p>
-              </div>
-              <div class="card-footer">
-              </div>
-            </div>
+  <div class="saved-recipes-container">
+    <Draggable 
+      v-model="savedRecipes" 
+      :group="{ name: 'recipes', pull: 'clone', put: true }"
+      :sort="true"
+      item-key="id"
+      :clone="cloneItem"
+      class="recipes-grid"
+    >
+      <template #item="{ element }">
+        <div class="recipe-card">
+          <img :src="element.image" :alt="element.name">
+          <div class="recipe-content">
+            <h5>{{ element.name }}</h5>
+            <p>Calories: {{ element.calories }}</p>
           </div>
-        </template>
-      </Draggable>
-    </div>
-  </template>
-  
+        </div>
+      </template>
+    </Draggable>
+  </div>
+</template>
+
   <script setup>
   import { ref } from 'vue'
   import Draggable from 'vuedraggable'
@@ -68,37 +63,48 @@
   
   <style scoped>
   .saved-recipes-container {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 400px;
+    overflow: auto;
+  }
+  
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
   
   .recipe-card {
+    background-color: white;
+    border-radius: 0.75rem;
+    overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: move;
   }
   
   .recipe-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
-  .card-img-top {
+  .recipe-card img {
+    width: 100%;
     height: 80px;
     object-fit: cover;
   }
-  .card-body {
-    height: 100px;
-    overflow: none;
+  
+  .recipe-content {
+    padding: 0.75rem;
   }
-
-  .card-title {
-    font-size: 15px;
+  
+  .recipe-content h5 {
+    font-size: 0.875rem;
+    margin: 0 0 0.25rem 0;
+    color: #4A5240;
   }
-
-  .card-footer {
-    background-color: transparent;
-    border-top: none;
+  
+  .recipe-content p {
+    font-size: 0.75rem;
+    color: #666;
+    margin: 0;
   }
   </style>
