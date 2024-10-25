@@ -1,52 +1,55 @@
 <template>
   <div class="meal-plan-card">
-    <h3 class="title">Weekly Meal Plan</h3>
+    <h3 class="title">This Week's Menu</h3>
     <div class="scroll-wrapper">
       <div class="meal-plan-grid">
         <div v-for="day in days" :key="day" class="day-column">
-          <h3 class="day-title">{{ day }}</h3>
-          <div v-for="mealTime in mealTimes" :key="mealTime" class="meal-slot">
-            <div class="meal-header">
-              <h4 class="meal-time-title">{{ mealTime }}</h4>
-              <button 
-                v-if="mealPlan[day][mealTime].length > 1"
-                class="dropdown-toggle"
-                @click="toggleDropdown(day, mealTime)"
-                :class="{ 'is-open': isDropdownOpen(day, mealTime) }"
-              >
-                {{ mealPlan[day][mealTime].length }} meals
-                <span class="arrow">▼</span>
-              </button>
-            </div>
-            <Draggable
-              v-model="mealPlan[day][mealTime]"
-              :group="{ name: 'recipes', pull: true, put: true }"
-              :sort="false"
-              item-key="id"
-              class="meal-drop-zone"
-              :animation="200"
-              :delay="50"
-              :delayOnTouchOnly="true"
-              :touchStartThreshold="5"
-              ghost-class="ghost-item"
-              drag-class="dragging-item"
-            >
-              <template #item="{ element, index }">
-                <div
-                  v-if="index < 1 || isDropdownOpen(day, mealTime)"
-                  class="meal-item"
-                  :key="element.id"
-                  :class="{ 'in-dropdown': index >= 1 }"
+          <div class="day-title-wrapper">
+            <h3 class="day-title">{{ day }}</h3>
+          </div>
+          <div class="meal-times-wrapper">
+            <div v-for="mealTime in mealTimes" :key="mealTime" class="meal-slot">
+              <div class="meal-header">
+                <h4 class="meal-time-title">{{ mealTime }}</h4>
+                <button 
+                  v-if="mealPlan[day][mealTime].length > 1"
+                  class="dropdown-toggle"
+                  @click="toggleDropdown(day, mealTime)"
+                  :class="{ 'is-open': isDropdownOpen(day, mealTime) }"
                 >
-                  <img :src="element.image" :alt="element.name" class="meal-image" />
-                  <div class="meal-details">
-                    <p class="meal-name">{{ element.name }}</p>
-                    <span class="calories">{{ element.calories }} calories</span>
+                  {{ mealPlan[day][mealTime].length }} dishes
+                </button>
+              </div>
+              <Draggable
+                v-model="mealPlan[day][mealTime]"
+                :group="{ name: 'recipes', pull: true, put: true }"
+                :sort="false"
+                item-key="id"
+                class="meal-drop-zone"
+                :animation="200"
+                :delay="40"
+                :delayOnTouchOnly="true"
+                :touchStartThreshold="5"
+                ghost-class="ghost-item"
+                drag-class="dragging-item"
+              >
+                <template #item="{ element, index }">
+                  <div
+                    v-if="index < 1 || isDropdownOpen(day, mealTime)"
+                    class="meal-item"
+                    :key="element.id"
+                    :class="{ 'in-dropdown': index >= 1 }"
+                  >
+                    <img :src="element.image" :alt="element.name" class="meal-image" />
+                    <div class="meal-details">
+                      <p class="meal-name">{{ element.name }}</p>
+                      <span class="calories">{{ element.calories }} calories</span>
+                    </div>
+                    <button @click="removeMeal(day, mealTime, element)" class="remove-btn">&times;</button>
                   </div>
-                  <button @click="removeMeal(day, mealTime, element)" class="remove-btn">&times;</button>
-                </div>
-              </template>
-            </Draggable>
+                </template>
+              </Draggable>
+            </div>
           </div>
         </div>
       </div>
@@ -96,7 +99,6 @@ const removeMeal = (day, mealTime, meal) => {
 </script>
 
 <style scoped>
-/* Main card styling */
 .meal-plan-card {
   width: 100%;
   box-sizing: border-box;
@@ -122,12 +124,29 @@ const removeMeal = (day, mealTime, meal) => {
   flex: 0 0 260px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+}
+.day-title-wrapper {
+  position: sticky;
+  top: 0;
+  background-color: #4A5240;
+  z-index: 10;
+  width: 120px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  margin-top: 10px;
 }
 .day-title {
   font-size: 1rem;
   font-weight: 500;
   padding: 0.5rem 0;
+  text-align: center;
+  color: #FFE5D9;
+}
+.meal-times-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
 }
 .meal-slot {
   background-color: #FFE5D9;
@@ -142,7 +161,6 @@ const removeMeal = (day, mealTime, meal) => {
 .meal-time-title {
   font-size: 0.875rem;
 }
-
 .meal-name {
   font-size: 10px;
 }
@@ -173,6 +191,8 @@ const removeMeal = (day, mealTime, meal) => {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 .meal-image {
   width: 48px;
@@ -206,57 +226,26 @@ const removeMeal = (day, mealTime, meal) => {
   animation: slideDown 0.3s ease;
 }
 .meal-drop-zone {
-  min-height: 60px; /* Ensure there's always space to drop items */
+  min-height: 60px;
   transition: background-color 0.2s ease;
 }
-
 .meal-drop-zone:empty {
   padding: 10px;
   border: 2px dashed #ccc;
   border-radius: 0.5rem;
 }
-
 .ghost-item {
   opacity: 0.5;
   background: #c8ebfb;
 }
-
 .dragging-item {
   cursor: grabbing;
 }
-
-.meal-item {
-  background-color: white;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
 .meal-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.meal-item.in-dropdown {
-  animation: slideDown 0.3s ease;
-}
-
-/* Add a subtle transition for all properties */
 * {
   transition: all 0.2s ease;
 }

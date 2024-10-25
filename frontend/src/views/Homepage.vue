@@ -3,8 +3,7 @@
     <Navbar />
     <div class="container-wrapper">
       <div class="grid-layout">
-        <div class="taste-section">
-          <h2>your taste</h2>
+        <div class="saved-recipes-section">
           <SavedRecipesCard />
         </div>
 
@@ -56,12 +55,12 @@ import WeekSummaryCard from "@/components/Homepage Components/WeekSummaryCard.vu
   width: 100%;
 }
 
-.taste-section,
+.saved-recipes-section,
 .menu-section,
 .grocery-section,
 .nutrition-section {
   background-color: #DAE2BC;
-  border-radius: 1.5rem;
+  border-radius: 2.5rem;
   padding: 1.5rem;
   min-width: 0; 
   width: 100%;
@@ -95,7 +94,7 @@ h2 {
     grid-template-columns: 1fr;
   }
   
-  .taste-section,
+  .saved-recipes-section,
   .menu-section,
   .grocery-section,
   .nutrition-section {
