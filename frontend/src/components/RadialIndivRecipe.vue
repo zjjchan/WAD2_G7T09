@@ -31,14 +31,14 @@ export default {
                     fatSubData.value = {
                         labels: labels,
                         datasets: [{
-                            label: 'Fat Composition',
+                            label: 'Fat',
                             data: values,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(245, 201, 5, 0.5)',
+                            borderColor: 'rgba(245, 201, 5, 1)',
+                            pointBackgroundColor: 'rgba(245, 201, 5, 1)',
                             pointBorderColor: '#fff',
                             pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
+                            pointHoverBorderColor: 'rgba(245, 201, 5, 1)',
                             borderWidth: 1,
                         }],
                     };
