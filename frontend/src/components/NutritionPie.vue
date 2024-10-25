@@ -1,14 +1,11 @@
 <template>
-    <div class="container-fluid">
-        <h1 class="">Total Calories per Day (Polar Area Chart)</h1>
-        <div class="container-fluid p-3" id="nutritionoverview">
-            <div id="polarAreaChartWrapper" class="row">
-                <div class="col-lg-8 col-m-12 p-2">
-                    <canvas id="polarAreaChart" style="width:100%; max-width:1000px"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- <div class="container-fluid"> -->
+        <!-- <div class="container-fluid p-3" id="nutritionoverview"> -->
+            <!-- <div id="polarAreaChartWrapper" class="row"> -->
+                <canvas id="polarAreaChart" style="width:100%; max-width:800px; max-height: 600px"></canvas>
+            <!-- </div> -->
+        <!-- </div> -->
+    <!-- </div> -->
 </template>
 
 <script>

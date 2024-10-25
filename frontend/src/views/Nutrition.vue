@@ -1,8 +1,28 @@
 <template>
     <Navbar />
-    <MealPlanCard />
-    <NutritionOverview />
-    <NutritionPie />
+    <div class="m-4">
+        <MealPlanCard />
+    </div>
+    <div class="row m-2">
+        <div class="col-lg-6 col-md-12 p-2">
+            <div class=" border rounded m-2 h-100">
+                <h2 class="text-center pt-2">Nutritional Overview</h2>
+                <div class="p-3">
+                    <NutritionOverview />
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12 p-2">
+            <div class=" border rounded m-2 h-100">
+                <h2 class="text-center pt-2">Total Calories Consumed each Day</h2>
+                <div class="p-3">
+                    <NutritionPie />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </template>
 
 <script setup>
