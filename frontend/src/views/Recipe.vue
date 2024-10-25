@@ -33,13 +33,10 @@
     <p>Recipe not found. Please go back and try again.</p>
   </div>
 
-  <!-- Yi Ting you can ignore this just don't delete, it's supposed to be the visuals for each recipe nutrients-->
-  <!-- <IndivRecipeVisual :recipe="recipe" /> -->
 </template>
 
 <script setup>
 import Navbar from "@/components/Navbar.vue";
-import IndivRecipeVisual from "@/components/IndivRecipeVisual.vue";
 </script>
 
 <script>

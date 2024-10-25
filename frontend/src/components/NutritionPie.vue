@@ -42,12 +42,12 @@ export default {
             const xValues = daysOfWeek.map(day => day.charAt(0).toUpperCase() + day.slice(1)); // Capitalize day names
             const polarAreaColors = [
                 "rgba(255, 99, 132, 0.5)",  // Red, 50% opacity
-                "rgba(54, 162, 235, 0.5)",  // Blue, 50% opacity
-                "rgba(255, 206, 86, 0.5)",  // Yellow, 50% opacity
-                "rgba(75, 192, 192, 0.5)",  // Green, 50% opacity
-                "rgba(153, 102, 255, 0.5)", // Purple, 50% opacity
-                "rgba(255, 159, 64, 0.5)",  // Orange, 50% opacity
-                "rgba(255, 99, 102, 0.5)"   // other, 50% opacity (repeat)
+                "rgba(54, 162, 235, 0.5)",  // Blue, 
+                "rgba(255, 206, 86, 0.5)",  // Yellow, 
+                "rgba(75, 192, 192, 0.5)",  // Green, 
+                "rgba(153, 102, 255, 0.5)", // Purple
+                "rgba(255, 159, 64, 0.5)",  // Orange
+                "rgba(255, 99, 102, 0.5)"   // other
             ];
 
 
