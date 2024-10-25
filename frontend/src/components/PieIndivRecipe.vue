@@ -7,7 +7,7 @@
 
 <script>
 import { onMounted, ref } from 'vue';
-import { Chart } from 'chart.js'; // Ensure Chart.js is imported if it's not globally available
+import { Chart } from 'chart.js';
 
 export default {
   props: {
@@ -19,25 +19,30 @@ export default {
   setup(props) {
     const nutritionData = ref(null);
 
-    // Use onMounted to create the chart after the component is mounted
     onMounted(() => {
       if (props.recipe) {
-        // Extracting the values for fat, protein, carbs, ... from recipe
+        // Extract the main values for fat, protein, and carbs
         const fat = props.recipe.digest.find(nutrient => nutrient.label === 'Fat')?.total || 0;
         const protein = props.recipe.digest.find(nutrient => nutrient.label === 'Protein')?.total || 0;
-        const carbs = props.recipe.digest.find(nutrient => nutrient.label === 'Carbs')?.total || 0;
+        const carbsData = props.recipe.digest.find(nutrient => nutrient.label === 'Carbs');
+        const carbs = carbsData?.total || 0;
 
+        // Extract subcategories for carbs: Sugars and Fibre
+        const sugars = carbsData?.sub?.find(sub => sub.label === 'Sugars')?.total || 0;
+        const fibre = carbsData?.sub?.find(sub => sub.label === 'Fiber')?.total || 0;
 
-        // Prepare data for the donut chart
+        // Prepare data for the donut chart with subcategories of carbs included
         nutritionData.value = {
-          labels: ['Fats', 'Protein', 'Carbohydrates'],
+          labels: ['Fats', 'Protein', 'Carbohydrates', 'Sugars', 'Fibre'],
           datasets: [{
             label: 'Nutritional Composition',
-            data: [fat, protein, carbs],
+            data: [fat, protein, carbs, sugars, fibre],
             backgroundColor: [
               'rgba(255, 206, 86, 0.5)', // Fat color
               'rgba(255, 99, 132, 0.5)', // Protein color
               'rgba(184, 125, 0, 0.5)', // Carbs color
+              'rgba(153, 102, 255, 0.5)', // Sugars color
+              'rgba(75, 192, 192, 0.5)', // Fibre color
             ],
             borderWidth: 1.5
           }],
@@ -45,7 +50,7 @@ export default {
 
         // Create the donut chart
         const ctx = document.getElementById('nutritionChart').getContext('2d');
-        const chart = new Chart(ctx, {
+        new Chart(ctx, {
           type: 'doughnut',
           data: nutritionData.value,
           options: {
@@ -62,8 +67,8 @@ export default {
                 callbacks: {
                   label: function (tooltipItem) {
                     const label = tooltipItem.label || '';
-                    const value = tooltipItem.raw || 0; // Get the value of the data point
-                    return `${label}: ${value.toFixed(2)} g`; // Format with units
+                    const value = tooltipItem.raw || 0;
+                    return `${label}: ${value.toFixed(2)} g`; // Units
                   },
                 },
               },
@@ -79,6 +84,5 @@ export default {
   },
 };
 </script>
-
 
 <style scoped></style>
