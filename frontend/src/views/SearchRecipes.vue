@@ -5,8 +5,8 @@
     <div class="row">
 
       <!-- Sidebar for filters -->
-      <div class="col-3">
-        <h5>Filters</h5>
+      <div class="col-3 sidebar">
+        <h5><strong>Filters</strong></h5>
 
         <div class="filter-section">
           <h6>Meal Types</h6>
@@ -61,7 +61,7 @@
           <div class="col-3 column">
             <div v-for="(recipe, index) in filteredRecipes" :key="index" class="container-fluid card mb-3">
 
-              <h5 class="card-title">{{ recipe.label }}</h5>
+              <h5 class="card-title"><strong>{{ recipe.label }}</strong></h5>
               <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
               <div class="card-body">
                 <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
@@ -117,53 +117,53 @@ export default {
       to: 20, // Number of results to fetch
 
       // Filter data
-      dietLabels: ["balanced",
-        "high-fiber",
-        "high-protein",
-        "low-carb",
-        "low-fat",
-        "low-sodium"],
+      dietLabels: ["Balanced",
+        "High-Fiber",
+        "High-Protein",
+        "Low-Carb",
+        "Low-Fat",
+        "Low-Sodium"],
       mealTypes: ["Breakfast",
         "Dinner",
         "Lunch",
         "Snack",
         "Teatime"],
-      healthLabels: ["alcohol-cocktail",
-        "alcohol-free",
-        "celery-free",
-        "crustacean-free",
-        "dairy-free",
+      healthLabels: ["Alcohol-Cocktail",
+        "Alcohol-Free",
+        "Celery-Free",
+        "Crustacean-Free",
+        "Dairy-Free",
         "DASH",
-        "egg-free",
-        "fish-free",
-        "fodmap-free",
-        "gluten-free",
-        "immuno-supportive",
-        "keto-friendly",
-        "kidney-friendly",
-        "kosher",
-        "low-fat-abs",
-        "low-potassium",
-        "low-sugar",
-        "lupine-free",
+        "Egg-Free",
+        "Fish-Free",
+        "Fodmap-Free",
+        "Gluten-Free",
+        "Immuno-Supportive",
+        "Keto-Friendly",
+        "Kidney-Friendly",
+        "Kosher",
+        "Low-Fat-Abs",
+        "Low-Potassium",
+        "Low-Sugar",
+        "Lupine-Free",
         "Mediterranean",
-        "mollusk-free",
-        "mustard-free",
-        "no-oil-added",
-        "paleo",
-        "peanut-free",
-        "pescatarian",
-        "pork-free",
-        "red-meat-free",
-        "sesame-free",
-        "shellfish-free",
-        "soy-free",
-        "sugar-conscious",
-        "sulfite-free",
-        "tree-nut-free",
-        "vegan",
-        "vegetarian",
-        "wheat-free"],
+        "Mollusk-Free",
+        "Mustard-Free",
+        "No-oil-added",
+        "Paleo",
+        "Peanut-Free",
+        "Pescatarian",
+        "Pork-Free",
+        "Red-Meat-Free",
+        "Sesame-Free",
+        "Shellfish-Free",
+        "Soy-Free",
+        "Sugar-Conscious",
+        "Sulfite-Free",
+        "Tree-Nut-Free",
+        "Vegan",
+        "Vegetarian",
+        "Wheat-Free"],
       cuisineTypes: ["American",
         "Asian",
         "British",
@@ -261,9 +261,14 @@ export default {
   width: 50%;
 }
 
+.sidebar {
+  padding-left: 50px
+}
+
 #recipe_img {
   width: 200px;
   height: 200px;
+  margin: auto;
 }
 
 .card {
@@ -273,10 +278,10 @@ export default {
 #searchbar {
   border: solid 2px;
   border-radius: 30px;
-  margin: auto;
+
   width: 400px;
   height: 50px;
-  margin-top: 50px;
+
   align-content: center;
 
 }
@@ -287,6 +292,10 @@ input {
 
 }
 
+.filter-section label {
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
 
 button {
   margin-left: 30px;
