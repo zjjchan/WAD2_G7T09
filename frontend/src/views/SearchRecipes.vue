@@ -7,6 +7,15 @@
       <!-- Sidebar for filters -->
       <div class="col-3">
         <h5>Filters</h5>
+
+        <div class="filter-section">
+          <h6>Meal Types</h6>
+          <div v-for="label in mealTypes" :key="label">
+            <input type="checkbox" :value="label" v-model="selectedMealTypes" />
+            <label>{{ label }}</label>
+          </div>
+        </div>
+
         <div class="filter-section">
           <h6>Diet Labels</h6>
           <div v-for="label in dietLabels" :key="label">
@@ -49,24 +58,27 @@
 
 
           <!-- Display results -->
-          <div v-for="(recipe, index) in filteredRecipes" :key="index" class="container-fluid card mb-3">
+          <div class="col-3 column">
+            <div v-for="(recipe, index) in filteredRecipes" :key="index" class="container-fluid card mb-3">
 
-            <h5 class="card-title">{{ recipe.label }}</h5>
-            <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
-            <div class="card-body">
-              <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
-              <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
-              <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
-              <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
+              <h5 class="card-title">{{ recipe.label }}</h5>
+              <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
+              <div class="card-body">
+                <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
+                <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
+                <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
+                <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
+                <p><strong>Meal Type:</strong> {{ recipe.mealType.join(', ') }}</p>
 
-              <RouterLink :to="{ name: 'recipe', params: { label: recipe.label } }" class="btn btn-primary"
-                @click.native="saveSelectedRecipe(recipe)">
+                <RouterLink :to="{ name: 'recipe', params: { label: recipe.label } }" class="btn btn-primary"
+                  @click.native="saveSelectedRecipe(recipe)">
 
-                More Info
-              </RouterLink>
+                  More Info
+                </RouterLink>
 
+              </div>
             </div>
-          </div>
+          </div class="col-5">
 
 
           <button @click="loadMore" v-if="recipes.length > 0">Load More</button>
@@ -105,14 +117,77 @@ export default {
       to: 20, // Number of results to fetch
 
       // Filter data
-      dietLabels: ['Balanced', 'High-Protein', 'Low-Carb', 'Low-Fat'],
-      healthLabels: ['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free'],
-      cuisineTypes: ['Italian', 'Chinese', 'Mexican', 'Indian'],
+      dietLabels: ["balanced",
+        "high-fiber",
+        "high-protein",
+        "low-carb",
+        "low-fat",
+        "low-sodium"],
+      mealTypes: ["Breakfast",
+        "Dinner",
+        "Lunch",
+        "Snack",
+        "Teatime"],
+      healthLabels: ["alcohol-cocktail",
+        "alcohol-free",
+        "celery-free",
+        "crustacean-free",
+        "dairy-free",
+        "DASH",
+        "egg-free",
+        "fish-free",
+        "fodmap-free",
+        "gluten-free",
+        "immuno-supportive",
+        "keto-friendly",
+        "kidney-friendly",
+        "kosher",
+        "low-fat-abs",
+        "low-potassium",
+        "low-sugar",
+        "lupine-free",
+        "Mediterranean",
+        "mollusk-free",
+        "mustard-free",
+        "no-oil-added",
+        "paleo",
+        "peanut-free",
+        "pescatarian",
+        "pork-free",
+        "red-meat-free",
+        "sesame-free",
+        "shellfish-free",
+        "soy-free",
+        "sugar-conscious",
+        "sulfite-free",
+        "tree-nut-free",
+        "vegan",
+        "vegetarian",
+        "wheat-free"],
+      cuisineTypes: ["American",
+        "Asian",
+        "British",
+        "Caribbean",
+        "Central Europe",
+        "Chinese",
+        "Eastern Europe",
+        "French",
+        "Indian",
+        "Italian",
+        "Japanese",
+        "Kosher",
+        "Mediterranean",
+        "Mexican",
+        "Middle Eastern",
+        "Nordic",
+        "South American",
+        "South East Asian"],
 
       // Selected filters
       selectedDietLabels: [],
       selectedHealthLabels: [],
-      selectedCuisineTypes: []
+      selectedCuisineTypes: [],
+      selectedMealTypes: []
     };
   },
   computed: {
@@ -121,7 +196,9 @@ export default {
         const matchesDiet = !this.selectedDietLabels.length || this.selectedDietLabels.some(label => recipe.dietLabels.includes(label));
         const matchesHealth = !this.selectedHealthLabels.length || this.selectedHealthLabels.some(label => recipe.healthLabels.includes(label));
         const matchesCuisine = !this.selectedCuisineTypes.length || this.selectedCuisineTypes.some(cuisine => recipe.cuisineType.includes(cuisine));
-        return matchesDiet && matchesHealth && matchesCuisine;
+        const matchesMeal = !this.selectedMealTypes.length || this.selectedMealTypes.some(meal => recipe.mealType.includes(meal));
+
+        return matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
       });
     }
   },
@@ -177,6 +254,11 @@ export default {
 #search_img {
   width: 2rem;
   padding-right: 10px;
+}
+
+.column {
+  float: left;
+  width: 50%;
 }
 
 #recipe_img {
