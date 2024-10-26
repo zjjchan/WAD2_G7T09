@@ -54,42 +54,44 @@
           </div>
 
           <br><br>
+          <div v-if="isLoading">Loading recipes...</div>
+          <div v-else>
 
+            <div class="card-columns">
+              <!-- Display filtered and paginated results -->
+              <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3 col-5">
+                <h5 class="card-title">{{ recipe.label }}</h5>
+                <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
+                <div class="card-body">
+                  <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
+                  <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
+                  <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
+                  <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
+                  <p><strong>Meal Type:</strong> {{ recipe.mealType.join(', ') }}</p>
 
-          <div class="card-columns">
-            <!-- Display filtered and paginated results -->
-            <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3">
-              <h5 class="card-title">{{ recipe.label }}</h5>
-              <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
-              <div class="card-body">
-                <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
-                <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
-                <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
-                <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
+                  <!-- Pass the recipe URI instead of the label -->
+                  <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
+                    class="btn btn-primary">
+                    More Info
+                  </RouterLink>
 
-                <!-- Pass the recipe URI instead of the label -->
-                <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
-                  class="btn btn-primary">
-                  More Info
-                </RouterLink>
-
+                </div>
               </div>
+              <!-- Pagination Controls -->
+              <div class="pagination-controls">
+                <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+
+                <!-- Numbered Pagination Buttons -->
+                <button v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }"
+                  @click="goToPage(page)">
+                  {{ page }}
+                </button>
+
+                <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+              </div>
+
             </div>
-            <!-- Pagination Controls -->
-            <div class="pagination-controls">
-              <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-
-              <!-- Numbered Pagination Buttons -->
-              <button v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }"
-                @click="goToPage(page)">
-                {{ page }}
-              </button>
-
-              <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
-            </div>
-
           </div>
-
           <!-- Error message -->
           <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
         </div>
@@ -124,7 +126,8 @@ export default {
       recipesPerPage: 10, // Number of recipes per page in the UI
       currentPage: 1, // Track current page number
       from: 0, // Pagination start index
-      to: 50, // Number of results to fetch
+      to: 100, // Number of results to fetch
+      isLoading: false,
 
       // Filter data
       dietLabels: ["Balanced",
@@ -221,40 +224,51 @@ export default {
     }
   },
   methods: {
-    handleSearch() {
+    async handleSearch() {
       if (this.query.length > 2) {
         this.from = 0; // Reset pagination when starting a new search
-        this.getData(this.query); // Fetch the data based on query
+        this.recipes = [];
+        await this.getData(this.query); // Fetch the data based on query
       } else {
         this.recipes = [];
         this.errorMessage = 'Please enter at least 3 characters.';
       }
     },
-    getData(query) {
-      axios
-        .get(this.apiUrl, {
-          params: {
-            q: query,
-            app_id: this.appId,
-            app_key: this.apiKey,
-            from: this.from,
-            to: this.to
-          }
-        })
-        .then(response => {
-          if (response.data.hits && response.data.hits.length > 0) {
-            this.recipes = response.data.hits.map(hit => hit.recipe);
-            this.errorMessage = ''; // Clear error message
-            this.currentPage = 1; // Reset pagination after fetching new data
-          } else {
-            this.recipes = [];
-            this.errorMessage = 'No recipes found for this search.';
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          this.errorMessage = 'Failed to retrieve data. Please try again later.';
-        });
+    async getData(query) {
+      this.isLoading = true;
+      const apiUrl = 'https://api.edamam.com/search';
+      const appId = '374ab5b2'; // Replace with your actual App ID
+      const apiKey = '160b560497690476362bc1fca361165a'; // Replace with your actual API key
+      try {
+        while (true) {
+          const response = await axios.get(apiUrl, {
+            params: {
+              q: query,
+              app_id: appId,
+              app_key: apiKey,
+              from: this.from,
+              to: this.to,
+            },
+          });
+
+          // If no results are returned, break out of the loop
+          if (!response.data.hits.length) break;
+
+          // Add new recipes to the existing list
+          this.recipes = [...this.recipes, ...response.data.hits.map(hit => hit.recipe)];
+
+          // Update `from` and `to` for the next batch
+          this.from += 50;
+          this.to += 50;
+        }
+        this.errorMessage = '';
+      }
+      catch (error) {
+        console.error(error);
+        this.errorMessage = 'Failed to retrieve data. Please try again later.';
+      } finally {
+        this.isLoading = false;
+      }
     }, applyFilters() {
       // Trigger re-evaluation of filteredRecipes
       this.filteredRecipes;
@@ -282,11 +296,7 @@ export default {
   padding-right: 10px;
 }
 
-.card-columns {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
+
 
 .sidebar {
   padding-left: 50px
@@ -318,12 +328,13 @@ export default {
 
 .card {
   background-color: #8fb17f;
+  display: inline-block;
+  margin-left: 10px;
 }
 
 #searchbar {
   border: solid 2px;
   border-radius: 30px;
-
   width: 400px;
   height: 50px;
 

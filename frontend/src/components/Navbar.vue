@@ -111,7 +111,7 @@ const isActiveLink = (routePath) => route.path === routePath;
           </RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink to="/recipes" class="nav-link text-light" :class="{ 'active': isActiveLink('/recipes') }">
+          <RouterLink to="/search-recipes" class="nav-link text-light" :class="{ 'active': isActiveLink('/search-recipes') }">
             Recipes
           </RouterLink>
         </li>
