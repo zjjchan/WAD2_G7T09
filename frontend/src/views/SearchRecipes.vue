@@ -56,32 +56,40 @@
           <br><br>
 
 
-
-          <!-- Display results -->
-          <div class="col-3 column">
-            <div v-for="(recipe, index) in filteredRecipes" :key="index" class="container-fluid card mb-3">
-
-              <h5 class="card-title"><strong>{{ recipe.label }}</strong></h5>
+          <div class="card-columns">
+            <!-- Display filtered and paginated results -->
+            <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3">
+              <h5 class="card-title">{{ recipe.label }}</h5>
               <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
               <div class="card-body">
                 <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
                 <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
                 <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
                 <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
-                <p><strong>Meal Type:</strong> {{ recipe.mealType.join(', ') }}</p>
 
-                <RouterLink :to="{ name: 'recipe', params: { label: recipe.label } }" class="btn btn-primary"
-                  @click.native="saveSelectedRecipe(recipe)">
-
+                <!-- Pass the recipe URI instead of the label -->
+                <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
+                  class="btn btn-primary">
                   More Info
                 </RouterLink>
 
               </div>
             </div>
-          </div class="col-5">
+            <!-- Pagination Controls -->
+            <div class="pagination-controls">
+              <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
 
+              <!-- Numbered Pagination Buttons -->
+              <button v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }"
+                @click="goToPage(page)">
+                {{ page }}
+              </button>
 
-          <button @click="loadMore" v-if="recipes.length > 0">Load More</button>
+              <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+            </div>
+
+          </div>
+
           <!-- Error message -->
           <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
         </div>
@@ -113,8 +121,10 @@ export default {
       apiUrl: 'https://api.edamam.com/search', // Replace with the actual API URL
       apiKey: '160b560497690476362bc1fca361165a', // Replace with your actual API key
       appId: '374ab5b2', // Replace with your actual App ID
+      recipesPerPage: 10, // Number of recipes per page in the UI
+      currentPage: 1, // Track current page number
       from: 0, // Pagination start index
-      to: 20, // Number of results to fetch
+      to: 50, // Number of results to fetch
 
       // Filter data
       dietLabels: ["Balanced",
@@ -200,6 +210,14 @@ export default {
 
         return matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
       });
+    },
+    paginatedRecipes() {
+      const start = (this.currentPage - 1) * this.recipesPerPage;
+      const end = start + this.recipesPerPage;
+      return this.filteredRecipes.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredRecipes.length / this.recipesPerPage);
     }
   },
   methods: {
@@ -227,6 +245,7 @@ export default {
           if (response.data.hits && response.data.hits.length > 0) {
             this.recipes = response.data.hits.map(hit => hit.recipe);
             this.errorMessage = ''; // Clear error message
+            this.currentPage = 1; // Reset pagination after fetching new data
           } else {
             this.recipes = [];
             this.errorMessage = 'No recipes found for this search.';
@@ -236,14 +255,21 @@ export default {
           console.error(error);
           this.errorMessage = 'Failed to retrieve data. Please try again later.';
         });
-    },
-    loadMore() {
-      this.from += this.to; // Increment the starting index for pagination
-      this.getData(this.query); // Fetch more data
-    },
-    applyFilters() {
+    }, applyFilters() {
       // Trigger re-evaluation of filteredRecipes
       this.filteredRecipes;
+    }, goToPage(page) {
+      this.currentPage = page;
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
     }
   }
 };
@@ -256,13 +282,32 @@ export default {
   padding-right: 10px;
 }
 
-.column {
-  float: left;
-  width: 50%;
+.card-columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .sidebar {
   padding-left: 50px
+}
+
+.pagination-controls .active {
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-controls button {
+  margin: 0 5px;
+  padding: 5px 10px;
 }
 
 #recipe_img {
