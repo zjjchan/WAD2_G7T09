@@ -27,7 +27,7 @@
     </section>
     
     <section class="how-it-works" ref="howItWorksSection">
-      <h2>How It Works</h2>
+      <h2>Quick Actionss</h2>
       <div class="steps">
         <div class="step" v-for="(step, index) in steps" :key="index" ref="stepItems">
           <div class="step-number">{{ index + 1 }}</div>
@@ -138,9 +138,9 @@ const steps = [
 ];
 
 const testimonials = [
-  { quote: 'MealMate has revolutionized the way I plan my meals. It\'s a game-changer!', author: 'Sarah J.' },
-  { quote: 'I\'ve never eaten healthier or saved so much time on meal prep. Highly recommended!', author: 'Mike T.' },
-  { quote: 'The personalized meal suggestions are spot-on. MealMate knows me better than I know myself!', author: 'Emily R.' },
+  { quote: '-', author: 'placeholder' },
+  { quote: '-', author: 'placeholder' },
+  { quote: '-', author: 'placeholder' },
 ];
 
 
