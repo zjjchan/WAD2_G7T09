@@ -11,32 +11,40 @@
         <div class="filter-section">
           <h6>Meal Types</h6>
           <div v-for="label in mealTypes" :key="label">
-            <input id="{{label}}" type="checkbox" :value="label" v-model="selectedMealTypes" />
-            <label for="{{label}}">{{ label }}</label>
+            <input :id="label" type="checkbox" :value="label" v-model="selectedMealTypes" />
+            <label :for="label" @click.prevent="toggleCheckbox(selectedMealTypes, label)">
+              {{ label }}
+            </label>
           </div>
         </div>
 
         <div class="filter-section">
           <h6>Diet Labels</h6>
           <div v-for="label in dietLabels" :key="label">
-            <input type="checkbox" :value="label" v-model="selectedDietLabels" />
-            <label>{{ label }}</label>
+            <input :id="label" type="checkbox" :value="label" v-model="selectedDietLabels" />
+            <label :for="label" @click.prevent="toggleCheckbox(selectedDietLabels, label)">
+              {{ label }}
+            </label>
           </div>
         </div>
 
         <div class="filter-section">
           <h6>Health Labels</h6>
           <div v-for="label in healthLabels" :key="label">
-            <input type="checkbox" :value="label" v-model="selectedHealthLabels" />
-            <label>{{ label }}</label>
+            <input :id="label" type="checkbox" :value="label" v-model="selectedHealthLabels" />
+            <label :for="label" @click.prevent="toggleCheckbox(selectedHealthLabels, label)">
+              {{ label }}
+            </label>
           </div>
         </div>
 
         <div class="filter-section">
           <h6>Cuisine Type</h6>
           <div v-for="cuisine in cuisineTypes" :key="cuisine">
-            <input type="checkbox" :value="cuisine" v-model="selectedCuisineTypes" />
-            <label>{{ cuisine }}</label>
+            <input :id="cuisine" type="checkbox" :value="cuisine" v-model="selectedCuisineTypes" />
+            <label :for="cuisine" @click.prevent="toggleCheckbox(selectedCuisineTypes, cuisine)">
+              {{ cuisine }}
+            </label>
           </div>
         </div>
 
@@ -74,6 +82,7 @@
                     class="btn btn-primary">
                     More Info
                   </RouterLink>
+
 
                 </div>
               </div>
@@ -255,6 +264,14 @@ export default {
     }
   },
   methods: {
+    toggleCheckbox(list, item) {
+      const index = list.indexOf(item);
+      if (index > -1) {
+        list.splice(index, 1); // Remove if it’s already selected
+      } else {
+        list.push(item); // Add if it’s not selected
+      }
+    },
     async handleSearch() {
       if (this.query.length > 2) {
         this.from = 0; // Reset pagination when starting a new search

@@ -25,7 +25,7 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/recipe',
+      path: '/recipe/:uri',
       name: 'recipe',
       component: Recipe,
       meta: { requiresAuth: true }

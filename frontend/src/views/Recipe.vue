@@ -56,19 +56,36 @@ import RadialIndivRecipe from "@/components/RadialIndivRecipe.vue";
 </script>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       recipe: null, // Holds the selected recipe
     };
   },
-  mounted() {
-    // Retrieve the recipe from localStorage or any state management solution (e.g., Vuex)
-    const savedRecipe = localStorage.getItem('selectedRecipe');
-    if (savedRecipe) {
-      this.recipe = JSON.parse(savedRecipe);
-      console.log(this.recipe);
+  async mounted() {
+    const { uri } = this.$route.params;
+    if (uri) {
+      await this.fetchRecipeDetails(decodeURIComponent(uri));
     }
-  }
+  },
+  methods: {
+    async fetchRecipeDetails(uri) {
+      try {
+        const appId = '374ab5b2'; // Replace with actual App ID
+        const apiKey = '160b560497690476362bc1fca361165a'; // Replace with actual API Key
+        const response = await axios.get(`https://api.edamam.com/search`, {
+          params: {
+            r: uri,
+            app_id: appId,
+            app_key: apiKey,
+          },
+        });
+        this.recipe = response.data[0];
+      } catch (error) {
+        console.error("Failed to fetch recipe:", error);
+      }
+    },
+  },
 };
 </script>
