@@ -11,8 +11,8 @@
         <div class="filter-section">
           <h6>Meal Types</h6>
           <div v-for="label in mealTypes" :key="label">
-            <input type="checkbox" :value="label" v-model="selectedMealTypes" />
-            <label>{{ label }}</label>
+            <input id="{{label}}" type="checkbox" :value="label" v-model="selectedMealTypes" />
+            <label for="{{label}}">{{ label }}</label>
           </div>
         </div>
 
@@ -66,8 +66,8 @@
                   <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
                   <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
                   <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
-                  <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
-                  <p><strong>Meal Type:</strong> {{ recipe.mealType.join(', ') }}</p>
+                  <p><strong>Cuisine Type:</strong> {{ capitalise(recipe.cuisineType.join(', ')) }}</p>
+                  <p><strong>Meal Type:</strong> {{ capitalise(recipe.mealType.join(', ')) }}</p>
 
                   <!-- Pass the recipe URI instead of the label -->
                   <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
@@ -114,6 +114,22 @@ const isActiveLink = (routePath) => {
 }
 </script>
 <script>
+function capitalise(word) {
+  if (word.includes(" ") || word.includes("/")) {
+    if (word.includes(" ")) {
+      var words = word.split(" ");
+    } else {
+      var words = word.split("/");
+    }
+    for (let i = 0; i < words.length; i++) {
+      words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+    }
+    return words.join(" / ");
+
+  } else {
+    return word[0].toUpperCase() + word.substring(1);
+  }
+}
 export default {
   data() {
     return {
@@ -206,10 +222,25 @@ export default {
   computed: {
     filteredRecipes() {
       return this.recipes.filter(recipe => {
-        const matchesDiet = !this.selectedDietLabels.length || this.selectedDietLabels.some(label => recipe.dietLabels.includes(label));
-        const matchesHealth = !this.selectedHealthLabels.length || this.selectedHealthLabels.some(label => recipe.healthLabels.includes(label));
-        const matchesCuisine = !this.selectedCuisineTypes.length || this.selectedCuisineTypes.some(cuisine => recipe.cuisineType.includes(cuisine));
-        const matchesMeal = !this.selectedMealTypes.length || this.selectedMealTypes.some(meal => recipe.mealType.includes(meal));
+        const matchesDiet = !this.selectedDietLabels.length ||
+          this.selectedDietLabels.some(label =>
+            recipe.dietLabels.some(d => d.toLowerCase() === label.toLowerCase())
+          );
+
+        const matchesHealth = !this.selectedHealthLabels.length ||
+          this.selectedHealthLabels.some(label =>
+            recipe.healthLabels.some(h => h.toLowerCase() === label.toLowerCase())
+          );
+
+        const matchesCuisine = !this.selectedCuisineTypes.length ||
+          this.selectedCuisineTypes.some(cuisine =>
+            recipe.cuisineType.some(c => c.toLowerCase() === cuisine.toLowerCase())
+          );
+
+        const matchesMeal = !this.selectedMealTypes.length ||
+          this.selectedMealTypes.some(meal =>
+            recipe.mealType.some(m => m.toLowerCase() === meal.toLowerCase())
+          );
 
         return matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
       });
@@ -228,6 +259,9 @@ export default {
       if (this.query.length > 2) {
         this.from = 0; // Reset pagination when starting a new search
         this.recipes = [];
+        this.currentPage = 1;
+        this.errorMessage = '';
+        this.to = 100;
         await this.getData(this.query); // Fetch the data based on query
       } else {
         this.recipes = [];
