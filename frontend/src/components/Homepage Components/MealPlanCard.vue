@@ -22,16 +22,14 @@
               </div>
               <Draggable
                 v-model="mealPlan[day][mealTime]"
-                :group="{ name: 'recipes', pull: true, put: true }"
+                :group="{ name: 'recipes', pull: 'clone', put: true }"
                 :sort="false"
                 item-key="id"
                 class="meal-drop-zone"
-                :animation="200"
-                :delay="40"
-                :delayOnTouchOnly="true"
-                :touchStartThreshold="5"
                 ghost-class="ghost-item"
                 drag-class="dragging-item"
+                :animation="200"
+                @change="handleDrag"
               >
                 <template #item="{ element, index }">
                   <div
@@ -61,11 +59,9 @@
 import { ref } from 'vue';
 import Draggable from 'vuedraggable';
 
-// Days and meal times
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const mealTimes = ['Breakfast', 'Lunch', 'Dinner'];
 
-// Meal plan structure
 const mealPlan = ref(
   days.reduce((acc, day) => {
     acc[day] = mealTimes.reduce((meals, mealTime) => {
@@ -76,7 +72,6 @@ const mealPlan = ref(
   }, {})
 );
 
-// Store dropdown states
 const openDropdowns = ref(new Set());
 
 const getDropdownKey = (day, mealTime) => `${day}-${mealTime}`;
@@ -96,7 +91,12 @@ const removeMeal = (day, mealTime, meal) => {
   const index = mealPlan.value[day][mealTime].indexOf(meal);
   if (index > -1) mealPlan.value[day][mealTime].splice(index, 1);
 };
+
+const handleDrag = (event) => {
+  console.log('Drag event:', event);
+};
 </script>
+
 
 <style scoped>
 .meal-plan-card {
@@ -118,7 +118,7 @@ const removeMeal = (day, mealTime, meal) => {
 .meal-plan-grid {
   display: flex;
   gap: 1rem;
-  padding-bottom: 1rem;
+  padding-bottom: 6rem;
 }
 .day-column {
   flex: 0 0 260px;
@@ -134,6 +134,7 @@ const removeMeal = (day, mealTime, meal) => {
   border-radius: 20px;
   margin-bottom: 20px;
   margin-top: 10px;
+  margin-left:74px;
 }
 .day-title {
   font-size: 1rem;
@@ -141,6 +142,7 @@ const removeMeal = (day, mealTime, meal) => {
   padding: 0.5rem 0;
   text-align: center;
   color: #FFE5D9;
+  margin:auto;
 }
 .meal-times-wrapper {
   display: flex;
@@ -240,7 +242,11 @@ const removeMeal = (day, mealTime, meal) => {
 }
 .dragging-item {
   cursor: grabbing;
+  transform: scale(0.2); 
+  height: auto; 
+  transition: transform 0.2s ease; 
 }
+
 .meal-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
