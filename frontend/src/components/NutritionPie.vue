@@ -1,18 +1,11 @@
 <template>
-    <!-- <div class="container-fluid"> -->
-        <!-- <div class="container-fluid p-3" id="nutritionoverview"> -->
-            <!-- <div id="polarAreaChartWrapper" class="row"> -->
-                <canvas id="polarAreaChart" style="width:100%; max-width:800px; max-height: 1000px"></canvas>
-            <!-- </div> -->
-        <!-- </div> -->
-    <!-- </div> -->
+    <canvas id="polarAreaChart" style="width:100%; max-width:800px; max-height: 1000px"></canvas>
 </template>
 
 <script>
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { onMounted, ref } from 'vue';
-import Chart from 'chart.js/auto'; // Import Chart.js
 
 export default {
     setup() {
@@ -38,20 +31,19 @@ export default {
                 await fetchNutritionData(day);
             }
 
-            // Chart data for the Polar Area chart
+            // data for Polar Area chart
             const xValues = daysOfWeek.map(day => day.charAt(0).toUpperCase() + day.slice(1)); // Capitalize day names
             const polarAreaColors = [
-                "rgba(255, 99, 132, 0.5)",  // Red, 50% opacity
-                "rgba(54, 162, 235, 0.5)",  // Blue, 
-                "rgba(255, 206, 86, 0.5)",  // Yellow, 
-                "rgba(75, 192, 192, 0.5)",  // Green, 
-                "rgba(153, 102, 255, 0.5)", // Purple
-                "rgba(255, 159, 64, 0.5)",  // Orange
-                "rgba(255, 99, 102, 0.5)"   // other
+                "rgba(50, 50, 255, 0.5)",
+                "rgba(54, 162, 200, 0.5)",
+                "rgba(100, 190, 150, 0.5)",
+                "rgba(0, 185, 0, 0.5)",
+                "rgba(255, 206, 86, 0.5)",
+                "rgba(255, 159, 64, 0.5)",
+                "rgba(255, 99, 102, 0.5)"
             ];
 
-
-            // Create the Polar Area Chart
+            // Polar Area Chart
             new Chart(document.getElementById('polarAreaChart'), {
                 type: 'polarArea',
                 data: {

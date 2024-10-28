@@ -38,17 +38,17 @@ export default {
             label: 'Nutritional Composition',
             data: [fat, protein, carbs, sugars, fibre],
             backgroundColor: [
-              'rgba(255, 206, 86, 0.5)', // Fat color
-              'rgba(255, 99, 132, 0.5)', // Protein color
-              'rgba(184, 125, 0, 0.5)', // Carbs color
-              'rgba(153, 102, 255, 0.5)', // Sugars color
-              'rgba(75, 192, 192, 0.5)', // Fibre color
+              'rgba(255, 206, 86, 0.5)', // Fat colour
+              'rgba(255, 99, 132, 0.5)', // Protein colour
+              'rgba(184, 125, 0, 0.5)', // Carbs colour
+              'rgba(153, 102, 255, 0.5)', // Sugars colour
+              'rgba(75, 192, 192, 0.5)', // Fibre colour
             ],
             borderWidth: 1.5
           }],
         };
 
-        // Create the donut chart
+        // Create doughnut chart
         const ctx = document.getElementById('nutritionChart').getContext('2d');
         new Chart(ctx, {
           type: 'doughnut',
