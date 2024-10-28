@@ -1,9 +1,11 @@
 <template>
   <Navbar />
-  <div class="container-fluid">
-    Recipe
+
+  <!-- Display loading message while fetching the recipe data -->
+  <div v-if="isLoading">
+    <p>Loading recipe...</p>
   </div>
-  <div v-if="recipe">
+  <div v-else-if="recipe">
     <h1>{{ recipe.label }}</h1>
     <img :src="recipe.image" alt="Recipe Image" />
     <p><strong>Calories:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
@@ -57,23 +59,27 @@ import RadialIndivRecipe from "@/components/RadialIndivRecipe.vue";
 
 <script>
 import axios from "axios";
+
 export default {
   data() {
     return {
-      recipe: null, // Holds the selected recipe
+      recipe: null,  // Holds the selected recipe
+      isLoading: true,  // Loading state
     };
   },
   async mounted() {
     const { uri } = this.$route.params;
     if (uri) {
       await this.fetchRecipeDetails(decodeURIComponent(uri));
+    } else {
+      this.isLoading = false;  // Stop loading if no URI is provided
     }
   },
   methods: {
     async fetchRecipeDetails(uri) {
       try {
-        const appId = '374ab5b2'; // Replace with actual App ID
-        const apiKey = '160b560497690476362bc1fca361165a'; // Replace with actual API Key
+        const appId = '374ab5b2';  // Replace with actual App ID
+        const apiKey = '160b560497690476362bc1fca361165a';  // Replace with actual API Key
         const response = await axios.get(`https://api.edamam.com/search`, {
           params: {
             r: uri,
@@ -81,9 +87,14 @@ export default {
             app_key: apiKey,
           },
         });
-        this.recipe = response.data[0];
+
+        if (response.data && response.data.length > 0) {
+          this.recipe = response.data[0];
+        }
       } catch (error) {
         console.error("Failed to fetch recipe:", error);
+      } finally {
+        this.isLoading = false;  // Ensure loading state is turned off
       }
     },
   },

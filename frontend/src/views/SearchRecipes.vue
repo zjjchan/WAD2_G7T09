@@ -154,6 +154,12 @@ export default {
       to: 100, // Number of results to fetch
       isLoading: false,
 
+      // Selected filters
+      selectedDietLabels: [],
+      selectedHealthLabels: [],
+      selectedCuisineTypes: [],
+      selectedMealTypes: [],
+
       // Filter data
       dietLabels: ["Balanced",
         "High-Fiber",
@@ -221,16 +227,17 @@ export default {
         "South American",
         "South East Asian"],
 
-      // Selected filters
-      selectedDietLabels: [],
-      selectedHealthLabels: [],
-      selectedCuisineTypes: [],
-      selectedMealTypes: []
+
     };
   },
   computed: {
     filteredRecipes() {
       return this.recipes.filter(recipe => {
+
+        // Ensure recipe label contains the search query (case-insensitive)
+        const matchesQuery = this.query ? recipe.label.toLowerCase().includes(this.query.toLowerCase()) : true; // if query is empty, don't filter by label
+
+
         const matchesDiet = !this.selectedDietLabels.length ||
           this.selectedDietLabels.some(label =>
             recipe.dietLabels.some(d => d.toLowerCase() === label.toLowerCase())
@@ -251,7 +258,7 @@ export default {
             recipe.mealType.some(m => m.toLowerCase() === meal.toLowerCase())
           );
 
-        return matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
+        return matchesQuery && matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
       });
     },
     paginatedRecipes() {
