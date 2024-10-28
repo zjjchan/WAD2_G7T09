@@ -7,7 +7,7 @@
 
 <script>
 import { onMounted, ref } from 'vue';
-import { Chart } from 'chart.js';
+// import { Chart } from 'chart.js';  MUST NOT INCLUDE CODE WILL NOT WORK
 
 export default {
   props: {

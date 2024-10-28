@@ -7,6 +7,7 @@
 
 <script>
 import { onMounted, ref } from 'vue';
+// import { Chart } from 'chart.js'; MUST NOT INCLUDE CODE WILL NOT WORK
 
 export default {
     props: {
@@ -25,7 +26,7 @@ export default {
                 if (fatData && fatData.sub) {
                     const labels = fatData.sub.map(sub => sub.label);
                     const values = fatData.sub.map(sub => sub.total);
-                    const unit = fatData.sub[0]?.unit || "g"; // Use the unit from one of the sub-categories
+                    const unit = fatData.sub[0]?.unit || "g";
 
                     // Prepare data for radar chart
                     fatSubData.value = {
