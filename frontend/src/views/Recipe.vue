@@ -12,6 +12,7 @@
     <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
     <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
     <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
+    <button @click="saveRecipe" class="btn btn-primary mt-3">Save to Favorites</button>
     <h3>Nutrition Facts</h3>
     <div v-for="(nutrient, index) in recipe.digest" :key="index">
       <p>
@@ -55,48 +56,82 @@
 import Navbar from "@/components/Navbar.vue";
 import PieIndivRecipe from "@/components/PieIndivRecipe.vue";
 import RadialIndivRecipe from "@/components/RadialIndivRecipe.vue";
+import axios from "axios";
+import { ref, onMounted } from "vue";
+import { useRouter, RouterLink, useRoute } from 'vue-router';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { db } from "../firebase";
+const route = useRoute();
+
+const isActiveLink = (routePath) => {
+  return route.path === routePath;
+}
+const recipe = ref(null);
+const isLoading = ref(true);
+
+const auth = getAuth();
+const user = ref(null);
+
+onAuthStateChanged(auth, (currentUser) => {
+  user.value = currentUser;
+});
+
+const saveRecipe = async () => {
+  if (!user.value) {
+    alert("You need to sign in to save recipes.");
+    return;
+  }
+
+  try {
+    const userDoc = doc(db, "users", user.value.uid);
+    await updateDoc(userDoc, {
+      favoritedRecipes: arrayUnion({
+        label: recipe.value.label,
+        uri: recipe.value.uri,
+        image: recipe.value.image,
+      })
+    });
+    alert("Recipe saved to favorites!");
+  } catch (error) {
+    console.error("Failed to save recipe:", error);
+  }
+};
+const fetchRecipeDetails = async (uri) => {
+  try {
+    const appId = '374ab5b2';
+    const apiKey = '160b560497690476362bc1fca361165a';
+    const response = await axios.get(`https://api.edamam.com/search`, {
+      params: {
+        r: uri,
+        app_id: appId,
+        app_key: apiKey,
+      },
+    });
+
+    if (response.data && response.data.length > 0) {
+      recipe.value = response.data[0];
+    } else {
+      console.warn("Recipe not found.");
+    }
+  } catch (error) {
+    console.error("Failed to fetch recipe:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(async () => {
+  const { uri } = route.params;
+  console.log("Recipe URI:", uri); // Check if the URI is correctly received
+  if (uri) {
+    await fetchRecipeDetails(decodeURIComponent(uri));
+  } else {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <script>
-import axios from "axios";
 
-export default {
-  data() {
-    return {
-      recipe: null,  // Holds the selected recipe
-      isLoading: true,  // Loading state
-    };
-  },
-  async mounted() {
-    const { uri } = this.$route.params;
-    if (uri) {
-      await this.fetchRecipeDetails(decodeURIComponent(uri));
-    } else {
-      this.isLoading = false;  // Stop loading if no URI is provided
-    }
-  },
-  methods: {
-    async fetchRecipeDetails(uri) {
-      try {
-        const appId = '374ab5b2';  // Replace with actual App ID
-        const apiKey = '160b560497690476362bc1fca361165a';  // Replace with actual API Key
-        const response = await axios.get(`https://api.edamam.com/search`, {
-          params: {
-            r: uri,
-            app_id: appId,
-            app_key: apiKey,
-          },
-        });
-
-        if (response.data && response.data.length > 0) {
-          this.recipe = response.data[0];
-        }
-      } catch (error) {
-        console.error("Failed to fetch recipe:", error);
-      } finally {
-        this.isLoading = false;  // Ensure loading state is turned off
-      }
-    },
-  },
-};
 </script>
