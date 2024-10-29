@@ -1,10 +1,11 @@
-<template>
+###HOMEPAGE <template>
   <div class="homepage">
     <Navbar />
+    <WelcomeModal v-if="showModal" />
     <div class="scroll-progress" ref="scrollProgress"></div>
     <section class="hero">
       <div class="hero-content">
-        <h1 class="hero-title" ref="heroTitle">Welcome back to Mealmate, {{ username }}</h1>
+        <h1 class="hero-title" ref="heroTitle">Welcome back to Mealmate</h1>
         <p ref="heroSubtitle">Your personal assistant for meal planning, grocery shopping, and nutrition</p>
       </div>
       <img ref="heroImage" src="/images/loginimage.png" alt="MealMate Hero" class="hero-image" />
@@ -27,12 +28,13 @@
     </section>
     
     <section class="how-it-works" ref="howItWorksSection">
-      <h2>Quick Actionss</h2>
+      <h2>Quick Actions</h2>
       <div class="steps">
         <div class="step" v-for="(step, index) in steps" :key="index" ref="stepItems">
           <div class="step-number">{{ index + 1 }}</div>
           <h3>{{ step.title }}</h3>
           <p>{{ step.description }}</p>
+          <button @click="navigateTo(step.path)">Go to {{ step.title }}</button>
         </div>
       </div>
     </section>
@@ -58,17 +60,19 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { getFirestore, collection, getDocs} from 'firebase/firestore';
-import { getAuth } from "firebase/auth";
+import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getAuth,  onAuthStateChanged } from "firebase/auth";
 import Navbar from "@/components/Navbar.vue";
+import { useRouter } from 'vue-router';
+import WelcomeModal from '@/components/WelcomeModal.vue';
+
 
 gsap.registerPlugin(ScrollTrigger);
 
-const db = getFirestore(); // Firestore instance
+const db = getFirestore(); // to get firestore instance
 
 const auth = getAuth();
-const user = auth.currentUser;
-
+const showModal = ref(false);
 
 const heroTitle = ref(null);
 const heroSubtitle = ref(null);
@@ -85,6 +89,8 @@ const food1 = ref(null);
 const food2 = ref(null);
 const food3 = ref(null);
 const scrollProgress = ref(null);
+
+
 
 // Set default features in case data is not fetched yet
 const features = ref([
@@ -129,13 +135,36 @@ try {
   }
   };
 
+  const router = useRouter();
 
-const steps = [
-  { title: 'Create Your Profile', description: 'Tell us about your dietary preferences, allergies, and health goals.' },
-  { title: 'Get Your Meal Plan', description: 'Receive a personalized weekly meal plan based on your profile.' },
-  { title: 'Shop with Ease', description: 'Use our smart grocery list for efficient shopping.' },
-  { title: 'Cook and Enjoy', description: 'Follow our easy recipes and enjoy delicious, healthy meals.' },
-];
+  const steps = [
+    { 
+      title: 'Change Meal Preferences', 
+      description: 'Tell us about your dietary preferences, allergies, and health goals.', 
+      path: '/profile' 
+    },
+    { 
+      title: 'View weekly meal plan', 
+      description: 'Receive a personalized weekly meal plan based on your profile.', 
+      path: '/meal-preferences' 
+    },
+    { 
+      title: 'Grocery List', 
+      description: 'Use our smart grocery list for efficient shopping.', 
+      path: '/grocery-list' 
+    },
+    { 
+      title: 'Find recipes', 
+      description: 'Follow our easy recipes and enjoy delicious, healthy meals.', 
+      path: '/search-recipes' 
+    },
+  ];
+
+  const navigateTo = (path) => {
+    router.push(path);  
+  };
+
+
 
 const testimonials = [
   { quote: '-', author: 'placeholder' },
@@ -147,8 +176,13 @@ const testimonials = [
 
 onMounted(async() => {
   await getTodayMeals();
-  // Hero section animations
+ const isNewUser = localStorage.getItem('isNewUser');
 
+  if (isNewUser) {
+    showModal.value = true; // Show the modal
+    localStorage.removeItem('isNewUser')
+  };
+  // Hero section animations
   gsap.from(heroTitle.value, { opacity: 0, y: 50, duration: 1, delay: 0.5 });
   gsap.from(heroSubtitle.value, { opacity: 0, y: 50, duration: 1, delay: 0.7 });
   gsap.from(ctaButton.value, { opacity: 0, y: 50, duration: 1, delay: 0.9 });
