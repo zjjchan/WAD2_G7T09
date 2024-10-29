@@ -49,7 +49,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup} from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import bcrypt from 'bcryptjs'; 
@@ -88,8 +88,10 @@ const handleSubmit = async () => {
         profilePicture: "", 
         dietaryPreferences: [],
         healthGoals: [],
-        favoritedRecipes: []
+        favoritedRecipes: [],
       };
+      localStorage.setItem('isNewUser', 'true');
+
       await setDoc(doc(db, 'users', userId), userData);
     }
     router.push('/');
@@ -122,7 +124,7 @@ const handleGoogleSignIn = async () => {
       profilePicture: userCredential.user.photoURL || "",
       dietaryPreferences: [],
       healthGoals: [],
-      favoritedRecipes: []
+      favoritedRecipes: [],
     }, { merge: true });
     router.push('/');
   } catch (error) {
