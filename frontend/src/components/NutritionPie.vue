@@ -1,5 +1,5 @@
 <template>
-    <canvas id="polarAreaChart" style="width:100%; max-width:800px; max-height: 1000px"></canvas>
+    <canvas id="polarAreaChart" style="width:100%; max-width:800px; max-height: 500px"></canvas>
 </template>
 
 <script>
@@ -36,8 +36,8 @@ export default {
             const polarAreaColors = [
                 "rgba(50, 50, 255, 0.5)",
                 "rgba(54, 162, 200, 0.5)",
-                "rgba(100, 190, 150, 0.5)",
                 "rgba(0, 185, 0, 0.5)",
+                "rgba(100, 190, 150, 0.5)",
                 "rgba(255, 206, 86, 0.5)",
                 "rgba(255, 159, 64, 0.5)",
                 "rgba(255, 99, 102, 0.5)"
@@ -52,8 +52,8 @@ export default {
                         label: 'Calories per Day',
                         data: totalCalories.value,
                         backgroundColor: polarAreaColors,
-                        borderWidth: 1,
-                        borderColor: "#fff"
+                        borderWidth: 0.75,
+                        borderColor: "grey"
                     }]
                 },
                 options: {
@@ -64,8 +64,8 @@ export default {
                             position: 'bottom'
                         },
                         title: {
-                            display: true,
-                            text: 'Total Calories per Day for the Week'
+                            display: true
+                            // text: 'Total Calories per Day for the Week'
                         }
                     }
                 }

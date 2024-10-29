@@ -46,7 +46,7 @@ export default {
         const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
         const mealtypes = ['Breakfast', 'Lunch', 'Dinner', 'Supper'];
 
-        // Fetch data when component is mounted
+        // Fetch data only when component is mounted
         onMounted(async () => {
             await Promise.all(daysOfWeek.map(day => fetchNutritionData(day)));
 
@@ -63,7 +63,7 @@ export default {
                             data: daysOfWeek.map(day => nutritionData.value[day].breakfast.reduce((sum, meal) => sum + meal.calories, 0)),
                             backgroundColor: "rgba(255, 171, 0, 0.5)",
                             borderWidth: 1,
-                            // borderColor: "grey",
+                            borderColor: "rgba(255, 171, 0, 1)",
                             mealNames: daysOfWeek.map(day => nutritionData.value[day].breakfast.map(meal => meal.name).join(', '))
                         },
                         {
@@ -71,7 +71,7 @@ export default {
                             data: daysOfWeek.map(day => nutritionData.value[day].lunch.reduce((sum, meal) => sum + meal.calories, 0)),
                             backgroundColor: "rgba(0, 135, 0, 0.5)",
                             borderWidth: 1,
-                            // borderColor: "grey",
+                            borderColor: "rgba(0, 135, 0, 1)",
                             mealNames: daysOfWeek.map(day => nutritionData.value[day].lunch.map(meal => meal.name).join(', '))
                         },
                         {
@@ -79,7 +79,7 @@ export default {
                             data: daysOfWeek.map(day => nutritionData.value[day].dinner.reduce((sum, meal) => sum + meal.calories, 0)),
                             backgroundColor: "rgba(54, 150, 255, 0.5)",
                             borderWidth: 1,
-                            // borderColor: "grey",
+                            borderColor: "rgba(54, 150, 255, 1)",
                             mealNames: daysOfWeek.map(day => nutritionData.value[day].dinner.map(meal => meal.name).join(', '))
                         },
                         {
@@ -87,7 +87,7 @@ export default {
                             data: daysOfWeek.map(day => nutritionData.value[day].supper.reduce((sum, meal) => sum + meal.calories, 0)),
                             backgroundColor: "rgba(0, 81, 121, 0.5)",
                             borderWidth: 1,
-                            // borderColor: "grey",
+                            borderColor: "rgba(0, 81, 121, 1)",
                             mealNames: daysOfWeek.map(day => nutritionData.value[day].supper.map(meal => meal.name).join(', '))
                         },
                     ],
@@ -114,8 +114,8 @@ export default {
                             position: 'top'
                         },
                         title: {
-                            display: true,
-                            text: 'Calorie Breakdown per Meal'
+                            display: true
+                            // text: 'Calorie Breakdown per Meal'
                         },
                         tooltip: {
                             callbacks: {
@@ -144,7 +144,10 @@ export default {
     },
 };
 
-
 </script>
 
-<style scoped></style>
+<style scoped>
+    #overviewchart {
+        padding-top: 50px;
+    }
+</style>

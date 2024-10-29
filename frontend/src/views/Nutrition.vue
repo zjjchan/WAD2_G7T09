@@ -4,18 +4,23 @@
         <MealPlanCard />
     </div>
     <div class="row m-2">
-        <div class="col-lg-6 col-md-12 p-2">
-            <div class=" border rounded m-2 h-100">
-                <h2 class="text-center pt-2">Calories Composition Overview</h2>
-                <div class="p-3">
+        <div class="col-md-6 col-sm-12 p-2">
+            <div class="m-2 h-100">
+                <div id="barchart" class="p-1 my-2 border rounded">
+                    <h4 class="text-center pt-2">Calorie Consumption for the Week</h4>
+                </div>
+                <div class="p-3" style="">
                     <NutritionOverview />
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 col-md-12 p-2">
-            <div class=" border rounded m-2 h-100">
-                <h2 class="text-center pt-2">Total Calories Consumed each Day</h2>
-                <div class="p-3">
+        <div class="col-md-6 col-sm-12 p-2">
+            <div class="m-2 h-100">
+                <div id="piechart" class="p-1 my-2 border rounded">
+                    <h4 class="text-center pt-2">Calories Consumed each Day of the Week</h4>
+                </div>
+
+                <div class="p-3" style="">
                     <NutritionPie />
                 </div>
             </div>
@@ -39,4 +44,8 @@ import NutritionPie from "@/components/NutritionPie.vue";
 </script>
 
 
-<style></style>
+<style>
+    #barchart, #piechart {
+        background-color: rgba(0, 135, 0, 0.5);
+    }
+</style>
