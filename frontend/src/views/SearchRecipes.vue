@@ -6,10 +6,10 @@
 
       <!-- Sidebar for filters -->
       <div class="col-3 sidebar">
-        <h5><strong>Filters</strong></h5>
+        <h3><strong>Filters</strong></h3>
 
         <div class="filter-section">
-          <h6>Meal Types</h6>
+          <h5>Meal Types</h5>
           <div v-for="label in mealTypes" :key="label">
             <input :id="label" type="checkbox" :value="label" v-model="selectedMealTypes" />
             <label :for="label" @click.prevent="toggleCheckbox(selectedMealTypes, label)">
@@ -19,7 +19,7 @@
         </div>
 
         <div class="filter-section">
-          <h6>Diet Labels</h6>
+          <h5>Diet Labels</h5>
           <div v-for="label in dietLabels" :key="label">
             <input :id="label" type="checkbox" :value="label" v-model="selectedDietLabels" />
             <label :for="label" @click.prevent="toggleCheckbox(selectedDietLabels, label)">
@@ -29,7 +29,7 @@
         </div>
 
         <div class="filter-section">
-          <h6>Health Labels</h6>
+          <h5>Health Labels</h5>
           <div v-for="label in healthLabels" :key="label">
             <input :id="label" type="checkbox" :value="label" v-model="selectedHealthLabels" />
             <label :for="label" @click.prevent="toggleCheckbox(selectedHealthLabels, label)">
@@ -39,7 +39,7 @@
         </div>
 
         <div class="filter-section">
-          <h6>Cuisine Type</h6>
+          <h5>Cuisine Type</h5>
           <div v-for="cuisine in cuisineTypes" :key="cuisine">
             <input :id="cuisine" type="checkbox" :value="cuisine" v-model="selectedCuisineTypes" />
             <label :for="cuisine" @click.prevent="toggleCheckbox(selectedCuisineTypes, cuisine)">
@@ -56,9 +56,11 @@
       <div class="col-9">
         <div>
           <div class="container" id="searchbar">
-            <img id="search_img" src="../assets/images/search.png" alt="search">
-            <input v-model="query" placeholder="Search recipe" @keyup.enter="handleSearch" />
-            <button @click="handleSearch" class="btn btn-primary">Search</button>
+
+            <input id="search" v-model="query" placeholder="Search recipe" @keyup.enter="handleSearch" />
+
+            <img id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search">
+
           </div>
 
           <br><br>
@@ -143,8 +145,10 @@ export default {
   data() {
     return {
       query: '', // Holds the user's search query
+      submittedQuery: '', // Holds the submitted search query for filtering
       recipes: [], // Holds the list of recipes
       errorMessage: '', // Error message to display if the API request fails
+      uniqueRecipes: [], // Holds unique recipes after removing duplicates
       apiUrl: 'https://api.edamam.com/search', // Replace with the actual API URL
       apiKey: '160b560497690476362bc1fca361165a', // Replace with your actual API key
       appId: '374ab5b2', // Replace with your actual App ID
@@ -235,7 +239,7 @@ export default {
       return this.recipes.filter(recipe => {
 
         // Ensure recipe label contains the search query (case-insensitive)
-        const matchesQuery = this.query ? recipe.label.toLowerCase().includes(this.query.toLowerCase()) : true; // if query is empty, don't filter by label
+        const matchesQuery = this.submittedQuery ? recipe.label.toLowerCase().includes(this.submittedQuery.toLowerCase()) : true;
 
 
         const matchesDiet = !this.selectedDietLabels.length ||
@@ -253,10 +257,10 @@ export default {
             recipe.cuisineType.some(c => c.toLowerCase() === cuisine.toLowerCase())
           );
 
-        const matchesMeal = !this.selectedMealTypes.length ||
-          this.selectedMealTypes.some(meal =>
-            recipe.mealType.some(m => m.toLowerCase() === meal.toLowerCase())
-          );
+          const matchesMeal = !this.selectedMealTypes.length ||
+        this.selectedMealTypes.some(meal =>
+          recipe.mealType.some(m => m.toLowerCase().includes(meal.toLowerCase()))
+        );
 
         return matchesQuery && matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
       });
@@ -282,28 +286,28 @@ export default {
     async handleSearch() {
       if (this.query.length > 2) {
         this.from = 0; // Reset pagination when starting a new search
+        this.submittedQuery = this.query; // Set submittedQuery to query for filtering
+        this.uniqueRecipes = []; // Reset unique recipes
         this.recipes = [];
         this.currentPage = 1;
         this.errorMessage = '';
         this.to = 100;
         await this.getData(this.query); // Fetch the data based on query
       } else {
-        this.recipes = [];
+        this.uniqueRecipes = [];
         this.errorMessage = 'Please enter at least 3 characters.';
       }
     },
     async getData(query) {
       this.isLoading = true;
-      const apiUrl = 'https://api.edamam.com/search';
-      const appId = '374ab5b2'; // Replace with your actual App ID
-      const apiKey = '160b560497690476362bc1fca361165a'; // Replace with your actual API key
+
       try {
         while (true) {
-          const response = await axios.get(apiUrl, {
+          const response = await axios.get(this.apiUrl, {
             params: {
               q: query,
-              app_id: appId,
-              app_key: apiKey,
+              app_id: this.appId,
+              app_key: this.apiKey,
               from: this.from,
               to: this.to,
             },
@@ -314,6 +318,8 @@ export default {
 
           // Add new recipes to the existing list
           this.recipes = [...this.recipes, ...response.data.hits.map(hit => hit.recipe)];
+          // Remove duplicates
+          this.uniqueRecipes = this.removeDuplicates(this.recipes);
 
           // Update `from` and `to` for the next batch
           this.from += 50;
@@ -327,6 +333,17 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    }, removeDuplicates(recipes) {
+      const seen = new Set();
+      return recipes.filter(recipe => {
+        const key = `${recipe.label}-${recipe.calories.toFixed(0)}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          return true;
+        }
+        return false;
+      });
+
     }, applyFilters() {
       // Trigger re-evaluation of filteredRecipes
       this.filteredRecipes;
@@ -349,13 +366,6 @@ export default {
 </script>
 
 <style scoped>
-#search_img {
-  width: 2rem;
-  padding-right: 10px;
-}
-
-
-
 .sidebar {
   padding-left: 50px
 }
@@ -390,19 +400,24 @@ export default {
   margin-left: 10px;
 }
 
-#searchbar {
-  border: solid 2px;
-  border-radius: 30px;
-  width: 400px;
-  height: 50px;
-
-  align-content: center;
-
+#search_img {
+  width: 50px;
+  padding: 8px;
+  margin-left: auto;
+  border: solid 3px;
+  border-radius: 50%
 }
 
-input {
-  border: none;
+#search {
+  border: solid;
+  border-radius: 10px;
+  z-index: -1;
+
   margin: auto;
+  height: 45px;
+  width: 350px;
+  padding: 20px;
+  align-content: center;
 
 }
 

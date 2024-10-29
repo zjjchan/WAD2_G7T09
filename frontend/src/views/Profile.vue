@@ -10,7 +10,10 @@
             <h3 class="mt-4">Favourited Recipes</h3>
             <ul v-if="favoritedRecipes.length > 0">
               <li v-for="(recipe, index) in favoritedRecipes" :key="index">
-                <p><strong>{{ recipe.label }}</strong></p>
+                
+                <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }">
+                    <p><strong>{{ recipe.label }}</strong></p>
+                  </RouterLink>
                 <img :src="recipe.image" alt="Recipe Image" width="100">
               </li>
             </ul>
