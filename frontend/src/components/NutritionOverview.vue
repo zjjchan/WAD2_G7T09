@@ -7,7 +7,7 @@
 import { db } from '../firebase';
 import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { onMounted, ref } from 'vue';
-import { Chart } from 'chart.js';
+// import { Chart } from 'chart.js'; DO NOT UNCOMMENT
 
 export default {
     setup() {
