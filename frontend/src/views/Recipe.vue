@@ -37,12 +37,23 @@
   </div>
 
   <!-- START: Ignore this chunk Yi Ting, I making the visuals, can leave at the bottom for now -->
-  <div>
-    <div class="container bg-light border rounded p-3">
-      <PieIndivRecipe v-if="recipe" :recipe="recipe" />
+  <div class="row">
+    <div class="col-sm-12 col-md-6">
+      <div id="breakdownmacrostext" class="m-2 p-1 border rounded">
+        <h4 class="text-center">Summary of Important Macros</h4>
+      </div>
+      <div class="container bg-light border rounded p-1 d-flex justify-content-center">
+        <PieIndivRecipe v-if="recipe" :recipe="recipe" />
+      </div>
     </div>
-    <div class="container bg-light border rounded p-3">
-      <RadialIndivRecipe v-if="recipe" :recipe="recipe" />
+
+    <div class="col-sm-12 col-md-6">
+      <div id="fatcomptext" class="m-2 p-1 border rounded">
+        <h4 class="text-center">Fat Types Composition</h4>
+      </div>
+      <div class="container bg-light border rounded p-1 d-flex justify-content-center">
+        <RadialIndivRecipe v-if="recipe" :recipe="recipe" />
+      </div>
     </div>
   </div>
   <!-- Template for loading visual only after page load -->
@@ -54,7 +65,9 @@
 
 <script setup>
 import Navbar from "@/components/Navbar.vue";
+// for importing doughnut chart
 import PieIndivRecipe from "@/components/PieIndivRecipe.vue";
+// for importing radar chart
 import RadialIndivRecipe from "@/components/RadialIndivRecipe.vue";
 import axios from "axios";
 import { ref, onMounted } from "vue";
@@ -135,3 +148,9 @@ onMounted(async () => {
 <script>
 
 </script>
+
+<style scoped>
+  #breakdownmacrostext, #fatcomptext {
+    background-color: rgba(0, 135, 0, 0.5);
+  }
+</style>

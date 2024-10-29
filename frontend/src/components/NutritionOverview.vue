@@ -114,7 +114,7 @@ export default {
                             position: 'top'
                         },
                         title: {
-                            display: true
+                            display: false
                             // text: 'Calorie Breakdown per Meal'
                         },
                         tooltip: {

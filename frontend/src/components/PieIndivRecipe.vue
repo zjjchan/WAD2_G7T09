@@ -1,7 +1,6 @@
 <template>
   <div>
-    <h3>Nutritional Distribution</h3>
-    <canvas id="nutritionChart" style="width:100%; max-width:600px; max-height:400px;"></canvas>
+    <canvas id="nutritionChart" style="width:100%; max-width:800px; max-height:800px;"></canvas>
   </div>
 </template>
 
@@ -60,8 +59,8 @@ export default {
                 position: 'top',
               },
               title: {
-                display: true,
-                text: 'Nutritional Distribution',
+                display: false,
+                // text: 'Nutritional Distribution',
               },
               tooltip: {
                 callbacks: {

@@ -64,7 +64,7 @@ export default {
                             position: 'bottom'
                         },
                         title: {
-                            display: true
+                            display: false
                             // text: 'Total Calories per Day for the Week'
                         }
                     }

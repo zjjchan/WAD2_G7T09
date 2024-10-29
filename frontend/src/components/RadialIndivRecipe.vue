@@ -1,7 +1,6 @@
 <template>
     <div>
-        <h3>Fat Composition</h3>
-        <canvas id="fatRadarChart" style="width:100%; max-width:600px; max-height:400px;"></canvas>
+        <canvas id="fatRadarChart" style="width:100%; max-width:800px; max-height:800px;"></canvas>
     </div>
 </template>
 
@@ -61,8 +60,8 @@ export default {
                                     position: 'top',
                                 },
                                 title: {
-                                    display: true,
-                                    text: 'Fat Sub-categories Distribution',
+                                    display: false,
+                                    // text: 'Fat Sub-categories Distribution',
                                 },
                                 tooltip: {
                                     callbacks: {
