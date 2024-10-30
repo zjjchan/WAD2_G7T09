@@ -15,7 +15,7 @@
           </div>
   
           <div class="nutrition-section">
-            <WeekSummaryCard />
+            <Preferences />
           </div>
         </div>
       </div>
@@ -24,10 +24,10 @@
   
   <script setup>
   import Navbar from "@/components/Navbar.vue";
-  import SavedRecipesCard from "@/components/Homepage Components/SavedRecipesCard.vue";
-  import MealPlanCard from "@/components/Homepage Components/MealPlanCard.vue";
-  import GroceryListCard from "@/components/Homepage Components/GroceryListCard.vue";
-  import WeekSummaryCard from "@/components/Homepage Components/WeekSummaryCard.vue";
+  import SavedRecipesCard from "@/components/Meal Preferences Components/SavedRecipesCard.vue";
+  import MealPlanCard from "@/components/Meal Preferences Components/MealPlanCard.vue";
+  import GroceryListCard from "@/components/Meal Preferences Components/GroceryListCard.vue";
+  import Preferences from "@/components/Meal Preferences Components/Preferences.vue";
   import { onMounted } from 'vue';
   import { gsap } from "gsap";
   
