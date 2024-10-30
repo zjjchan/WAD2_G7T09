@@ -10,6 +10,8 @@
     let groceryList = ref([]);
     let itemAdded = ref();
     let quantityAdded = ref();
+    let isEditingItem = ref(false);
+    let editItemIndex = -1;
     const auth = getAuth();
     const user = auth.currentUser;
 
@@ -49,11 +51,15 @@
             isAddingItem.value = !isAddingItem.value;
         }
 
+        if (isEditingItem.value) {
+            isEditingItem.value = !isEditingItem.value;
+        }
+
         const itemSnap = await getDoc(doc(db, "grocerylist", uid));
         const listData = itemSnap.data().itemlist;
 
         for (let i=0; i<listData.length; i++) {
-            if (listData[i].itemname == itemAdded.value) {
+            if (listData[i].itemname == itemAdded.value && editItemIndex == -1) {
                 listData[i].quantity += quantityAdded.value;
 
                 await updateDoc(doc(db, "grocerylist", uid), {
@@ -65,10 +71,20 @@
             }
         }
 
-        await updateDoc(doc(db, "grocerylist", uid), {
-            itemlist: arrayUnion({itemname: itemAdded.value, quantity: quantityAdded.value, checked: "unchecked"})
-        });
+        if (editItemIndex == -1) {
+            await updateDoc(doc(db, "grocerylist", uid), {
+                itemlist: arrayUnion({itemname: itemAdded.value, quantity: quantityAdded.value, checked: "unchecked"})
+            });
+        } else {
+            listData[editItemIndex].itemname = itemAdded.value;
+            listData[editItemIndex].quantity = quantityAdded.value;
 
+            await updateDoc(doc(db, "grocerylist", uid), {
+                itemlist: listData
+            });
+        }
+
+        editItemIndex = -1;
         loadList();
     }
 
@@ -85,6 +101,12 @@
         if (isAddingItem.value) {
             isAddingItem.value = !isAddingItem.value;
         }
+
+        if (isEditingItem.value) {
+            isEditingItem.value = !isEditingItem.value;
+        }
+
+        editItemIndex = -1;
     }
 
     async function checkItem(item) {
@@ -134,6 +156,21 @@
 
         loadList();
     }
+
+    function editItemProcess(item, qty, index) {
+        if (!isEditingItem.value) {
+            isEditingItem.value = !isEditingItem.value;
+        }
+
+        itemAdded.value = item;
+        quantityAdded.value = qty;
+
+        editItemIndex = index;
+
+        if (!isAddingItem.value) {
+            isAddingItem.value = !isAddingItem.value;
+        }
+    }
     
 
 
@@ -153,10 +190,12 @@
                         <th scope="col">Item</th>
                         <th class="text-end" scope="col">Quantity</th>
                         <th></th>
+                        <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr :class="i.checked" @click="checkItem(i.itemname)" @mouseenter="() => {if (i.checked == 'unchecked') {i.checked = 'checked'}}"
+                        <tr v-for="(i, index) in groceryList">
+                            <td :class="i.checked" @click="checkItem(i.itemname)" @mouseenter="() => {if (i.checked == 'unchecked') {i.checked = 'checked'}}"
                             @mouseout="async () => {
                             const uid = user.uid;
                             const itemSnap = await getDoc(doc(db, 'grocerylist', uid));
@@ -168,25 +207,40 @@
                                     }
                                 }
                             }
-                        }" v-for="i in groceryList">
-                            <td class="info" scope="row">{{ i.itemname }}</td>
-                            <td class="info text-end">{{ i.quantity }}</td>
+                        }" class="info" scope="row">{{ i.itemname }}</td>
+                            <td :class="i.checked" @click="checkItem(i.itemname)" @mouseenter="() => {if (i.checked == 'unchecked') {i.checked = 'checked'}}"
+                            @mouseout="async () => {
+                            const uid = user.uid;
+                            const itemSnap = await getDoc(doc(db, 'grocerylist', uid));
+                            const listData = itemSnap.data().itemlist;
+                            for (let n=0; n<listData.length; n++) {
+                                if (listData[n].itemname == i.itemname) {
+                                    if (listData[n].checked == 'unchecked') {
+                                        i.checked = 'unchecked';
+                                    }
+                                }
+                            }
+                        }" class="info text-end">{{ i.quantity }}</td>
                             <td class="delete-item"><button type="button" class="btn-close" @click="removeItem(i.itemname)" aria-label="Delete"></button></td>
+                            <td class="edit-item" @click="editItemProcess(i.itemname, i.quantity, index)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+  <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
+</svg></td>
                         </tr>
                         <tr v-if="isAddingItem" class="add-item">
-                            <td colspan="3">
+                            <td colspan="4">
                                 <div class="input-group add-input">
                                     <span class="input-group-text bg-dark-subtle">Item:</span>
                                     <input type="text" aria-label="Item" class="form-control" v-model="itemAdded">
                                     <span class="input-group-text bg-dark-subtle">Quantity:</span>
                                     <input type="number" aria-label="Quantity" class="form-control" v-model="quantityAdded">
-                                    <button class="btn btn-success" type="button" @click="addItem">Add</button>
+                                    <button v-if="isEditingItem" class="btn btn-warning" type="button" @click="addItem">Edit</button>
+                                    <button v-else class="btn btn-success" type="button" @click="addItem">Add</button>
                                     <button class="btn btn-danger" type="button" @click="cancelAddItem">Cancel</button>
                                 </div>
                             </td>
                         </tr>
                         <tr v-else class="add-item">
-                            <td colspan="3">
+                            <td colspan="4">
                                 <div class="d-grid">
                                     <button class="btn btn-success" type="button" @click="showAddItem">+ add an item</button>
                                 </div>
@@ -221,11 +275,15 @@
         box-shadow: none;
     }
 
-    tr.checked td {
+    /* td.checked {
+        text-decoration: line-through;
+    } */
+
+    td.checked {
         position: relative;
     }
 
-    tr.checked td.info:before {
+    td.checked:before {
         content: " ";
         position: absolute;
         top: 50%;
@@ -234,13 +292,22 @@
         width: 100%;
     }
 
-    tr.checked td.info:after {
+    td.checked:after {
         content: "\00B7";
         font-size: 1px;
     }
 
     .delete-item {
         width: 0;
+    }
+    
+    .edit-item {
+        width: 0;
+        color: rgb(106, 106, 106);
+    }
+
+    .edit-item:hover {
+        color: black;
     }
 
     input::-webkit-outer-spin-button,
