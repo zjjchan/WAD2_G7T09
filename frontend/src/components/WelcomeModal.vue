@@ -88,6 +88,11 @@
   import { ref, onMounted, nextTick } from 'vue';
   import gsap from 'gsap';
   import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+  import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+
+  const auth = getAuth();
+  const userId = ref(null);   
 
   const db = getFirestore();
   
@@ -208,12 +213,22 @@
       }
     });
   };
+
   
-  const submitPreferences = () => {
-    console.log('Selected Diet Type:', selectedDietType.value);
-    console.log('Selected Labels:', selectedLabels.value);
-    showModal.value = false; // Close the modal
-    localStorage.setItem('isFirstTime', 'false'); // Persist the change
+  const submitPreferences = async () => {
+  try {
+    const user = auth.currentUser; 
+    if (user) {
+      const userRef = doc(db, 'users', user.uid); 
+      console.log(user.uid)
+      await updateDoc(userRef, {
+        healthGoals: selectedDietType.value,
+        dietaryPreferences: selectedLabels.value
+      });
+      console.log('Preferences saved successfully!');
+    }
+    showModal.value = false;
+    localStorage.setItem('isFirstTime', 'false'); 
     gsap.to(modalContent.value, {
       duration: 0.5,
       y: -50,
@@ -221,7 +236,10 @@
       ease: 'power2.in',
       onComplete: closeModal
     });
-  };
+  } catch (error) {
+    console.error('Error saving preferences:', error);
+  }
+};
   
   const closeModal = () => {
     gsap.to(modalOverlay.value, {
@@ -246,7 +264,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(2px);
   }
   
   .modal-content {
@@ -266,6 +284,8 @@
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1rem;
     margin-bottom: 1rem;
+    height: 30vh;
+    overflow-y: auto;
   }
   
   .diet-type-label {
@@ -494,7 +514,25 @@
     border-radius: 4px;
   }
   
-  .checkbox-container::-webkit-scrollbar-thumb:hover {
+  .diet-type-container::-webkit-scrollbar-thumb:hover {
+    background: #45a049;
+  }
+
+  .diet-type-container::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .diet-type-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  
+  .diet-type-container::-webkit-scrollbar-thumb {
+    background: #4CAF50;
+    border-radius: 4px;
+  }
+  
+  .diet-type-container::-webkit-scrollbar-thumb:hover {
     background: #45a049;
   }
   </style>

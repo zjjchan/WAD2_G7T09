@@ -1,7 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { onMounted } from 'vue';
 
 const firebaseConfig = {
     apiKey: "AIzaSyBGQg2VtqJNrL6NAihfnR6SOwY18lPn8YM",
@@ -17,5 +18,15 @@ const firebaseApp = initializeApp(firebaseConfig);
 const analytics = getAnalytics(firebaseApp);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+
+onMounted(() => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userId.value = user.uid;
+    } else {
+      userId.value = null;
+    }
+  });
+});
 
 export { firebaseApp, analytics, auth, db };
