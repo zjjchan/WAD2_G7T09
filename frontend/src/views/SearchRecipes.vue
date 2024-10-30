@@ -48,7 +48,7 @@
           </div>
         </div>
 
-        <button @click="applyFilters" class="btn btn-primary mt-3">Apply Filters</button>
+
       </div>
 
 
@@ -59,7 +59,7 @@
 
             <input id="search" v-model="query" placeholder="Search recipe" @keyup.enter="handleSearch" />
 
-            <img id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search">
+            <img class="btn" id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search">
 
           </div>
 
@@ -257,10 +257,10 @@ export default {
             recipe.cuisineType.some(c => c.toLowerCase() === cuisine.toLowerCase())
           );
 
-          const matchesMeal = !this.selectedMealTypes.length ||
-        this.selectedMealTypes.some(meal =>
-          recipe.mealType.some(m => m.toLowerCase().includes(meal.toLowerCase()))
-        );
+        const matchesMeal = !this.selectedMealTypes.length ||
+          this.selectedMealTypes.some(meal =>
+            recipe.mealType.some(m => m.toLowerCase().includes(meal.toLowerCase()))
+          );
 
         return matchesQuery && matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
       });
@@ -344,9 +344,6 @@ export default {
         return false;
       });
 
-    }, applyFilters() {
-      // Trigger re-evaluation of filteredRecipes
-      this.filteredRecipes;
     }, goToPage(page) {
       this.currentPage = page;
     },
