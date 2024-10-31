@@ -62,6 +62,28 @@
               <span class="label-text">{{ label }}</span>
             </label>
           </div>
+
+          <h3 class="text-xl font-semibold mb-4">Cuisine Types</h3>
+          <p class="text-lg mb-6">Choose your favourite cuisines:</p>
+          <div class="checkbox-container" ref="checkboxContainer">
+            <label 
+              v-for="(label, index) in cuisineTypes" 
+              :key="index" 
+              class="checkbox-label"
+              :ref="el => { if (el) checkboxRefs[index] = el }"
+            >
+              <div class="checkbox-wrapper">
+                <input 
+                  type="checkbox" 
+                  :value="label" 
+                  v-model="selectedCuisine"
+                  class="custom-checkbox"
+                />
+                <span class="checkmark"></span>
+              </div>
+              <span class="label-text">{{ label }}</span>
+            </label>
+          </div>
   
           <div class="modal-buttons" ref="buttonContainer">
             <button 
@@ -85,12 +107,14 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, defineEmits } from 'vue';
   import gsap from 'gsap';
   import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
   import { getAuth, onAuthStateChanged } from 'firebase/auth';
+  
 
-
+  
+  const emit = defineEmits(['preferencesUpdated']);
   const auth = getAuth();
   const userId = ref(null);   
 
@@ -108,6 +132,7 @@
   const welcomeScreen = ref(null);
   const preferencesScreen = ref(null);
   const dietTypeSection = ref(null);
+  const user = auth.currentUser; 
   
   const dietTypes = [
     'Balanced',
@@ -130,11 +155,58 @@
     'Sulfite-Free', 'Tree-Nut-Free', 'Vegan', 'Vegetarian', 'Wheat-Free'
   ];
   
+  const cuisineTypes = [
+  'American',
+  'Asian',
+  'British',
+  'Caribbean',
+  'Central Europe',
+  'Chinese',
+  'Eastern Europe',
+  'French',
+  'Indian',
+  'Italian',
+  'Japanese',
+  'Kosher',
+  'Mediterranean',
+  'Mexican',
+  'Middle Eastern',
+  'Nordic',
+  'South American',
+  'South East Asian',
+    ]
+
   const selectedLabels = ref([]);
   const selectedDietType = ref('Balanced');
+  const selectedCuisine = ref([]);
+  
+  const fetchUserData = async () => {
+  if (user) {
+    const userRef = doc(db, 'users', user.uid); 
+    try {
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        
+        // Update reactive fields with data from Firestore
+        selectedDietType.value = data.healthGoals || ['Balanced']; // Default to 'Balanced' if not set
+        selectedLabels.value = data.dietaryPreferences || [];
+        selectedCuisine.value = data.cuisineTypes || [];
+        
+      } else {
+        console.log('No such document!');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  } else {
+    console.log('User not authenticated');
+  }
+};
   
   onMounted(() => {
-    // Initial modal animation
+    fetchUserData()
+
     gsap.from(modalOverlay.value, {
       duration: 0.3,
       backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -217,29 +289,22 @@
   
   const submitPreferences = async () => {
   try {
-    const user = auth.currentUser; 
+    const user = auth.currentUser;
     if (user) {
-      const userRef = doc(db, 'users', user.uid); 
-      console.log(user.uid)
+      const userRef = doc(db, 'users', user.uid);
       await updateDoc(userRef, {
         healthGoals: selectedDietType.value,
-        dietaryPreferences: selectedLabels.value
+        dietaryPreferences: selectedLabels.value,
+        cuisineTypes: selectedCuisine.value
       });
-      console.log('Preferences saved successfully!');
+      emit('preferencesUpdated');
+      closeModal();
     }
-    showModal.value = false;
-    localStorage.setItem('isFirstTime', 'false'); 
-    gsap.to(modalContent.value, {
-      duration: 0.5,
-      y: -50,
-      opacity: 0,
-      ease: 'power2.in',
-      onComplete: closeModal
-    });
   } catch (error) {
-    console.error('Error saving preferences:', error);
+    console.error('Error updating preferences:', error);
   }
 };
+
   
   const closeModal = () => {
     gsap.to(modalOverlay.value, {
@@ -272,19 +337,20 @@
     padding: 2rem;
     border-radius: 16px;
     width: 90%;
+    margin: auto;
+    margin-top: 0px;
     max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   }
   
-  /* Diet Type Styles */
   .diet-type-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1rem;
     margin-bottom: 1rem;
-    height: 30vh;
+    height: 12vh;
     overflow-y: auto;
   }
   
