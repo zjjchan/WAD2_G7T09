@@ -22,7 +22,7 @@
               </div>
               <Draggable
                 v-model="mealPlan[day][mealTime]"
-                :group="{ name: 'recipes', pull: 'clone', put: true }"
+                :group="{ name: 'recipes', pull: true, put: true }"
                 :sort="false"
                 item-key="id"
                 class="meal-drop-zone"
@@ -38,10 +38,9 @@
                     :key="element.id"
                     :class="{ 'in-dropdown': index >= 1 }"
                   >
-                    <img :src="element.image" :alt="element.name" class="meal-image" />
+                    <img :src="element.image" :alt="element.label" class="meal-image" />
                     <div class="meal-details">
-                      <p class="meal-name">{{ element.name }}</p>
-                      <span class="calories">{{ element.calories }} calories</span>
+                      <p class="meal-name">{{ element.label }}</p>
                     </div>
                     <button @click="removeMeal(day, mealTime, element)" class="remove-btn">&times;</button>
                   </div>
@@ -98,6 +97,7 @@ const handleDrag = (event) => {
 </script>
 
 
+
 <style scoped>
 .meal-plan-card {
   width: 100%;
@@ -111,7 +111,7 @@ const handleDrag = (event) => {
 }
 .scroll-wrapper {
   width: 100%;
-  height: 370px;
+  height: 60vh;
   overflow-x: auto;
   padding: 0 1rem;
 }
@@ -154,6 +154,7 @@ const handleDrag = (event) => {
   background-color: #FFE5D9;
   border-radius: 0.75rem;
   padding: 0.75rem;
+  margin-bottom:20px;
 }
 .meal-header {
   display: flex;
