@@ -1,4 +1,4 @@
-###HOMEPAGE <template>
+<template>
   <div class="homepage">
     <Navbar />
     <WelcomeModal v-if="showModal" />
@@ -21,8 +21,8 @@
       <div class="features-grid">
         <div class="feature" v-for="(feature, index) in features" :key="index" ref="featureItems">
           <img :src="feature.icon" class="feature-icon" />
-          <!-- <h3>{{ feature.title }}</h3> -->
           <p>{{ feature.description }}</p>
+          <img v-if="feature.description" :src="feature.image">
         </div>
       </div>
     </section>
@@ -54,7 +54,6 @@
     </section>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
@@ -94,46 +93,68 @@ const scrollProgress = ref(null);
 
 // Set default features in case data is not fetched yet
 const features = ref([
-{ icon: 'images/breakfasticon.png', title: 'Breakfast', description: 'Oops, no meals set yet!' },
-{ icon: 'images/lunchicon.png', title: 'Lunch', description: 'Oops, no meals set yet!' },
-{ icon: 'images/dinnericon.png', title: 'Dinner', description: 'Oops, no meals set yet!' },
+{ icon: 'images/breakfasticon.png', title: 'Breakfast', description: '', image: '' },
+{ icon: 'images/lunchicon.png', title: 'Lunch', description: '', image: '' },
+{ icon: 'images/dinnericon.png', title: 'Dinner', description: '', image: '' },
 ]);
 
-const daysOfWeek = [
-'sundaymeals', 'mondaymeals', 'tuesdaymeals',
-'wednesdaymeals', 'thursdaymeals', 'fridaymeals', 'saturdaymeals'
-];
-
 const getTodayMeals = async () => {
-try {
-  const today = new Date().getDay();
-  const todayCollection = daysOfWeek[today];
-  console.log(todayCollection)
+  try {
+    const todayIndex = new Date().getDay(); 
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  const querySnapshot = await getDocs(collection(db, todayCollection));
-  const meals = {
-  breakfast: "Oops, no breakfast set yet!",
-  lunch: "Oops, no lunch set yet!",
-  dinner: "Oops, no dinner set yet!",
-  };
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("No user is currently signed in.");
+      return;
+    }
 
-  querySnapshot.forEach((doc) => {
-  const data = doc.data();
-  if (data.mealType === "breakfast") meals.breakfast = data.name;
-  if (data.mealType === "lunch") meals.lunch = data.name;
-  if (data.mealType === "dinner") meals.dinner = data.name;
-  });
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userDocRef);
+    
+    if (!userDoc.exists()) {
+      console.error("User document not found.");
+      return;
+    }
 
-  // Update the features array with meal data
-  features.value = [
-  { icon: "images/breakfasticon.png", title: "Breakfast", description: meals.breakfast },
-  { icon: "images/lunchicon.png", title: "Lunch", description: meals.lunch },
-  { icon: "images/dinnericon.png", title: "Dinner", description: meals.dinner },
-  ];
+    const userData = userDoc.data();
+    const todayMeals = userData.mealPlan[daysOfWeek[todayIndex]] || {};
+
+
+    const meals = {
+      breakfast: "Oops, no breakfast set yet!",
+      lunch: "Oops, no lunch set yet!",
+      dinner: "Oops, no dinner set yet!",
+    };
+
+    const image = {
+      breakfast: "No image",
+      lunch: "No image",
+      dinner: "No image",
+    }
+
+    if (todayMeals.Breakfast[0] && todayMeals.Breakfast[0].label) {
+      meals.breakfast = todayMeals.Breakfast[0].label;
+      image.breakfast = todayMeals.Breakfast[0].image;
+    }
+    if (todayMeals.Lunch[0] && todayMeals.Lunch[0].label) {
+      meals.lunch = todayMeals.Lunch[0].label;
+      image.lunch = todayMeals.Lunch[0].image;
+    }
+    if (todayMeals.Dinner[0] && todayMeals.Dinner[0].label) {
+      meals.dinner = todayMeals.Dinner[0].label;
+      image.dinner = todayMeals.Dinner[0].image;
+    }
+
+    features.value = [
+      { icon: "images/breakfasticon.png", title: "Breakfast", description: meals.breakfast, image: image.breakfast },
+      { icon: "images/lunchicon.png", title: "Lunch", description: meals.lunch, image: image.lunch },
+      { icon: "images/dinnericon.png", title: "Dinner", description: meals.dinner, image: image.dinner },
+    ];
   } catch (error) {
-      console.error('Error fetching meals:', error);
+    console.error('Error fetching meals:', error);
   }
-  };
+};
 
   const router = useRouter();
 
@@ -292,7 +313,6 @@ onUnmounted(() => {
 @import url("https://fonts.googleapis.com/css2?family=Gluten:wght@600&family=Space+Mono&display=swap");
 
 * {
-  color: rgb(9, 56, 9);
   font-family: 'Open Sans', sans-serif;
 }
 .homepage {
