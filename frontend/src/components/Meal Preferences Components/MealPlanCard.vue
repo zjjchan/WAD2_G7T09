@@ -21,15 +21,15 @@
                 </button>
               </div>
               <Draggable
-                v-model="mealPlan[day][mealTime]"
-                :group="{ name: 'recipes', pull: true, put: true }"
-                :sort="false"
-                item-key="id"
-                class="meal-drop-zone"
-                ghost-class="ghost-item"
-                drag-class="dragging-item"
-                :animation="200"
-                @change="handleDrag"
+              v-model="mealPlan[day][mealTime]"
+              :group="{ name: 'recipes', pull: true, put: true }"
+              :sort="true"
+              item-key="uri"
+              class="meal-drop-zone"
+              ghost-class="ghost-item"
+              drag-class="dragging-item"
+              :animation="200"
+              @change="handleDragChange"
               >
                 <template #item="{ element, index }">
                   <div
@@ -57,6 +57,11 @@
 <script setup>
 import { ref } from 'vue';
 import Draggable from 'vuedraggable';
+import { getAuth } from 'firebase/auth';
+import { doc, updateDoc, getFirestore, getDoc } from 'firebase/firestore';
+
+const db = getFirestore();
+const auth = getAuth();
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const mealTimes = ['Breakfast', 'Lunch', 'Dinner'];
@@ -86,15 +91,61 @@ const toggleDropdown = (day, mealTime) => {
 
 const isDropdownOpen = (day, mealTime) => openDropdowns.value.has(getDropdownKey(day, mealTime));
 
-const removeMeal = (day, mealTime, meal) => {
+const removeMeal = async (day, mealTime, meal) => {
   const index = mealPlan.value[day][mealTime].indexOf(meal);
-  if (index > -1) mealPlan.value[day][mealTime].splice(index, 1);
+  if (index > -1) {
+    mealPlan.value[day][mealTime].splice(index, 1);
+    await saveMealPlan();
+  }
 };
 
-const handleDrag = (event) => {
-  console.log('Drag event:', event);
+// Handle drag changes and save to Firestore
+const handleDragChange = async (evt) => {
+  if (evt.added) {
+    evt.added.element.uri = `${evt.added.element.uri}_${Date.now()}`;
+  }
+  
+  await saveMealPlan();
 };
+
+// Save meal plan to Firestore
+const saveMealPlan = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    const userDoc = doc(db, 'users', user.uid);
+    await updateDoc(userDoc, {
+      mealPlan: mealPlan.value
+    });
+  } catch (error) {
+    console.error('Error saving meal plan:', error);
+  }
+};
+
+
+const loadMealPlan = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    const userDoc = doc(db, 'users', user.uid);
+    const docSnap = await getDoc(userDoc);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      mealPlan.value = data.mealPlan || mealPlan.value;
+    }
+  } catch (error) {
+    console.error('Error loading meal plan:', error);
+  }
+};
+
+auth.onAuthStateChanged((user) => {
+  if (user) loadMealPlan();
+});
 </script>
+
 
 
 

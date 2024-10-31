@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="saved-recipes-container">
     <div class="title-container">
@@ -5,12 +6,12 @@
     </div>
     <Draggable 
       v-model="favoritedRecipes" 
-      :group="{ name: 'recipes', pull: 'clone', put: true }"
+      :group="{ name: 'recipes', pull: true, put: false }"
       item-key="uri"
-      :clone="cloneItem"
       class="recipes-grid"
       @start="onDragStart"
       @end="onDragEnd"
+      @remove="handleRemove" 
     >
       <template #item="{ element, index }">
         <div class="recipe-card-wrapper">
@@ -61,6 +62,21 @@ onMounted(() => {
   });
 });
 
+// Handle when an item is removed via dragging
+const handleRemove = async (evt) => {
+  if (!currentUser.value) return;
+  
+  try {
+    // Update Firestore with the new state
+    const userDoc = doc(db, 'users', currentUser.value.uid);
+    await updateDoc(userDoc, {
+      favoritedRecipes: favoritedRecipes.value
+    });
+  } catch (error) {
+    console.error('Error updating Firestore after drag:', error);
+  }
+};
+
 const removeRecipe = async (recipe) => {
   try {
     if (!currentUser.value) return;
@@ -78,14 +94,8 @@ const removeRecipe = async (recipe) => {
 
   } catch (error) {
     console.error('Error removing recipe:', error);
-    // Optionally show error message to user
   }
 };
-
-const cloneItem = (item) => ({
-  ...item,
-  uri: `${item.uri}_${Date.now()}`,
-});
 
 let cards = []; 
 
@@ -109,6 +119,7 @@ const onDragEnd = () => {
   });
 };
 </script>
+
 
 <style scoped>
 .saved-recipes-container {
