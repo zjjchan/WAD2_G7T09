@@ -1,24 +1,32 @@
 <template>
   <div class="saved-recipes-container">
     <div class="title-container">
-      <img class="title-img" src="/images/yourtaste.png" />
+      <h3>Saved Recipes</h3>
     </div>
     <Draggable 
-      v-model="savedRecipes" 
+      v-model="favoritedRecipes" 
       :group="{ name: 'recipes', pull: 'clone', put: true }"
-      item-key="id"
+      item-key="uri"
       :clone="cloneItem"
       class="recipes-grid"
       @start="onDragStart"
       @end="onDragEnd"
     >
       <template #item="{ element, index }">
-        <div class="col">
-          <div class="card h-100 shadow-sm" :ref="setCardRef(index)">
-            <img :src="element.image" :alt="element.name" class="card-img-top" />
+        <div class="recipe-card-wrapper">
+          <div class="card shadow-sm" :ref="setCardRef(index)">
+            <div class="card-img-container">
+              <img :src="element.image" :alt="element.label" class="card-img-top" />
+              <button 
+                class="remove-button"
+                @click.stop="removeRecipe(element)"
+                title="Remove from saved recipes"
+              >
+                ×
+              </button>
+            </div>
             <div class="card-body">
-              <h5 class="card-text">Calories: {{ element.calories }}</h5>
-              <p class="card-title">{{ element.name }}</p>
+              <p class="card-title">{{ element.label }}</p>
             </div>
           </div>
         </div>
@@ -28,20 +36,56 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted } from 'vue';
 import Draggable from 'vuedraggable';
 import gsap from 'gsap';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, updateDoc, getFirestore } from 'firebase/firestore';
 
-// State
-const savedRecipes = ref([
-  { id: 1, name: 'Grilled Chicken Salad', image: '/images/placeholder.webp', calories: 350 },
-  { id: 3, name: 'Salmon with Roasted Vegetables', image: '/images/placeholder.webp', calories: 450 },
-  { id: 4, name: 'Quinoa and Black Bean Bowl', image: '/images/placeholder.webp', calories: 380 },
-  { id: 5, name: 'Greek Yogurt Parfait', image: '/images/placeholder.webp', calories: 300 },
-]);
+const favoritedRecipes = ref([]);
+const auth = getAuth();
+const db = getFirestore();
+const currentUser = ref(null);
 
+onMounted(() => {
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser.value = user;
+      const userDoc = doc(db, 'users', user.uid);
+      const userSnapshot = await getDoc(userDoc);
 
-const cloneItem = (item) => ({ ...item, id: Date.now() });
+      if (userSnapshot.exists()) {
+        favoritedRecipes.value = userSnapshot.data().favoritedRecipes || [];
+      }
+    }
+  });
+});
+
+const removeRecipe = async (recipe) => {
+  try {
+    if (!currentUser.value) return;
+
+    // Remove from local state
+    favoritedRecipes.value = favoritedRecipes.value.filter(
+      r => r.uri !== recipe.uri
+    );
+
+    // Update Firestore
+    const userDoc = doc(db, 'users', currentUser.value.uid);
+    await updateDoc(userDoc, {
+      favoritedRecipes: favoritedRecipes.value
+    });
+
+  } catch (error) {
+    console.error('Error removing recipe:', error);
+    // Optionally show error message to user
+  }
+};
+
+const cloneItem = (item) => ({
+  ...item,
+  uri: `${item.uri}_${Date.now()}`,
+});
 
 let cards = []; 
 
@@ -68,53 +112,100 @@ const onDragEnd = () => {
 
 <style scoped>
 .saved-recipes-container {
-  height: 400px;
-  overflow-y: auto;
-
-}
-
-.recipes-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  height: 300px;
+  overflow-y: scroll;
 }
 
 .title-container {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
 }
 
-.title-img {
-  width: 60%;
-  max-width: 300px;
+.recipes-grid {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .recipes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .recipes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.recipe-card-wrapper {
+  width: 100%;
 }
 
 .card {
-  transition: transform 0.2s, box-shadow 0.2s;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.2s;
   cursor: grab;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .card:active {
   cursor: grabbing;
-  transform: scale(0.9);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.card-img-container {
+  position: relative;
 }
 
 .card-img-top {
-  height: 50px;
+  width: 100%;
+  height: 95px;
   object-fit: cover;
 }
 
-.card-text {
-  font-size: 12px;
+.remove-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #ff4444;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+.card-body {
+  padding: 1rem;
 }
 
 .card-title {
-  font-size: 9px;
+  font-size: 1.1rem;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  color: #666;
 }
 </style>
