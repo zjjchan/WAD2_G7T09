@@ -89,6 +89,7 @@ const handleSubmit = async () => {
         dietaryPreferences: [],
         healthGoals: [],
         favoritedRecipes: [],
+        cuisineTypes: [],
       };
       localStorage.setItem('isNewUser', 'true');
 
@@ -125,6 +126,7 @@ const handleGoogleSignIn = async () => {
       dietaryPreferences: [],
       healthGoals: [],
       favoritedRecipes: [],
+      cuisineTypes: [],
     }, { merge: true });
     router.push('/');
   } catch (error) {
