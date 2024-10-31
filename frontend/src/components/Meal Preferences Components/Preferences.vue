@@ -1,15 +1,27 @@
 <template>
-  <WelcomeModal v-if="showModal" @close="showModal = false" />
+  <WelcomeModal v-if="showModal" @close="showModal = false" @preferencesUpdated="fetchUserData" />
   <div class="preferences-container">
     <h2>Your Preferences</h2>
-    <p>
+    <div>
       Selected Diet Type(s):
       {{ selectedDietType }}
-    </p>
-    <p>
-      Health Labels
-      {{ selectedLabels }}
-    </p>
+    </div>
+    <div>
+      Health Label(s):
+      <ul>
+      <li v-for="label of selectedLabels">
+        {{ label }}
+      </li>
+    </ul>
+    </div>
+    <div>
+      Cuisine(s):
+      <ul>
+      <li v-for="cuisine of selectedCuisine">
+        {{ cuisine }}
+      </li>
+    </ul>
+    </div>
     <button @click="openModal">Edit Preferences</button>
   </div>
 </template>
@@ -27,6 +39,7 @@ const db = getFirestore();
 const user = auth.currentUser; 
 const selectedDietType = ref(null); 
 const selectedLabels = ref(null); 
+const selectedCuisine = ref(null);
 
 const fetchUserData = async () => {
   if (user) {
@@ -34,9 +47,9 @@ const fetchUserData = async () => {
     try {
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
-        // Access user data here
         selectedDietType.value = userDoc.data().healthGoals;
         selectedLabels.value = userDoc.data().dietaryPreferences;
+        selectedCuisine.value = userDoc.data().cuisineTypes;
       } else {
         console.log('No such document!');
       }
