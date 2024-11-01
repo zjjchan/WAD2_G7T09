@@ -22,7 +22,7 @@
         <div class="feature" v-for="(feature, index) in features" :key="index" ref="featureItems">
           <img :src="feature.icon" class="feature-icon" />
           <p>{{ feature.description }}</p>
-          <img v-if="feature.description" :src="feature.image">
+          <img class="feature-img" v-if="feature.description" :src="feature.image">
         </div>
       </div>
     </section>
@@ -589,5 +589,9 @@ p {
 
 .feature-icon {
   width: 100px;
+}
+
+.feature-img {
+  width: 100%;
 }
 </style>
