@@ -5,7 +5,7 @@
     <div class="row">
 
       <!-- Sidebar for filters -->
-      <div class="col-3 sidebar">
+      <div class="col-2 sidebar">
         <h3><strong>Filters</strong></h3>
 
         <div class="filter-section">
@@ -53,14 +53,23 @@
 
 
       <!-- search -->
-      <div class="col-9">
+      <div class="col-10">
         <div>
-          <div class="container" id="searchbar">
 
-            <input id="search" v-model="query" placeholder="Search recipe" @keyup.enter="handleSearch" />
+          <div class="container-fluid" id="searchbar">
+            <div class="search-wrapper">
+              <img class="btn" id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search" />
 
-            <img class="btn" id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search">
-
+              <input id="search" v-model="query" placeholder="Search recipe" @input="filterSuggestions"
+                @keyup.enter="handleSearch" />
+              <!-- Dropdown suggestions -->
+              <ul v-if="filteredSuggestions.length && showSuggestions" class="suggestions-dropdown">
+                <li v-for="(suggestion, index) in filteredSuggestions" :key="index"
+                  @click="selectSuggestion(suggestion)">
+                  {{ suggestion }}
+                </li>
+              </ul>
+            </div>
           </div>
 
           <br><br>
@@ -71,22 +80,24 @@
               <!-- Display filtered and paginated results -->
               <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3 col-5">
                 <h5 class="card-title">{{ recipe.label }}</h5>
+                <h6>{{ capitalise(recipe.cuisineType.join(' ')) }} &nbsp &nbsp &nbsp&nbsp &nbsp &nbsp &nbsp {{
+                  capitalise(recipe.mealType.join(', ')) }}</h6>
+
+
                 <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
                 <div class="card-body">
                   <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
                   <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
                   <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
-                  <p><strong>Cuisine Type:</strong> {{ capitalise(recipe.cuisineType.join(', ')) }}</p>
-                  <p><strong>Meal Type:</strong> {{ capitalise(recipe.mealType.join(', ')) }}</p>
-
-                  <!-- Pass the recipe URI instead of the label -->
-                  <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
-                    class="btn btn-primary">
-                    More Info
-                  </RouterLink>
-
-
                 </div>
+                <!-- Pass the recipe URI instead of the label -->
+                <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
+                  class="btn btn-primary">
+                  More Info
+                </RouterLink>
+
+
+
               </div>
               <!-- Pagination Controls -->
               <div class="pagination-controls">
@@ -146,13 +157,16 @@ export default {
     return {
       query: '', // Holds the user's search query
       submittedQuery: '', // Holds the submitted search query for filtering
+      showSuggestions: false,
+      suggestions: ["Pasta", "Pizza", "Pancakes", "Pasta Salad", "Pumpkin Soup", "Pesto", "Peanut Butter Cookies"], // Example list of suggestions
+      filteredSuggestions: [],
       recipes: [], // Holds the list of recipes
       errorMessage: '', // Error message to display if the API request fails
       uniqueRecipes: [], // Holds unique recipes after removing duplicates
       apiUrl: 'https://api.edamam.com/search', // Replace with the actual API URL
       apiKey: '160b560497690476362bc1fca361165a', // Replace with your actual API key
       appId: '374ab5b2', // Replace with your actual App ID
-      recipesPerPage: 10, // Number of recipes per page in the UI
+      recipesPerPage: 15, // Number of recipes per page in the UI
       currentPage: 1, // Track current page number
       from: 0, // Pagination start index
       to: 100, // Number of results to fetch
@@ -289,6 +303,7 @@ export default {
         this.submittedQuery = this.query; // Set submittedQuery to query for filtering
         this.uniqueRecipes = []; // Reset unique recipes
         this.recipes = [];
+        this.showSuggestions = false; // Hide dropdown after search
         this.currentPage = 1;
         this.errorMessage = '';
         this.to = 100;
@@ -356,7 +371,23 @@ export default {
       if (this.currentPage > 1) {
         this.currentPage--;
       }
-    }
+    },
+    filterSuggestions() {
+      if (this.query.length > 0) {
+        this.filteredSuggestions = this.suggestions.filter(suggestion =>
+          suggestion.toLowerCase().includes(this.query.toLowerCase())
+        );
+        this.showSuggestions = true;
+      } else {
+        this.showSuggestions = false;
+        this.filteredSuggestions = [];
+      }
+    },
+    selectSuggestion(suggestion) {
+      this.query = suggestion;
+      this.showSuggestions = false; // Hide suggestions after selecting one
+      this.handleSearch(); // Optionally trigger search on selection
+    },
   }
 };
 
@@ -386,36 +417,91 @@ export default {
 }
 
 #recipe_img {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   margin: auto;
+  object-fit: cover;
+}
+
+.card-columns h5 {
+  font-weight: bold;
+}
+
+.card-body {
+  border-radius: 10px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  background-color: rgba(253, 253, 252, 0.886)
+}
+
+.card-body p {
+  justify-content: left;
+
 }
 
 .card {
-  background-color: #8fb17f;
+  padding-top: 10px;
+  background-color: #a4c694;
   display: inline-block;
   margin-left: 10px;
+  width: 500px;
+  height: 700px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 150px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1;
+}
+
+.suggestions-dropdown li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestions-dropdown li:hover {
+  background-color: #f0f0f0;
 }
 
 #search_img {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 50px;
-  padding: 8px;
-  margin-left: auto;
-  border: solid 3px;
-  border-radius: 50%
+  height: 38px;
+  cursor: pointer;
 }
 
 #search {
+  width: 200%;
+  padding-left: 50px;
   border: solid;
   border-radius: 10px;
-  z-index: -1;
-
-  margin: auto;
   height: 45px;
-  width: 350px;
-  padding: 20px;
-  align-content: center;
+}
 
+#searchbar {
+  display: flex;
+
+
+}
+
+.search-wrapper {
+  position: relative;
+  width: 400px;
 }
 
 .filter-section label {
