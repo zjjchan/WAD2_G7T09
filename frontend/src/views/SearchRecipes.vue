@@ -51,7 +51,14 @@
             <div class="card-columns">
               <!-- Display filtered and paginated results -->
               <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3 col-5">
-                <h5 class="card-title">{{ recipe.label }}</h5>
+                <h5 class="card-title">{{ recipe.label }}
+                  <svg class="bookmark" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path d="M6 2a2 2 0 0 0-2 2v18l8-4.5 8 4.5V4a2 2 0 0 0-2-2H6z" />
+                  </svg>
+                </h5>
+
+
                 <h6>{{ capitalise(recipe.cuisineType.join(' ')) }} &nbsp &nbsp &nbsp&nbsp &nbsp &nbsp &nbsp {{
                   capitalise(recipe.mealType.join(', ')) }}</h6>
 
