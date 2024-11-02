@@ -8,8 +8,6 @@
       <div class="col-2 sidebar">
         <h3><strong>Filters</strong></h3>
 
-
-        <!-- Filter Section Template -->
         <div class="filter-section" v-for="(items, section) in filterSections" :key="section">
           <h5>{{ section }}</h5>
           <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item">
@@ -18,14 +16,10 @@
               {{ item }}
             </label>
           </div>
-          <!-- Show More / Show Less Button -->
           <button v-if="items.length > 3" @click="toggleExpand(section)" class="toggle-button">
             {{ filterExpand[section] ? 'Show Less' : 'Show More' }}
           </button>
         </div>
-
-
-
 
       </div>
 
@@ -150,6 +144,7 @@ export default {
       to: 100, // Number of results to fetch
       isLoading: false,
 
+      // Initializing selected filters and expand toggle options
       selectedFilters: {
         MealTypes: [],
         DietLabels: [],
@@ -162,46 +157,51 @@ export default {
         HealthLabels: false,
         CuisineTypes: false
       },
+      // Filter sections with default options
       filterSections: {
-        MealTypes: ["Breakfast", "Dinner", "Lunch", "Snack", "Teatime"],
+        MealTypes: ["Breakfast", "Brunch", "Lunch", "Dinner", "Snack", "Teatime"],
         DietLabels: ["Balanced", "High-Fiber", "High-Protein", "Low-Carb", "Low-Fat", "Low-Sodium"],
-        HealthLabels: ["Alcohol-Cocktail", "Alcohol-Free", "Celery-Free", "Crustacean-Free", "Dairy-Free", "DASH", "Egg-Free", "Fish-Free", "Fodmap-Free", "Gluten-Free", "Immuno-Supportive", "Keto-Friendly", "Kidney-Friendly", "Kosher", "Low-Fat-Abs", "Low-Potassium", "Low-Sugar", "Lupine-Free", "Mediterranean", "Mollusk-Free", "Mustard-Free", "No-oil-added", "Paleo", "Peanut-Free", "Pescatarian", "Pork-Free", "Red-Meat-Free", "Sesame-Free", "Shellfish-Free", "Soy-Free", "Sugar-Conscious", "Sulfite-Free", "Tree-Nut-Free", "Vegan", "Vegetarian", "Wheat-Free"],
+        HealthLabels: ["Alcohol-Cocktail", "Alcohol-Free", "Celery-Free", "Crustacean-Free", "Dairy-Free", "DASH", "Egg-Free", "Fish-Free", "Fodmap-Free", "Gluten-Free", "Immuno-Supportive", "Keto-Friendly", "Kidney-Friendly", "Kosher", "Low-Fat-Abs", "Low-Potassium", "Low-Sugar", "Lupine-Free", "Mediterranean", "Mollusk-Free", "Mustard-Free", "No oil added", "Paleo", "Peanut-Free", "Pescatarian", "Pork-Free", "Red-Meat-Free", "Sesame-Free", "Shellfish-Free", "Soy-Free", "Sugar-Conscious", "Sulfite-Free", "Tree-Nut-Free", "Vegan", "Vegetarian", "Wheat-Free"],
         CuisineTypes: ["American", "Asian", "British", "Caribbean", "Central Europe", "Chinese", "Eastern Europe", "French", "Indian", "Italian", "Japanese", "Kosher", "Mediterranean", "Mexican", "Middle Eastern", "Nordic", "South American", "South East Asian"]
       },
-
+      // Separate lists to avoid undefined errors
+      selectedDietLabels: [],
+      selectedHealthLabels: [],
+      selectedCuisineTypes: [],
+      selectedMealTypes: []
 
     };
   },
   computed: {
     filteredRecipes() {
       return this.recipes.filter(recipe => {
+        const matchesQuery = this.submittedQuery
+          ? recipe.label.toLowerCase().includes(this.submittedQuery.toLowerCase())
+          : true;
 
-        // Ensure recipe label contains the search query (case-insensitive)
-        const matchesQuery = this.submittedQuery ? recipe.label.toLowerCase().includes(this.submittedQuery.toLowerCase()) : true;
-
-
-        const matchesDiet = !this.selectedDietLabels.length ||
-          this.selectedDietLabels.some(label =>
-            recipe.dietLabels.some(d => d.toLowerCase() === label.toLowerCase())
+        const matchesDiet = !this.selectedFilters.DietLabels.length ||
+          this.selectedFilters.DietLabels.some(label =>
+            recipe.dietLabels.map(d => d.toLowerCase()).includes(label.toLowerCase())
           );
 
-        const matchesHealth = !this.selectedHealthLabels.length ||
-          this.selectedHealthLabels.some(label =>
-            recipe.healthLabels.some(h => h.toLowerCase() === label.toLowerCase())
+        const matchesHealth = !this.selectedFilters.HealthLabels.length ||
+          this.selectedFilters.HealthLabels.some(label =>
+            recipe.healthLabels.map(h => h.toLowerCase()).includes(label.toLowerCase())
           );
 
-        const matchesCuisine = !this.selectedCuisineTypes.length ||
-          this.selectedCuisineTypes.some(cuisine =>
-            recipe.cuisineType.some(c => c.toLowerCase() === cuisine.toLowerCase())
+        const matchesCuisine = !this.selectedFilters.CuisineTypes.length ||
+          this.selectedFilters.CuisineTypes.some(type =>
+            recipe.cuisineType.map(c => c.toLowerCase()).includes(type.toLowerCase())
           );
 
-        const matchesMeal = !this.selectedMealTypes.length ||
-          this.selectedMealTypes.some(meal =>
+        const matchesMeal = !this.selectedFilters.MealTypes.length ||
+          this.selectedFilters.MealTypes.some(meal =>
             recipe.mealType.some(m => m.toLowerCase().includes(meal.toLowerCase()))
           );
 
         return matchesQuery && matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
       });
+
     },
     paginatedRecipes() {
       const start = (this.currentPage - 1) * this.recipesPerPage;
@@ -338,16 +338,6 @@ export default {
   margin-top: 20px;
 }
 
-.toggle-button {
-  background: none;
-  border: none;
-  color: #007bff;
-  cursor: pointer;
-  padding: 0;
-  font-size: 14px;
-  margin-top: 5px;
-}
-
 .pagination-controls button {
   margin: 0 5px;
   padding: 5px 10px;
@@ -362,6 +352,16 @@ export default {
 
 .card-columns h5 {
   font-weight: bold;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  margin-top: 5px;
 }
 
 .card-body {
