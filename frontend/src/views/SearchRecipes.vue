@@ -69,7 +69,6 @@
                 </RouterLink>
 
 
-
               </div>
               <!-- Pagination Controls -->
               <div class="pagination-controls">
@@ -212,6 +211,11 @@ export default {
       return Math.ceil(this.filteredRecipes.length / this.recipesPerPage);
     }
   },
+  mounted() {
+    // Call the API to get all recipes in alphabetical order when the component is loaded
+    this.handleSearch();
+  },
+
   methods: {
     toggleExpand(section) {
       this.filterExpand[section] = !this.filterExpand[section];
@@ -225,29 +229,26 @@ export default {
       }
     },
     async handleSearch() {
-      if (this.query.length > 2) {
-        this.from = 0; // Reset pagination when starting a new search
-        this.submittedQuery = this.query; // Set submittedQuery to query for filtering
-        this.uniqueRecipes = []; // Reset unique recipes
-        this.recipes = [];
-        this.showSuggestions = false; // Hide dropdown after search
-        this.currentPage = 1;
-        this.errorMessage = '';
-        this.to = 100;
-        await this.getData(this.query); // Fetch the data based on query
-      } else {
-        this.uniqueRecipes = [];
-        this.errorMessage = 'Please enter at least 3 characters.';
-      }
+
+      this.from = 0; // Reset pagination when starting a new search
+      this.submittedQuery = this.query; // Set submittedQuery to query for filtering
+      this.uniqueRecipes = []; // Reset unique recipes
+      this.recipes = [];
+      this.showSuggestions = false; // Hide dropdown after search
+      this.currentPage = 1;
+      this.errorMessage = '';
+      this.to = 100;
+      await this.getData(); // Fetch the data based on query
+      this.recipes = this.removeDuplicates(this.recipes);
     },
-    async getData(query) {
+    async getData() {
       this.isLoading = true;
 
       try {
         while (true) {
           const response = await axios.get(this.apiUrl, {
             params: {
-              q: query,
+              q: this.query || 'recipe',
               app_id: this.appId,
               app_key: this.apiKey,
               from: this.from,
@@ -267,6 +268,7 @@ export default {
           this.from += 50;
           this.to += 50;
         }
+        this.sortRecipesAlphabetically();
         this.errorMessage = '';
       }
       catch (error) {
@@ -275,17 +277,26 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    }, sortRecipesAlphabetically() {
+      this.recipes.sort((a, b) => a.label.localeCompare(b.label));
     }, removeDuplicates(recipes) {
-      const seen = new Set();
-      return recipes.filter(recipe => {
-        const key = `${recipe.label}-${recipe.calories.toFixed(0)}`;
-        if (!seen.has(key)) {
-          seen.add(key);
-          return true;
+      const uniqueRecipes = [];
+      const seenRecipes = new Set();
+
+      recipes.forEach(recipe => {
+        const normalizedLabel = recipe.label.trim().toLowerCase();
+        const caloriesRounded = Math.round(recipe.calories);
+        const uniqueKey = `${normalizedLabel}-${caloriesRounded}`;
+
+        if (!seenRecipes.has(uniqueKey)) {
+          seenRecipes.add(uniqueKey);
+          uniqueRecipes.push(recipe);
         }
-        return false;
       });
 
+      return uniqueRecipes;
+    }, sortRecipesAlphabetically() {
+      this.recipes.sort((a, b) => a.label.localeCompare(b.label));
     }, goToPage(page) {
       this.currentPage = page;
     },
@@ -382,7 +393,7 @@ export default {
   display: inline-block;
   margin-left: 10px;
   width: 500px;
-  height: 700px;
+  height: 740px;
   overflow: hidden;
   text-align: center;
 }
