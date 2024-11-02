@@ -267,8 +267,8 @@ onMounted(async() => {
     ease: 'none',
     scrollTrigger: {
       trigger: testimonialsSection.value,
-      start: 'top 50%',
-      end: 'bottom 50%',
+      start: 'top 20%',
+      end: 'bottom 80%',
       scrub: 1,
       pin: true,
     },
@@ -276,14 +276,14 @@ onMounted(async() => {
 
   // CTA section animations
   gsap.fromTo(ctaSection.value,
-    { opacity: 0, y: 50 },
+    { opacity: 1, y: 50 },
     {
       opacity: 1,
       y: 0,
       scrollTrigger: {
         trigger: ctaSection.value,
-        start: "top 80%",
-        end: "top 20%",
+        start: "top 10%",
+        end: "top 90%",
         scrub: true,
         toggleActions: "play reverse play reverse"
       }
@@ -326,7 +326,7 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 4px;
-  background-color: #3498db;
+  background-color: #226925;
   transform-origin: left;
   transform: scaleX(0);
   z-index: 1000;
@@ -369,7 +369,7 @@ p {
 .cta-button {
   padding: 12px 24px;
   font-size: 1.1rem;
-  background-color: #3498db;
+  background-color: #226925;
   color: white;
   border: none;
   border-radius: 5px;
@@ -378,7 +378,7 @@ p {
 }
 
 .cta-button:hover {
-  background-color: #2980b9;
+  background-color: #226925;
   transform: translateY(-2px);
 }
 
@@ -468,7 +468,7 @@ p {
   display: inline-block;
   width: 40px;
   height: 40px;
-  background-color: #3498db;
+  background-color: #226925;
   color: white;
   border-radius: 50%;
   font-size: 1.5rem;
@@ -504,7 +504,7 @@ p {
 }
 
 .cta-section {
-  background-color: #3498db;
+  background-color: #226925;
   color: white;
   text-align: center;
 }
