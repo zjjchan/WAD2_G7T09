@@ -22,8 +22,6 @@
         </div>
 
       </div>
-
-
       <!-- search -->
       <div class="col-10">
         <div>
@@ -52,10 +50,7 @@
               <!-- Display filtered and paginated results -->
               <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3 col-5">
                 <h5 class="card-title">{{ recipe.label }}
-                  <svg class="bookmark" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
-                    viewBox="0 0 24 24">
-                    <path d="M6 2a2 2 0 0 0-2 2v18l8-4.5 8 4.5V4a2 2 0 0 0-2-2H6z" />
-                  </svg>
+                  <FavoriteButton :recipe="recipe" />
                 </h5>
 
 
@@ -103,7 +98,7 @@
 </template>
 
 <script setup>
-
+import FavoriteButton from "@/components/FavoriteButton.vue"; // Import the FavoriteButton component
 import Navbar from "@/components/Navbar.vue";
 import axios from "axios";
 import { RouterLink, useRoute } from 'vue-router';
@@ -139,6 +134,7 @@ export default {
       suggestions: ["Pasta", "Pizza", "Pancakes", "Pasta Salad", "Pumpkin Soup", "Pesto", "Peanut Butter Cookies"], // Example list of suggestions
       filteredSuggestions: [],
       recipes: [], // Holds the list of recipes
+      favoriteRecipes: [],
       errorMessage: '', // Error message to display if the API request fails
       uniqueRecipes: [], // Holds unique recipes after removing duplicates
       apiUrl: 'https://api.edamam.com/search', // Replace with the actual API URL
@@ -224,6 +220,16 @@ export default {
   },
 
   methods: {
+    toggleFavorite(recipe) {
+      const index = this.favoriteRecipes.findIndex(fav => fav.uri === recipe.uri);
+      if (index > -1) {
+        this.favoriteRecipes.splice(index, 1); // Remove if already a favorite
+      } else {
+        this.favoriteRecipes.push(recipe); // Add if not already a favorite
+      }
+    }, isFavorite(recipe) {
+      return this.favoriteRecipes.some(fav => fav.uri === recipe.uri);
+    },
     toggleExpand(section) {
       this.filterExpand[section] = !this.filterExpand[section];
     },
@@ -403,6 +409,10 @@ export default {
   height: 740px;
   overflow: hidden;
   text-align: center;
+}
+
+.favorited {
+  fill: red;
 }
 
 .suggestions-dropdown {

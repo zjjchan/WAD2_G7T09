@@ -13,7 +13,7 @@ const props = defineProps({
     show: Boolean,
     duration: {
         type: Number,
-        default: 4000, // default to 4 seconds
+        default: 3000, // popup for 3s
     },
 });
 
@@ -45,6 +45,7 @@ watch(props.show, (newVal) => {
     color: #fff;
     padding: 10px 20px;
     border-radius: 5px;
+    z-index: 1000;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     transition: opacity 0.3s ease;
 }
