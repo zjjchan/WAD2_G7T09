@@ -8,45 +8,23 @@
       <div class="col-2 sidebar">
         <h3><strong>Filters</strong></h3>
 
-        <div class="filter-section">
-          <h5>Meal Types</h5>
-          <div v-for="label in mealTypes" :key="label">
-            <input :id="label" type="checkbox" :value="label" v-model="selectedMealTypes" />
-            <label :for="label" @click.prevent="toggleCheckbox(selectedMealTypes, label)">
-              {{ label }}
+
+        <!-- Filter Section Template -->
+        <div class="filter-section" v-for="(items, section) in filterSections" :key="section">
+          <h5>{{ section }}</h5>
+          <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item">
+            <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]" />
+            <label :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)">
+              {{ item }}
             </label>
           </div>
+          <!-- Show More / Show Less Button -->
+          <button v-if="items.length > 3" @click="toggleExpand(section)" class="toggle-button">
+            {{ filterExpand[section] ? 'Show Less' : 'Show More' }}
+          </button>
         </div>
 
-        <div class="filter-section">
-          <h5>Diet Labels</h5>
-          <div v-for="label in dietLabels" :key="label">
-            <input :id="label" type="checkbox" :value="label" v-model="selectedDietLabels" />
-            <label :for="label" @click.prevent="toggleCheckbox(selectedDietLabels, label)">
-              {{ label }}
-            </label>
-          </div>
-        </div>
 
-        <div class="filter-section">
-          <h5>Health Labels</h5>
-          <div v-for="label in healthLabels" :key="label">
-            <input :id="label" type="checkbox" :value="label" v-model="selectedHealthLabels" />
-            <label :for="label" @click.prevent="toggleCheckbox(selectedHealthLabels, label)">
-              {{ label }}
-            </label>
-          </div>
-        </div>
-
-        <div class="filter-section">
-          <h5>Cuisine Type</h5>
-          <div v-for="cuisine in cuisineTypes" :key="cuisine">
-            <input :id="cuisine" type="checkbox" :value="cuisine" v-model="selectedCuisineTypes" />
-            <label :for="cuisine" @click.prevent="toggleCheckbox(selectedCuisineTypes, cuisine)">
-              {{ cuisine }}
-            </label>
-          </div>
-        </div>
 
 
       </div>
@@ -172,78 +150,24 @@ export default {
       to: 100, // Number of results to fetch
       isLoading: false,
 
-      // Selected filters
-      selectedDietLabels: [],
-      selectedHealthLabels: [],
-      selectedCuisineTypes: [],
-      selectedMealTypes: [],
-
-      // Filter data
-      dietLabels: ["Balanced",
-        "High-Fiber",
-        "High-Protein",
-        "Low-Carb",
-        "Low-Fat",
-        "Low-Sodium"],
-      mealTypes: ["Breakfast",
-        "Dinner",
-        "Lunch",
-        "Snack",
-        "Teatime"],
-      healthLabels: ["Alcohol-Cocktail",
-        "Alcohol-Free",
-        "Celery-Free",
-        "Crustacean-Free",
-        "Dairy-Free",
-        "DASH",
-        "Egg-Free",
-        "Fish-Free",
-        "Fodmap-Free",
-        "Gluten-Free",
-        "Immuno-Supportive",
-        "Keto-Friendly",
-        "Kidney-Friendly",
-        "Kosher",
-        "Low-Fat-Abs",
-        "Low-Potassium",
-        "Low-Sugar",
-        "Lupine-Free",
-        "Mediterranean",
-        "Mollusk-Free",
-        "Mustard-Free",
-        "No-oil-added",
-        "Paleo",
-        "Peanut-Free",
-        "Pescatarian",
-        "Pork-Free",
-        "Red-Meat-Free",
-        "Sesame-Free",
-        "Shellfish-Free",
-        "Soy-Free",
-        "Sugar-Conscious",
-        "Sulfite-Free",
-        "Tree-Nut-Free",
-        "Vegan",
-        "Vegetarian",
-        "Wheat-Free"],
-      cuisineTypes: ["American",
-        "Asian",
-        "British",
-        "Caribbean",
-        "Central Europe",
-        "Chinese",
-        "Eastern Europe",
-        "French",
-        "Indian",
-        "Italian",
-        "Japanese",
-        "Kosher",
-        "Mediterranean",
-        "Mexican",
-        "Middle Eastern",
-        "Nordic",
-        "South American",
-        "South East Asian"],
+      selectedFilters: {
+        MealTypes: [],
+        DietLabels: [],
+        HealthLabels: [],
+        CuisineTypes: []
+      },
+      filterExpand: {
+        MealTypes: false,
+        DietLabels: false,
+        HealthLabels: false,
+        CuisineTypes: false
+      },
+      filterSections: {
+        MealTypes: ["Breakfast", "Dinner", "Lunch", "Snack", "Teatime"],
+        DietLabels: ["Balanced", "High-Fiber", "High-Protein", "Low-Carb", "Low-Fat", "Low-Sodium"],
+        HealthLabels: ["Alcohol-Cocktail", "Alcohol-Free", "Celery-Free", "Crustacean-Free", "Dairy-Free", "DASH", "Egg-Free", "Fish-Free", "Fodmap-Free", "Gluten-Free", "Immuno-Supportive", "Keto-Friendly", "Kidney-Friendly", "Kosher", "Low-Fat-Abs", "Low-Potassium", "Low-Sugar", "Lupine-Free", "Mediterranean", "Mollusk-Free", "Mustard-Free", "No-oil-added", "Paleo", "Peanut-Free", "Pescatarian", "Pork-Free", "Red-Meat-Free", "Sesame-Free", "Shellfish-Free", "Soy-Free", "Sugar-Conscious", "Sulfite-Free", "Tree-Nut-Free", "Vegan", "Vegetarian", "Wheat-Free"],
+        CuisineTypes: ["American", "Asian", "British", "Caribbean", "Central Europe", "Chinese", "Eastern Europe", "French", "Indian", "Italian", "Japanese", "Kosher", "Mediterranean", "Mexican", "Middle Eastern", "Nordic", "South American", "South East Asian"]
+      },
 
 
     };
@@ -289,6 +213,9 @@ export default {
     }
   },
   methods: {
+    toggleExpand(section) {
+      this.filterExpand[section] = !this.filterExpand[section];
+    },
     toggleCheckbox(list, item) {
       const index = list.indexOf(item);
       if (index > -1) {
@@ -409,6 +336,16 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  margin-top: 5px;
 }
 
 .pagination-controls button {
