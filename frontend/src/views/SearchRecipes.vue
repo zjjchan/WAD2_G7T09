@@ -11,11 +11,11 @@
         <div class="filter-section" v-for="(items, section) in filterSections" :key="section">
           <h5>{{ section }}</h5>
           <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item">
-            <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]" />
-            <label :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)">
-              {{ item }}
-            </label>
+            <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]"
+              :checked="isPreferenceSelected(section, item)" @change="toggleCheckbox(section, item)" />
+            <label :for="item">{{ item }}</label>
           </div>
+
           <button v-if="items.length > 3" @click="toggleExpand(section)" class="toggle-button">
             {{ filterExpand[section] ? 'Show Less' : 'Show More' }}
           </button>
@@ -102,11 +102,77 @@ import FavoriteButton from "@/components/FavoriteButton.vue"; // Import the Favo
 import Navbar from "@/components/Navbar.vue";
 import axios from "axios";
 import { RouterLink, useRoute } from 'vue-router';
-const route = useRoute();
 
-const isActiveLink = (routePath) => {
-  return route.path === routePath;
+import { ref, onMounted, computed, watch, reactive } from 'vue';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+const route = useRoute();
+const selectedDietType = ref([]);
+const selectedLabels = ref([]);
+const selectedCuisine = ref([]);
+const selectedFilters = reactive({
+  MealTypes: [],
+  DietLabels: [],
+  HealthLabels: [],
+  CuisineTypes: []
+});
+const filterExpand = reactive({
+  MealTypes: false,
+  DietLabels: false,
+  HealthLabels: false,
+  CuisineTypes: false
+});
+const auth = getAuth();
+const userId = ref(null);
+const db = getFirestore();
+const user = auth.currentUser;
+
+const userDietType = computed(() => selectedDietType.value || []);
+const userLabels = computed(() => selectedLabels.value || []);
+const userCuisine = computed(() => selectedCuisine.value || []);
+const fetchUserData = async () => {
+  if (user) {
+    const userRef = doc(db, 'users', user.uid);
+    try {
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        selectedDietType.value = userDoc.data().healthGoals || [];
+        selectedLabels.value = userDoc.data().dietaryPreferences || [];
+        selectedCuisine.value = userDoc.data().cuisineTypes || [];
+
+        // Initialize selectedFilters based on user preferences
+        selectedFilters.DietLabels = [...selectedDietType.value];
+        selectedFilters.HealthLabels = [...selectedLabels.value];
+        selectedFilters.CuisineTypes = [...selectedCuisine.value];
+      } else {
+        console.log('No such document!');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  } else {
+    console.log('User not authenticated');
+  }
+};
+onMounted(fetchUserData);
+watch(
+  () => [selectedDietType.value, selectedLabels.value, selectedCuisine.value],
+  ([newDietType, newLabels, newCuisine]) => {
+    selectedFilters.DietLabels = [...newDietType];
+    selectedFilters.HealthLabels = [...newLabels];
+    selectedFilters.CuisineTypes = [...newCuisine];
+  },
+  { immediate: true }
+);
+
+function isPreferenceSelected(section, item) {
+  return selectedFilters[section].includes(item);
 }
+
+function toggleExpand(section) {
+  filterExpand[section] = !filterExpand[section];
+}
+
 </script>
 <script>
 function capitalise(word) {
@@ -128,6 +194,12 @@ function capitalise(word) {
 export default {
   data() {
     return {
+      selectedFilters: {
+        MealTypes: [],
+        DietLabels: [],
+        HealthLabels: [],
+        CuisineTypes: []
+      },
       query: '', // Holds the user's search query
       submittedQuery: '', // Holds the submitted search query for filtering
       showSuggestions: false,
@@ -147,12 +219,7 @@ export default {
       isLoading: false,
 
       // Initializing selected filters and expand toggle options
-      selectedFilters: {
-        MealTypes: [],
-        DietLabels: [],
-        HealthLabels: [],
-        CuisineTypes: []
-      },
+
       filterExpand: {
         MealTypes: false,
         DietLabels: false,
@@ -175,6 +242,7 @@ export default {
     };
   },
   computed: {
+
     filteredRecipes() {
       return this.recipes.filter(recipe => {
         const matchesQuery = this.submittedQuery
@@ -219,7 +287,9 @@ export default {
     this.handleSearch();
   },
 
+
   methods: {
+
     toggleFavorite(recipe) {
       const index = this.favoriteRecipes.findIndex(fav => fav.uri === recipe.uri);
       if (index > -1) {
@@ -231,15 +301,18 @@ export default {
       return this.favoriteRecipes.some(fav => fav.uri === recipe.uri);
     },
     toggleExpand(section) {
+      // Access `this.filterExpand` directly instead of using `filterExpand.value`
       this.filterExpand[section] = !this.filterExpand[section];
     },
-    toggleCheckbox(list, item) {
-      const index = list.indexOf(item);
+    toggleCheckbox(section, item) {
+      console.log(`Toggling ${item} in section ${section}`);
+      const index = this.selectedFilters[section].indexOf(item);
       if (index > -1) {
-        list.splice(index, 1); // Remove if it’s already selected
+        this.selectedFilters[section].splice(index, 1);
       } else {
-        list.push(item); // Add if it’s not selected
+        this.selectedFilters[section].push(item);
       }
+      console.log('Updated selectedFilters:', this.selectedFilters);
     },
     async handleSearch() {
 
@@ -341,7 +414,9 @@ export default {
     },
   }
 };
-
+const userDietType = computed(() => selectedDietType.value || []);
+const userLabels = computed(() => selectedLabels.value || []);
+const userCuisine = computed(() => selectedCuisine.value || []);
 </script>
 
 <style scoped>
