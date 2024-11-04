@@ -318,53 +318,52 @@ import { ref, onMounted, nextTick, defineEmits } from 'vue';
   </script>
   
   <style scoped>
+  .preferences-screen {
+    height: 100%;
+  }
+  
   .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     backdrop-filter: blur(2px);
   }
-  
+
   .modal-content {
     background: white;
-    padding: 2rem;
-    border-radius: 16px;
+    padding: 2.5rem; /* Reduced padding */
+    border-radius: 12px; /* Slightly reduced border radius */
     width: 90%;
-    margin: auto;
-    margin-top: 0px;
-    max-width: 600px;
-    max-height: 90vh;
+    max-width: 800px;
+    max-height: 1000vh;
     overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   }
-  
+
   .diet-type-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1rem;
-    height: 12vh;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Smaller min-width */
+    gap: 0.5rem; /* Reduced gap */
+    margin-bottom: 0.5rem; /* Reduced margin */
+    height: 10vh;
     overflow-y: auto;
   }
-  
+
   .diet-type-label {
-    position: relative;
     display: flex;
     align-items: center;
-    padding: 0.75rem 1rem;
-    border: 2px solid #4CAF50;
-    border-radius: 8px;
-    background-color: white;
-    cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
-    }
+    padding: 0.5rem; /* Reduced padding */
+    border: 1px solid #4CAF50;
+    border-radius: 6px;
+    font-size: 0.9rem; /* Smaller font size */
+  }
+
   
   .diet-type-label:hover {
     background-color: rgba(76, 175, 80, 0.1);
@@ -375,11 +374,11 @@ import { ref, onMounted, nextTick, defineEmits } from 'vue';
     opacity: 0;
     pointer-events: none;
   }
-  
   .diet-type-text {
     font-weight: 500;
     color: #333;
   }
+
   
   .diet-type-radio:checked + .diet-type-text {
     color: #4CAF50;
@@ -437,18 +436,19 @@ import { ref, onMounted, nextTick, defineEmits } from 'vue';
   
   .checkbox-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-    margin: 1.5rem 0;
-    max-height: 20vh;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Smaller min-width */
+    gap: 0.5rem; /* Reduced gap */
+    max-height: 15vh;
     overflow-y: auto;
-    padding-right: 1rem;
+    padding-right: 0.5rem;
   }
+
   
   .checkbox-label {
     display: flex;
     align-items: center;
     padding: 0.5rem;
+    font-size: 0.85rem;
     border-radius: 8px;
     transition: background-color 0.2s;
   }
@@ -508,12 +508,12 @@ import { ref, onMounted, nextTick, defineEmits } from 'vue';
   .modal-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    gap: 0.5rem; /* Reduced gap */
+    margin-top: 1rem; /* Reduced margin */
   }
   
   .modal-button {
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1rem;
     border: none;
     border-radius: 8px;
     font-weight: 600;
@@ -544,7 +544,7 @@ import { ref, onMounted, nextTick, defineEmits } from 'vue';
   /* Responsive adjustments */
   @media (max-width: 640px) {
     .modal-content {
-      padding: 1.5rem;
+      padding: 1rem;
       width: 95%;
     }
   
