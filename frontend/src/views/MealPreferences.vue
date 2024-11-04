@@ -32,12 +32,12 @@ onMounted(() => {
 
 <style scoped>
 .home-page {
-  min-height: 100vh;
+  height: 100vh; 
   background-color: #ffffff;
   font-family: 'Poppins', sans-serif;
   width: 100%;
-  min-width: 320px;
   overflow-x: hidden;
+  overflow-y: scroll; 
 }
 
 .container-wrapper {

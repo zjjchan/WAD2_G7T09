@@ -2,31 +2,31 @@ import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { onMounted } from 'vue';
+// import { onMounted } from 'vue';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBGQg2VtqJNrL6NAihfnR6SOwY18lPn8YM",
-    authDomain: "wad2g7t09.firebaseapp.com",
-    projectId: "wad2g7t09",
-    storageBucket: "wad2g7t09.appspot.com",
-    messagingSenderId: "342958265365",
-    appId: "1:342958265365:web:9fb8d8d1794a3ccb7c6a1c",
-    measurementId: "G-9ZFXVK0JHG"
-  };
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+};
 
 const firebaseApp = initializeApp(firebaseConfig);
 const analytics = getAnalytics(firebaseApp);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 
-onMounted(() => {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      userId.value = user.uid;
-    } else {
-      userId.value = null;
-    }
-  });
-});
+// onMounted(() => {
+//   onAuthStateChanged(auth, (user) => {
+//     if (user) {
+//       userId.value = user.uid;
+//     } else {
+//       userId.value = null;
+//     }
+//   });
+// });
 
 export { firebaseApp, analytics, auth, db };

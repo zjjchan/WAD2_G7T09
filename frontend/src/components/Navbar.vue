@@ -91,7 +91,6 @@ onMounted(() => {
           <ul class="dropdown-menu">
             <li><RouterLink to="/profile" class="dropdown-item">My Profile</RouterLink></li>
             <li><RouterLink to="/meal-preferences" class="dropdown-item">Meal Preferences</RouterLink></li>
-            <li><RouterLink to="/profile-settings" class="dropdown-item">Profile Settings</RouterLink></li>
           </ul>
         </div>
       </div>
