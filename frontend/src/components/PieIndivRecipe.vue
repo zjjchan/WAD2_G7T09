@@ -20,59 +20,44 @@ export default {
 
     onMounted(() => {
       if (props.recipe) {
-        // Extract the main values for fat, protein, and carbs
         const fat = props.recipe.digest.find(nutrient => nutrient.label === 'Fat')?.total || 0;
         const protein = props.recipe.digest.find(nutrient => nutrient.label === 'Protein')?.total || 0;
         const carbsData = props.recipe.digest.find(nutrient => nutrient.label === 'Carbs');
         const carbs = carbsData?.total || 0;
-
-        // Extract subcategories for carbs: Sugars and Fibre
         const sugars = carbsData?.sub?.find(sub => sub.label === 'Sugars')?.total || 0;
         const fibre = carbsData?.sub?.find(sub => sub.label === 'Fiber')?.total || 0;
 
-        // Prepare data for the donut chart with subcategories of carbs included
         nutritionData.value = {
           labels: ['Fats', 'Protein', 'Carbohydrates', 'Sugars', 'Fibre'],
           datasets: [{
             label: 'Nutritional Composition',
             data: [fat, protein, carbs, sugars, fibre],
             backgroundColor: [
-              // pattern.draw('image', { src: '../assets/images/search.png' }),
-              // pattern.draw('image', { src: '../images/search.png' }),
-              // pattern.draw('image', { src: '../images/search.png' }),
-              // pattern.draw('image', { src: '../images/search.png' }),
-              // pattern.draw('image', { src: '../images/search.png' })
-              'rgba(255, 206, 10, 0.5)', // Fat colour
-              'rgba(255, 0, 80, 0.5)', // Protein colour
-              'rgba(184, 125, 0, 0.5)', // Carbs colour
-              'rgba(0, 100, 255, 0.5)', // Sugars colour
-              'rgba(0, 150, 0, 0.5)', // Fibre colour
+              'rgba(255, 206, 10, 0.5)', 
+              'rgba(255, 0, 80, 0.5)', 
+              'rgba(184, 125, 0, 0.5)', 
+              'rgba(0, 100, 255, 0.5)', 
+              'rgba(0, 150, 0, 0.5)',
             ],
             borderWidth: 1.5
           }],
         };
 
-        // Create doughnut chart
         const ctx = document.getElementById('nutritionChart').getContext('2d');
-        new Chart(ctx, {
+
+        const nutritionChart = new Chart(ctx, {
           type: 'doughnut',
           data: nutritionData.value,
           options: {
             responsive: true,
             plugins: {
-              legend: {
-                position: 'top',
-              },
-              title: {
-                display: false,
-                // text: 'Nutritional Distribution',
-              },
+              legend: { position: 'top' },
               tooltip: {
                 callbacks: {
                   label: function (tooltipItem) {
                     const label = tooltipItem.label || '';
                     const value = tooltipItem.raw || 0;
-                    return `${label}: ${value.toFixed(2)} g`; // Units
+                    return `${label}: ${value.toFixed(2)} g`;
                   },
                 },
               },
