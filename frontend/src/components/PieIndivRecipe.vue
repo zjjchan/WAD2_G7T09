@@ -45,38 +45,25 @@ export default {
 
         const ctx = document.getElementById('nutritionChart').getContext('2d');
 
-        // Draw background image before chart render
-        const backgroundImage = new Image();
-        backgroundImage.src = '../assets/images/search.png';
-        
-        backgroundImage.onload = function() {
-          const nutritionChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: nutritionData.value,
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { position: 'top' },
-                tooltip: {
-                  callbacks: {
-                    label: function (tooltipItem) {
-                      const label = tooltipItem.label || '';
-                      const value = tooltipItem.raw || 0;
-                      return `${label}: ${value.toFixed(2)} g`;
-                    },
+        const nutritionChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: nutritionData.value,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: function (tooltipItem) {
+                    const label = tooltipItem.label || '';
+                    const value = tooltipItem.raw || 0;
+                    return `${label}: ${value.toFixed(2)} g`;
                   },
                 },
               },
-              plugins: [{
-                id: 'backgroundImage',
-                beforeDraw: (chart) => {
-                  const { ctx, width, height } = chart;
-                  ctx.drawImage(backgroundImage, 0, 0, width, height);
-                }
-              }]
             },
-          });
-        };
+          },
+        });
       }
     });
 
@@ -88,4 +75,3 @@ export default {
 </script>
 
 <style scoped></style>
-
