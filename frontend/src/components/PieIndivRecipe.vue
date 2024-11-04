@@ -37,11 +37,16 @@ export default {
             label: 'Nutritional Composition',
             data: [fat, protein, carbs, sugars, fibre],
             backgroundColor: [
-              'rgba(255, 206, 86, 0.5)', // Fat colour
-              'rgba(255, 99, 132, 0.5)', // Protein colour
+              // pattern.draw('image', { src: '../assets/images/search.png' }),
+              // pattern.draw('image', { src: '../images/search.png' }),
+              // pattern.draw('image', { src: '../images/search.png' }),
+              // pattern.draw('image', { src: '../images/search.png' }),
+              // pattern.draw('image', { src: '../images/search.png' })
+              'rgba(255, 206, 10, 0.5)', // Fat colour
+              'rgba(255, 0, 80, 0.5)', // Protein colour
               'rgba(184, 125, 0, 0.5)', // Carbs colour
-              'rgba(153, 102, 255, 0.5)', // Sugars colour
-              'rgba(75, 192, 192, 0.5)', // Fibre colour
+              'rgba(0, 100, 255, 0.5)', // Sugars colour
+              'rgba(0, 150, 0, 0.5)', // Fibre colour
             ],
             borderWidth: 1.5
           }],
