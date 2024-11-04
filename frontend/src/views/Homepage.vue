@@ -5,7 +5,7 @@
     <div class="scroll-progress" ref="scrollProgress"></div>
     <section class="hero">
       <div class="hero-content">
-        <h1 class="hero-title" ref="heroTitle">Welcome to Mealmate</h1>
+        <h1 class="hero-title" ref="heroTitle">Welcome to back Mealmate</h1>
         <p ref="heroSubtitle">Your personal assistant for meal planning, grocery shopping, and nutrition</p>
       </div>
       <img ref="heroImage" src="/images/loginimage.png" alt="MealMate Hero" class="hero-image" />
