@@ -210,8 +210,8 @@ export default {
       errorMessage: '', // Error message to display if the API request fails
       uniqueRecipes: [], // Holds unique recipes after removing duplicates
       apiUrl: 'https://api.edamam.com/search', // Replace with the actual API URL
-      apiKey: '160b560497690476362bc1fca361165a', // Replace with your actual API key
-      appId: '374ab5b2', // Replace with your actual App ID
+      apiKey: import.meta.env.VITE_EDAMAM_API_KEY, // Replace with your actual API key
+      appId: import.meta.env.VITE_EDAMAM_APP_ID // Replace with your actual App ID
       recipesPerPage: 15, // Number of recipes per page in the UI
       currentPage: 1, // Track current page number
       from: 0, // Pagination start index

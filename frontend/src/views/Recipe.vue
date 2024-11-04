@@ -98,8 +98,8 @@ onAuthStateChanged(auth, (currentUser) => {
 
 const fetchRecipeDetails = async (uri) => {
   try {
-    const appId = '374ab5b2';
-    const apiKey = '160b560497690476362bc1fca361165a';
+    const appId = import.meta.env.VITE_EDAMAM_APP_ID;
+    const apiKey = import.meta.env.VITE_EDAMAM_API_KEY;
     const response = await axios.get(`https://api.edamam.com/search`, {
       params: {
         r: uri,
