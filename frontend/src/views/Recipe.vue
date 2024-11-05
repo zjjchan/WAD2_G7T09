@@ -3,19 +3,21 @@
 
   <!-- Display loading message while fetching the recipe data -->
   <div v-if="isLoading">
-    <p>Loading recipe...</p>
+    <Loading />
   </div>
 
-  <div v-else-if="recipe">
+  <div class="container" v-else-if="recipe">
     <h3>{{ recipe.label }}
       <FavoriteButton :recipe="recipe" />
     </h3>
     <img :src="recipe.image" alt="Recipe Image" />
-    <p><strong>Calories:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
-    <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
-    <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
-    <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
+    <div id="info">
+      <p><strong>Calories:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
+      <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
+      <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
+      <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
 
+    </div>
 
     <h3>Nutrition Facts</h3>
     <div v-for="(nutrient, index) in recipe.digest" :key="index">
@@ -35,12 +37,7 @@
         </div>
       </div>
     </div>
-  </div>
-  <div v-else>
-    <p>Recipe not found. Please go back and try again.</p>
-  </div>
-
-  <!-- START: Ignore this chunk Yi Ting, I making the visuals, can leave at the bottom for now -->
+    <!-- START: Ignore this chunk Yi Ting, I making the visuals, can leave at the bottom for now -->
   <div class="row mx-1 my-3">
     <div class="col-sm-12 col-md-6">
       <div id="breakdownmacrostext" class="m-2 p-1">
@@ -64,6 +61,12 @@
   <!-- <componentnamehere v-if="variablename" :variablename="variablename" /> -->
 
   <!-- END -->
+  </div>
+  <div v-else>
+    <p>Recipe not found. Please go back and try again.</p>
+  </div>
+
+  
 
 </template>
 
@@ -79,6 +82,7 @@ import { useRouter, RouterLink, useRoute } from 'vue-router';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import FavoriteButton from "@/components/FavoriteButton.vue"; // Import the FavoriteButton component
+import Loading from "@/components/Loading.vue"; // Import the Loading component
 
 
 const route = useRoute();
@@ -141,4 +145,18 @@ onMounted(async () => {
 #fatcomptext {
   background-color: rgba(0, 135, 0, 0.5);
 } */
+</style>
+
+<style>
+#info {
+  
+  background-color: rgb(173, 195, 231);
+  border: solid, 1px;
+  border-radius: 20px;
+  padding: 20px; 
+  float: right;
+  width: 900px;
+  height: 300px;
+  
+}
 </style>

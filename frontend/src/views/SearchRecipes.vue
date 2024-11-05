@@ -43,7 +43,9 @@
           </div>
 
           <br><br>
-          <div v-if="isLoading">Loading recipes...</div>
+          <div v-if="isLoading">
+            <Loading />
+          </div>
           <div v-else>
 
             <div class="card-columns">
@@ -102,6 +104,7 @@ import FavoriteButton from "@/components/FavoriteButton.vue"; // Import the Favo
 import Navbar from "@/components/Navbar.vue";
 import axios from "axios";
 import { RouterLink, useRoute } from 'vue-router';
+import Loading from "@/components/Loading.vue"; // Import the Loading component
 
 import { ref, onMounted, computed, watch, reactive } from 'vue';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
