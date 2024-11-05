@@ -76,6 +76,11 @@ export default {
                                 backdropColor: 'transparent', // Remove the background behind the ticks
                                 color: 'rgba(0, 0, 0, 0.7)', // Optional: Set a color for better visibility
                             },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.15)', // Color of radial lines
+                                lineWidth: 1.5, // Increased line width for radial lines
+                                circular: true, // Ensures the lines are circular
+                            },
                         },
                     },
                     plugins: {

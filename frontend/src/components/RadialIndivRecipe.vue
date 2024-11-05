@@ -77,6 +77,11 @@ export default {
                                         },
                                         padding: 15, // Increase padding to space out labels
                                     },
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.2)', // Change grid line color
+                                        lineWidth: 2, // Increase grid line width
+                                        circular: false, // If you want circular grid lines
+                                    },
                                 },
                             },
                             layout: {
