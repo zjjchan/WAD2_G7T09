@@ -59,14 +59,21 @@
       </div>
     </section>
     
-    <section class="testimonials" ref="testimonialsSection">
+    <section class="recommended-recipes" ref="recommendedRecipesSection">
       <h2>Recommended Recipes</h2>
-      <div class="testimonial-container" ref="testimonialContainer">
-        <div class="testimonial" v-for="(testimonial, index) in testimonials" :key="index">
-          <p>"{{ testimonial.quote }}"</p>
-          <span>- {{ testimonial.author }}</span>
-        </div>
-      </div>
+      <Carousel v-bind="carouselConfig">
+        <Slide v-for="(recipe, index) in recommendedRecipes" :key="index">
+          <div class="carousel__item">
+            <img :src="recipe.image" :alt="recipe.title" class="recipe-image" />
+            <h3>{{ recipe.title }}</h3>
+            <p>{{ recipe.cuisine }}</p>
+          </div>
+        </Slide>
+
+        <template #addons>
+          <Navigation />
+        </template>
+      </Carousel>
     </section>
     
     <section class="cta-section" ref="ctaSection">
@@ -84,6 +91,9 @@ import { getAuth,  onAuthStateChanged } from "firebase/auth";
 import Navbar from "@/components/Navbar.vue";
 import { useRouter } from 'vue-router';
 import WelcomeModal from '@/components/WelcomeModal.vue';
+import 'vue3-carousel/dist/carousel.css';
+import { Carousel, Slide, Navigation } from 'vue3-carousel';
+
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -101,15 +111,55 @@ const featuresSection = ref(null);
 const featureItems = ref([]);
 const howItWorksSection = ref(null);
 const stepItems = ref([]);
-const testimonialsSection = ref(null);
-const testimonialContainer = ref(null);
 const ctaSection = ref(null);
 const food1 = ref(null);
 const food2 = ref(null);
 const food3 = ref(null);
 const scrollProgress = ref(null);
+const recommendedRecipesSection = ref(null);
 
+const carouselConfig = {
+  wrapAround: true,
+  transition: 500,
+  breakpointMode: 'carousel',
+  breakpoints: {
+    480: {
+      itemsToShow: 1.5,
+      snapAlign: 'center',
+    },
+    768: {
+      itemsToShow: 2.5,
+      snapAlign: 'center',
+    },
+    1024: {
+      itemsToShow: 3,
+      snapAlign: 'center',
+    },
+  },
+};
 
+const recommendedRecipes = ref([
+  { 
+    title: "Korean Rice with Vegetables & Beef", 
+    cuisine: "Korean", 
+    image: "/images/masterchef.jpg"
+  },
+  { 
+    title: "Korean Rice with Vegetables & Beef", 
+    cuisine: "Korean", 
+    image: "/images/masterchef.jpg"
+  },
+  { 
+    title: "Korean Rice with Vegetables & Beef", 
+    cuisine: "Korean", 
+    image: "/images/masterchef.jpg"
+  },
+  { 
+    title: "Korean Rice with Vegetables & Beef", 
+    cuisine: "Korean", 
+    image: "/images/masterchef.jpg"
+  },
+]);
 
 // Set default features in case data is not fetched yet
 const features = ref([
@@ -205,16 +255,6 @@ const getTodayMeals = async () => {
     router.push(path);  
   };
 
-
-
-const testimonials = [
-  { quote: '-', author: 'placeholder' },
-  { quote: '-', author: 'placeholder' },
-  { quote: '-', author: 'placeholder' },
-];
-
-
-
 onMounted(async() => {
   await getTodayMeals();
  const isNewUser = localStorage.getItem('isNewUser');
@@ -266,14 +306,14 @@ onMounted(async() => {
     to: { x: 0 }
   });
 
-  // Testimonials section animations
-  gsap.fromTo(testimonialsSection.value,
-    { opacity: 0, y: 50 },
+
+  gsap.fromTo(recommendedRecipesSection.value,
+    { opacity: 1, y: 50 },
     {
       opacity: 1,
       y: 0,
       scrollTrigger: {
-        trigger: testimonialsSection.value,
+        trigger: recommendedRecipesSection.value,
         start: "top 80%",
         end: "top 20%",
         scrub: true,
@@ -282,17 +322,6 @@ onMounted(async() => {
     }
   );
 
-  gsap.to(testimonialContainer.value, {
-    x: () => -(testimonialContainer.value.scrollWidth - testimonialContainer.value.offsetWidth),
-    ease: 'none',
-    scrollTrigger: {
-      trigger: testimonialsSection.value,
-      start: 'top 20%',
-      end: 'bottom 80%',
-      scrub: 1,
-      pin: true,
-    },
-  });
 
   // CTA section animations
   gsap.fromTo(ctaSection.value,
@@ -426,7 +455,7 @@ p {
 .food-2 { top: 5%; right: 10%; }
 .food-3 { bottom: 15%; left: 15%; }
 
-.features, .how-it-works, .testimonials, .cta-section {
+.features, .how-it-works, .cta-section {
   padding: 5% 5%;
 }
 
@@ -579,33 +608,6 @@ p {
   margin-bottom: 1rem;
 }
 
-.testimonials {
-  background-color: #ffffff;
-  overflow: hidden;
-}
-
-.testimonial-container {
-  display: flex;
-  gap: 2rem;
-}
-
-.testimonial {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
-}
-
-.testimonial p {
-  font-style: italic;
-  margin-bottom: 1rem;
-}
-
-.testimonial span {
-  font-weight: bold;
-}
-
 .cta-section {
   background-color: #226925;
   color: white;
@@ -690,12 +692,65 @@ p {
   }
 }
 
-.feature-icon {
-  width: 80px;
+.recommended-recipes {
+  padding: 5% 5%;
+  background-color: #ffffff;
 }
 
-.feature-img {
+.carousel__item {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  min-width: 250px;
+  text-align: center;
+}
+
+.recipe-image {
   width: 100%;
-  margin-bottom:0px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.carousel__slide {
+  padding: 5px;
+}
+
+.carousel__viewport {
+  perspective: 2000px;
+}
+
+.carousel__track {
+  transform-style: preserve-3d;
+}
+
+.carousel__slide--sliding {
+  transition: 0.5s;
+}
+
+.carousel__slide {
+  opacity: 0.9;
+  transform: rotateY(-20deg) scale(0.9);
+}
+
+.carousel__slide--active ~ .carousel__slide {
+  transform: rotateY(20deg) scale(0.9);
+}
+
+.carousel__slide--prev {
+  opacity: 1;
+  transform: rotateY(-10deg) scale(0.95);
+}
+
+.carousel__slide--next {
+  opacity: 1;
+  transform: rotateY(10deg) scale(0.95);
+}
+
+.carousel__slide--active {
+  opacity: 1;
+  transform: rotateY(0) scale(1);
 }
 </style>
