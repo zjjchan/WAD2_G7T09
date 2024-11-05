@@ -44,7 +44,7 @@ export default {
         };
 
         const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        const mealtypes = ['Breakfast', 'Lunch', 'Dinner', 'Supper'];
+        const mealtypes = ['Breakfast', 'Lunch', 'Dinner']; // Add in 'Supper' if needed 
 
         // Fetch data only when component is mounted
         onMounted(async () => {
@@ -82,14 +82,15 @@ export default {
                             borderColor: "rgba(54, 150, 255, 1)",
                             mealNames: daysOfWeek.map(day => nutritionData.value[day].dinner.map(meal => meal.name).join(', '))
                         },
-                        {
-                            label: 'Supper',
-                            data: daysOfWeek.map(day => nutritionData.value[day].supper.reduce((sum, meal) => sum + meal.calories, 0)),
-                            backgroundColor: "rgba(0, 81, 121, 0.5)",
-                            borderWidth: 1,
-                            borderColor: "rgba(0, 81, 121, 1)",
-                            mealNames: daysOfWeek.map(day => nutritionData.value[day].supper.map(meal => meal.name).join(', '))
-                        },
+                        // To add in if want to include 'Supper' in chart
+                        // {
+                        //     label: 'Supper',
+                        //     data: daysOfWeek.map(day => nutritionData.value[day].supper.reduce((sum, meal) => sum + meal.calories, 0)),
+                        //     backgroundColor: "rgba(0, 81, 121, 0.5)",
+                        //     borderWidth: 1,
+                        //     borderColor: "rgba(0, 81, 121, 1)",
+                        //     mealNames: daysOfWeek.map(day => nutritionData.value[day].supper.map(meal => meal.name).join(', '))
+                        // },
                     ],
                 },
                 options: {
@@ -147,7 +148,7 @@ export default {
 </script>
 
 <style scoped>
-    #overviewchart {
+    /* #overviewchart {
         padding-top: 50px;
-    }
+    } */
 </style>

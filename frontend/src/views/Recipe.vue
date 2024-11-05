@@ -41,21 +41,21 @@
   </div>
 
   <!-- START: Ignore this chunk Yi Ting, I making the visuals, can leave at the bottom for now -->
-  <div class="row">
+  <div class="row mx-1 my-3">
     <div class="col-sm-12 col-md-6">
-      <div id="breakdownmacrostext" class="m-2 p-1 border rounded">
-        <h4 class="text-center">Summary of Important Macros</h4>
+      <div id="breakdownmacrostext" class="m-2 p-1">
+        <h4 class="text-center" style="color: rgba(0, 100, 0, 1);">Summary of Important Macros</h4>
       </div>
-      <div class="container bg-light border rounded p-1 d-flex justify-content-center">
+      <div class="container bg-light border rounded border-2 p-1 d-flex justify-content-center">
         <PieIndivRecipe v-if="recipe" :recipe="recipe" />
       </div>
     </div>
 
     <div class="col-sm-12 col-md-6">
-      <div id="fatcomptext" class="m-2 p-1 border rounded">
-        <h4 class="text-center">Fat Types Composition</h4>
+      <div id="fatcomptext" class="m-2 p-1">
+        <h4 class="text-center" style="color: rgba(0, 100, 0, 1);">Fat Types Composition</h4>
       </div>
-      <div class="container bg-light border rounded p-1 d-flex justify-content-center">
+      <div class="container bg-light border rounded border-2 p-1 d-flex justify-content-center">
         <RadialIndivRecipe v-if="recipe" :recipe="recipe" />
       </div>
     </div>
@@ -137,8 +137,8 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-#breakdownmacrostext,
+/* #breakdownmacrostext,
 #fatcomptext {
   background-color: rgba(0, 135, 0, 0.5);
-}
+} */
 </style>
