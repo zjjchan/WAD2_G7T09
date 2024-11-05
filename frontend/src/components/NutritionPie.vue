@@ -43,8 +43,19 @@ export default {
                 "rgba(255, 99, 102, 0.5)"
             ];
 
+            // Get canvas context and set background image style
+            const canvas = document.getElementById('polarAreaChart');
+            const ctx = canvas.getContext('2d');
+
+            // Setting background image with transparency
+            // canvas.style.backgroundImage =
+            //     "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('../src/assets/images/calories.png')"; // Replace with your image URL
+            // canvas.style.backgroundSize = '30%';        // Adjust as needed to fit the chart area
+            // canvas.style.backgroundRepeat = 'no-repeat';
+            // canvas.style.backgroundPosition = 'center'; // Center the image within the canvas
+
             // Polar Area Chart
-            new Chart(document.getElementById('polarAreaChart'), {
+            new Chart(ctx, {
                 type: 'polarArea',
                 data: {
                     labels: xValues,
@@ -59,16 +70,24 @@ export default {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            ticks: {
+                                backdropColor: 'transparent', // Remove the background behind the ticks
+                                color: 'rgba(0, 0, 0, 0.7)', // Optional: Set a color for better visibility
+                            },
+                        },
+                    },
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
                         },
                         title: {
-                            display: false
+                            display: false,
                             // text: 'Total Calories per Day for the Week'
-                        }
-                    }
-                }
+                        },
+                    },
+                },
             });
         });
 
