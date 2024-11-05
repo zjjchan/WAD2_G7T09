@@ -129,11 +129,11 @@ export default {
         const ctx = document.getElementById('nutritionChart').getContext('2d');
 
         // Load and set the background image
-        createImage('../src/assets/images/nutrients.png', (img) => {
+        createImage('../src/assets/images/nutrients3.png', (img) => {
           ctx.canvas.style.backgroundImage = `url('${img.src}')`;
-          ctx.canvas.style.backgroundSize = '20%';
+          ctx.canvas.style.backgroundSize = '25%';
           ctx.canvas.style.backgroundRepeat = 'no-repeat';
-          ctx.canvas.style.backgroundPosition = '50% 65%';
+          ctx.canvas.style.backgroundPosition = '50% 67%';
 
           // Create the chart after setting the background
           new Chart(ctx, {
