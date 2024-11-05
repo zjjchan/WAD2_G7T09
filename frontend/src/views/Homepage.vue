@@ -17,15 +17,35 @@
     </section>
     
     <section class="features" ref="featuresSection">
-      <h2>Your meals for today!</h2>
-      <div class="features-grid">
-        <div class="feature" v-for="(feature, index) in features" :key="index" ref="featureItems">
-          <img :src="feature.icon" class="feature-icon" />
-          <p>{{ feature.description }}</p>
-          <img class="feature-img" v-if="feature.description" :src="feature.image">
+    <h2>Your meals for today!</h2>
+    <div class="features-grid">
+      <div 
+        class="feature" 
+        v-for="(feature, index) in features" 
+        :key="index" 
+        ref="featureItems"
+      >
+        <div class="feature-content">
+          <div class="feature-image-container">
+            <img 
+              v-if="feature.image && feature.image !== 'No image'" 
+              class="feature-img" 
+              :src="feature.image" 
+              :alt="feature.title"
+            />
+            <div v-else class="feature-placeholder">
+              <p class="no-meal-message">Oops, no meal set yet!</p>
+            </div>
+          </div>
+          <div class="feature-info">
+            <h3 class="feature-title">{{ feature.title }}</h3>
+            <p class="feature-description">{{ feature.description }}</p>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
+
     
     <section class="how-it-works" ref="howItWorksSection">
       <h2>Quick Actions</h2>
@@ -93,9 +113,9 @@ const scrollProgress = ref(null);
 
 // Set default features in case data is not fetched yet
 const features = ref([
-{ icon: 'images/breakfasticon.png', title: 'Breakfast', description: '', image: '' },
-{ icon: 'images/lunchicon.png', title: 'Lunch', description: '', image: '' },
-{ icon: 'images/dinnericon.png', title: 'Dinner', description: '', image: '' },
+  { icon: 'images/breakfasticon.png', title: 'Breakfast', description: 'test', image: '' },
+  { icon: 'images/lunchicon.png', title: 'Lunch', description: '', image: '' },
+  { icon: 'images/dinnericon.png', title: 'Dinner', description: '', image: '' },
 ]);
 
 const getTodayMeals = async () => {
@@ -122,9 +142,9 @@ const getTodayMeals = async () => {
 
 
     const meals = {
-      breakfast: "Oops, no breakfast set yet!",
-      lunch: "Oops, no lunch set yet!",
-      dinner: "Oops, no dinner set yet!",
+      breakfast: "",
+      lunch: "",
+      dinner: "",
     };
 
     const image = {
@@ -411,37 +431,120 @@ p {
 }
 
 .features {
-  background-color: #ffffff;
+  padding: 5% 5%;
+
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+  padding: 0 1rem;
 }
 
 .feature {
-  text-align: center;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .feature:hover {
-  transform: translateY(-5px);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
-.feature i {
-  font-size: 3rem;
-  color: #3498db;
-  margin-bottom: 1rem;
+.feature-content {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
 }
 
-.feature h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+.feature-image-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.feature-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.feature:hover .feature-img {
+  transform: scale(1.1);
+}
+
+.feature-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
+  padding: 2rem 1.5rem;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.feature:hover .feature-info {
+  transform: translateY(0);
+}
+
+.feature-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.feature-description {
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+}
+
+.feature:hover .feature-title,
+.feature:hover .feature-description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.no-meal-message {
+  color: #6c757d;
+  font-size: 1.1rem;
+  text-align: center;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .feature-content {
+    height: 250px;
+  }
+  
+  .feature-title {
+    font-size: 1.5rem;
+  }
 }
 
 .how-it-works {
@@ -588,10 +691,11 @@ p {
 }
 
 .feature-icon {
-  width: 100px;
+  width: 80px;
 }
 
 .feature-img {
   width: 100%;
+  margin-bottom:0px;
 }
 </style>
