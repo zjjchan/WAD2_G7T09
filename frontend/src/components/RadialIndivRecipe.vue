@@ -134,13 +134,13 @@ export default {
                     const canvas = document.getElementById('fatRadarChart');
                     const ctx = canvas.getContext('2d');
 
-                    // Set background image
+                    // Setting background image
                     // canvas.style.backgroundImage = "url('../src/assets/images/fats.jpg')"; // Replace with your image URL
                     canvas.style.backgroundImage =
-                        "linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), url('../src/assets/images/fats.jpg')"; // Replace with your image URL
-                    canvas.style.backgroundSize = 'cover';        // Adjust as needed to fit the chart area
+                        "linear-gradient(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.1)), url('../src/assets/images/fats5.png')"; // Replace with your image URL
+                    canvas.style.backgroundSize = '80%';        // Adjust as needed to fit the chart area
                     canvas.style.backgroundRepeat = 'no-repeat';
-                    canvas.style.backgroundPosition = 'center';   // Center the image within the canvas
+                    canvas.style.backgroundPosition = '85% 65%';   // Center the image within the canvas
 
                     // Create the radar chart
                     new Chart(ctx, {
