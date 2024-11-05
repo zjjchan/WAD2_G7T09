@@ -340,8 +340,8 @@ import { ref, onMounted, nextTick, defineEmits } from 'vue';
     padding: 2.5rem; /* Reduced padding */
     border-radius: 12px; /* Slightly reduced border radius */
     width: 90%;
-    max-width: 800px;
-    max-height: 1000vh;
+    max-width: 700px;
+    max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   }
