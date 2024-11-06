@@ -62,6 +62,7 @@ const toggleFavorite = async () => {
                     uri: props.recipe.uri,
                     image: props.recipe.image,
                     calories: props.recipe.calories,
+                    yield:props.recipe.yield,
                 }),
             });
             isFavorited.value = false;
@@ -73,6 +74,7 @@ const toggleFavorite = async () => {
                     uri: props.recipe.uri,
                     image: props.recipe.image,
                     calories: props.recipe.calories,
+                    yield:props.recipe.yield,
                 }),
             });
             isFavorited.value = true;
