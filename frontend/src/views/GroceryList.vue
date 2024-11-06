@@ -2,15 +2,17 @@
     import Navbar from "@/components/Navbar.vue";
     import axios from 'axios';
     import { ref, onMounted } from "vue";
-    import { doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove, deleteField } from "firebase/firestore";
-    import { getAuth, onAuthStateChanged } from "firebase/auth";
+    import { doc, setDoc, getDoc, updateDoc, arrayUnion, deleteField, deleteDoc } from "firebase/firestore";
+    import { getAuth } from "firebase/auth";
     import { db } from "../firebase";
+    import redirect from "@/assets/images/redirect.png";
     
     let isAddingItem = ref(false);
     let groceryList = ref([]);
     let itemAdded = ref();
     let quantityAdded = ref();
     let isEditingItem = ref(false);
+    let amazonList = ref([]);
     let editItemIndex = -1;
     const auth = getAuth();
     const user = auth.currentUser;
@@ -36,10 +38,14 @@
             });
         }
 
-        groceryList.value = docSnap.data().itemlist;
+        try {
+            groceryList.value = docSnap.data().itemlist;
+        } catch (error) {
+            return;
+        }
     }
 
-    async function addItem() {
+    async function addItem(item, qty) {
         if (!user) {
             alert("You need to sign in to add items.");
             return null;
@@ -59,8 +65,8 @@
         const listData = itemSnap.data().itemlist;
 
         for (let i=0; i<listData.length; i++) {
-            if (listData[i].itemname == itemAdded.value && editItemIndex == -1) {
-                listData[i].quantity += quantityAdded.value;
+            if (listData[i].itemname == item && editItemIndex == -1) {
+                listData[i].quantity += qty;
 
                 await updateDoc(doc(db, "grocerylist", uid), {
                     itemlist: listData
@@ -73,11 +79,11 @@
 
         if (editItemIndex == -1) {
             await updateDoc(doc(db, "grocerylist", uid), {
-                itemlist: arrayUnion({itemname: itemAdded.value, quantity: quantityAdded.value, checked: "unchecked"})
+                itemlist: arrayUnion({itemname: item, quantity: qty, checked: "unchecked"})
             });
         } else {
-            listData[editItemIndex].itemname = itemAdded.value;
-            listData[editItemIndex].quantity = quantityAdded.value;
+            listData[editItemIndex].itemname = item;
+            listData[editItemIndex].quantity = qty;
 
             await updateDoc(doc(db, "grocerylist", uid), {
                 itemlist: listData
@@ -145,8 +151,6 @@
             }
         }
 
-        console.log(listData);
-
         await updateDoc(doc(db, "grocerylist", uid), {
             itemlist: deleteField()
         })
@@ -171,8 +175,97 @@
             isAddingItem.value = !isAddingItem.value;
         }
     }
-    
 
+    async function generateList() {
+        const uid = user.uid;
+        await deleteDoc(doc(db, "grocerylist", uid));
+        loadList();
+
+        const appId = import.meta.env.VITE_EDAMAM_APP_ID;
+        const apiKey = import.meta.env.VITE_EDAMAM_API_KEY;
+        const docSnap = await getDoc(doc(db, "users", uid));
+        const meals = docSnap.data().mealPlan;
+
+        if (meals == null) {
+            alert("You have no recipes added to your meal planner");
+            return;
+        } else {
+            for (let day in meals) {
+                for (let mealType in meals[day]) {
+                    for (let m of meals[day][mealType]) {
+                        let mealUri = m.uri.slice(0, m.uri.lastIndexOf("_"));
+                        await axios.get(`https://api.edamam.com/search`, {
+                            params: {
+                                r: decodeURIComponent(mealUri),
+                                app_id: appId,
+                                app_key: apiKey,
+                            },
+                        })
+                        .then(response => {
+                            let ingrs = response.data[0].ingredients;
+                            for (let ingr of ingrs) {
+                                let qty = "";
+                                let item = "";
+                                if (ingr.measure == "<unit>") {
+                                    qty = ingr.quantity;
+                                } else {
+                                    qty = 1;
+                                }
+                                item = ingr.food;
+
+                                addItem(item, qty);
+                            }
+                        })
+                        .finally(() => {
+                            loadList();
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    async function loadAmazonListings() {
+        const scraperKey = import.meta.env.SCRAPERAPI_KEY;
+        amazonList.value = [];
+
+        for (let item of groceryList.value) {
+            console.log(item.itemname);
+            console.log(item.quantity);
+
+            let para = {
+                api_key: scraperKey,
+                query: item.itemname,
+                country: "sg",
+                tld: "com.sg",
+                page: 1
+            }
+
+            await axios.get("https://api.scraperapi.com/structured/amazon/search", {params: para})
+            .then(response => {
+                let listings = response.data.results;
+                for (let l of listings) {
+                    if (l.position == 1) {
+                        let name = l.name;
+                        let image = l.image;
+                        let price = l.price_string;
+                        let asin = url.slice(8).split("/")[3];
+
+                        amazonList.value.push([name, image, price, asin]);
+                    }
+                }
+
+                console.log(amazonList.value);
+            })
+        }
+    }
+
+    function redirectToAmazon() {
+        window.open(
+            "https://www.amazon.sg",
+            "_blank"
+        );
+    }
 
 
 </script>
@@ -181,7 +274,7 @@
     <Navbar />
     <div class="container-fluid">
         <div class="row">
-            <div class="col-3"></div>
+            <div class="col-md-1"></div>
             <div class="col d-flex flex-column align-items-center">
                 <h2>Grocery List</h2>
                 <table class="table table-hover table-borderless">
@@ -230,11 +323,11 @@
                             <td colspan="4">
                                 <div class="input-group add-input">
                                     <span class="input-group-text bg-dark-subtle">Item:</span>
-                                    <input type="text" aria-label="Item" class="form-control" v-model="itemAdded">
-                                    <span class="input-group-text bg-dark-subtle">Quantity:</span>
+                                    <input type="text" aria-label="Item" class="form-control" style="width: 20%" v-model="itemAdded">
+                                    <span class="input-group-text bg-dark-subtle">Qty:</span>
                                     <input type="number" aria-label="Quantity" class="form-control" v-model="quantityAdded">
-                                    <button v-if="isEditingItem" class="btn btn-warning" type="button" @click="addItem">Edit</button>
-                                    <button v-else class="btn btn-success" type="button" @click="addItem">Add</button>
+                                    <button v-if="isEditingItem" class="btn btn-warning" type="button" @click="addItem(itemAdded, quantityAdded)">Edit</button>
+                                    <button v-else class="btn btn-success" type="button" @click="addItem(itemAdded, quantityAdded)">Add</button>
                                     <button class="btn btn-danger" type="button" @click="cancelAddItem">Cancel</button>
                                 </div>
                             </td>
@@ -249,14 +342,49 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-3"></div>
+            <div class="col-md-1"></div>
         </div>
         <div class="row">
-            <div class="col-3"></div>
-            <div class="col d-flex justify-content-center">
-                <button type="button" class="btn btn-primary">Generate a grocery list for me</button>
+            <div class="col-md-1"></div>
+            <div class="actions col d-flex justify-content-center">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#genRec">Generate a grocery list for me</button>
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkout" @click="loadAmazonListings">Add items to my Amazon Cart</button>
             </div>
-            <div class="col-3"></div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="modal fade" id="genRec" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Generate grocery list</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Doing this will <strong>delete your current grocery list</strong> and generate a new grocery list based on the meals in your weekly planner.<br>Do you wish to proceed and generate?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="generateList">Generate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="checkout" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Add items to Amazon Cart</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-warning" data-bs-dismiss="modal" @click="redirectToAmazon">Take me to Amazon <img :src=redirect style="height: 18px; margin-bottom: 2px"></button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -308,6 +436,10 @@
 
     .edit-item:hover {
         color: black;
+    }
+
+    .actions button {
+        margin: 0 3px;
     }
 
     input::-webkit-outer-spin-button,
