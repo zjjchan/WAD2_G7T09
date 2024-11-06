@@ -65,7 +65,8 @@
     
     <section class="recommended-recipes" ref="recommendedRecipesSection">
       <h2>Recommended Recipes</h2>
-      <Carousel v-bind="carouselConfig">
+      <Recommendation />
+      <!-- <Carousel v-bind="carouselConfig">
         <Slide v-for="(recipe, index) in recommendedRecipes" :key="index">
           <div class="carousel__item">
             <img :src="recipe.image" :alt="recipe.title" class="recipe-image" />
@@ -77,7 +78,7 @@
         <template #addons>
           <Navigation />
         </template>
-      </Carousel>
+      </Carousel> -->
     </section>
   </div>
 </template>
@@ -93,6 +94,7 @@ import { useRouter } from 'vue-router';
 import WelcomeModal from '@/components/WelcomeModal.vue';
 import 'vue3-carousel/dist/carousel.css';
 import { Carousel, Slide, Navigation } from 'vue3-carousel';
+import Recommendation from "@/components/Recommendation.vue";
 
 
 
@@ -138,28 +140,28 @@ const carouselConfig = {
   },
 };
 
-const recommendedRecipes = ref([
-  { 
-    title: "Korean Rice with Vegetables & Beef", 
-    cuisine: "Korean", 
-    image: "/images/masterchef.jpg"
-  },
-  { 
-    title: "Korean Rice with Vegetables & Beef", 
-    cuisine: "Korean", 
-    image: "/images/masterchef.jpg"
-  },
-  { 
-    title: "Korean Rice with Vegetables & Beef", 
-    cuisine: "Korean", 
-    image: "/images/masterchef.jpg"
-  },
-  { 
-    title: "Korean Rice with Vegetables & Beef", 
-    cuisine: "Korean", 
-    image: "/images/masterchef.jpg"
-  },
-]);
+// const recommendedRecipes = ref([
+//   { 
+//     title: "Korean Rice with Vegetables & Beef", 
+//     cuisine: "Korean", 
+//     image: "/images/masterchef.jpg"
+//   },
+//   { 
+//     title: "Korean Rice with Vegetables & Beef", 
+//     cuisine: "Korean", 
+//     image: "/images/masterchef.jpg"
+//   },
+//   { 
+//     title: "Korean Rice with Vegetables & Beef", 
+//     cuisine: "Korean", 
+//     image: "/images/masterchef.jpg"
+//   },
+//   { 
+//     title: "Korean Rice with Vegetables & Beef", 
+//     cuisine: "Korean", 
+//     image: "/images/masterchef.jpg"
+//   },
+// ]);
 
 // Set default features in case data is not fetched yet
 const features = ref([
@@ -310,20 +312,20 @@ onMounted(async() => {
   });
 
 
-  gsap.fromTo(recommendedRecipesSection.value,
-    { opacity: 1, y: 50 },
-    {
-      opacity: 1,
-      y: 0,
-      scrollTrigger: {
-        trigger: recommendedRecipesSection.value,
-        start: "top 80%",
-        end: "top 20%",
-        scrub: true,
-        toggleActions: "play reverse play reverse"
-      }
-    }
-  );
+  // gsap.fromTo(recommendedRecipesSection.value,
+  //   { opacity: 1, y: 50 },
+  //   {
+  //     opacity: 1,
+  //     y: 0,
+  //     scrollTrigger: {
+  //       trigger: recommendedRecipesSection.value,
+  //       start: "top 80%",
+  //       end: "top 20%",
+  //       scrub: true,
+  //       toggleActions: "play reverse play reverse"
+  //     }
+  //   }
+  // );
 
 
   // CTA section animations
@@ -714,7 +716,7 @@ p {
     max-width: 40px;
   }
 }
-
+/* 
 .recommended-recipes {
   padding: 5% 5%;
   background-color: #ffffff;
@@ -775,5 +777,5 @@ p {
 .carousel__slide--active {
   opacity: 1;
   transform: rotateY(0) scale(1);
-}
+} */
 </style>
