@@ -28,6 +28,7 @@
             </div>
             <div class="card-body">
               <p class="card-title">{{ element.label }}</p>
+              <p class="card-title">Calories: {{ element.calories.toFixed(0) }} kcals</p>
             </div>
           </div>
         </div>

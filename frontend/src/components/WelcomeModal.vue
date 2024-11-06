@@ -107,7 +107,7 @@
   </template>
   
   <script setup>
-import { ref, onMounted, nextTick, defineEmits } from 'vue';
+import { ref, onMounted, nextTick} from 'vue';
   import gsap from 'gsap';
   import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
   import { getAuth, onAuthStateChanged } from 'firebase/auth';
