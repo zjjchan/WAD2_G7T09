@@ -15,6 +15,9 @@
       </div>
     </div>
   </div>
+  <button @click="handleSignOut" class="btn btn-danger">
+                Sign Out
+                </button>
 </template>
 
 <script setup>
@@ -24,10 +27,23 @@ import MealPlanCard from "@/components/Meal Preferences Components/MealPlanCard.
 import Preferences from "@/components/Meal Preferences Components/Preferences.vue";
 import { onMounted } from 'vue';
 import { gsap } from "gsap";
+import { getAuth, signOut } from 'firebase/auth';
+import { useRouter} from 'vue-router';
+const router = useRouter();
+const auth = getAuth();
+
 
 onMounted(() => {
   gsap.to(".container-wrapper", { duration: 1, y: 20 });
 });
+const handleSignOut = async () => {
+  try {
+    await signOut(auth);
+    router.push('/auth');
+  } catch (error) {
+    console.error('Error signing out:', error);
+  }
+};
 </script>
 
 <style scoped>

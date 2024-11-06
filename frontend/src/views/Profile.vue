@@ -1,5 +1,5 @@
 <template>
-  <Navbar />
+  <!-- <Navbar />
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-6 offset-md-3">
@@ -27,49 +27,49 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter, RouterLink, useRoute } from 'vue-router';
-import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase';
-import Navbar from "@/components/Navbar.vue";
+// import { ref, onMounted } from 'vue';
+// import { useRouter, RouterLink, useRoute } from 'vue-router';
+// import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import Navbar from "@/components/Navbar.vue";
 
-const router = useRouter();
-const auth = getAuth();
-const user = ref(null);
-const username = ref('');
-const favoritedRecipes = ref([]);
-onMounted(() => {
-  onAuthStateChanged(auth, async (currentUser) => {
-    user.value = currentUser;
+// const router = useRouter();
+// const auth = getAuth();
+// const user = ref(null);
+// const username = ref('');
+// const favoritedRecipes = ref([]);
+// onMounted(() => {
+//   onAuthStateChanged(auth, async (currentUser) => {
+//     user.value = currentUser;
 
-    if (currentUser) {
+//     if (currentUser) {
 
-      const userDoc = doc(db, 'users', currentUser.uid);
-      const userSnapshot = await getDoc(userDoc);
+//       const userDoc = doc(db, 'users', currentUser.uid);
+//       const userSnapshot = await getDoc(userDoc);
 
-      if (userSnapshot.exists()) {
-        username.value = userSnapshot.data().username;
-        favoritedRecipes.value = userSnapshot.data().favoritedRecipes || [];
-      } else {
-        console.error('No such user document!');
-      }
-    }
-  });
-});
+//       if (userSnapshot.exists()) {
+//         username.value = userSnapshot.data().username;
+//         favoritedRecipes.value = userSnapshot.data().favoritedRecipes || [];
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     }
+//   });
+// });
 
-const handleSignOut = async () => {
-  try {
-    await signOut(auth);
-    router.push('/auth');
-  } catch (error) {
-    console.error('Error signing out:', error);
-  }
-};
+// const handleSignOut = async () => {
+//   try {
+//     await signOut(auth);
+//     router.push('/auth');
+//   } catch (error) {
+//     console.error('Error signing out:', error);
+//   }
+// };
 </script>
 
 <style scoped></style>

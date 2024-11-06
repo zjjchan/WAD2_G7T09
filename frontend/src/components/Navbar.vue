@@ -82,17 +82,10 @@ onMounted(() => {
           </li>
         </ul>
       </div>
-
       <div class="pfp ms-3">
-        <div class="dropdown">
-          <button class="btn border-0" @click="toggleDropdown">
-            <img :src="profilepic" alt="Profile Picture" class="profile-img" />
-          </button>
-          <ul class="dropdown-menu">
-            <li><RouterLink to="/profile" class="dropdown-item">My Profile</RouterLink></li>
-            <li><RouterLink to="/meal-preferences" class="dropdown-item">Meal Preferences</RouterLink></li>
-          </ul>
-        </div>
+        <RouterLink to="/meal-preferences" class="btn border-0">
+          <img :src="profilepic" alt="Profile Picture" class="profile-img" />
+        </RouterLink>
       </div>
     </div>
   </nav>
