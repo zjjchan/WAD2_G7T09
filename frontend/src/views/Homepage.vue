@@ -8,12 +8,16 @@
         <h1 class="hero-title" ref="heroTitle">Welcome to back Mealmate</h1>
         <p ref="heroSubtitle">Your personal assistant for meal planning, grocery shopping, and nutrition</p>
       </div>
-      <img ref="heroImage" src="/images/loginimage.png" alt="MealMate Hero" class="hero-image" />
-      <div class="floating-objects">
+      <!-- <img ref="heroImage" src="/images/alphabetsoup.png" alt="MealMate Hero" class="hero-image" /> -->
+      <div ref="heroImage" class="bowl-container">
+        <img src="/images/bowl.png" class="bowl">
+        <img src="/images/spoon.png" class="spoon" ref="food1">
+      </div>
+      <!-- <div class="floating-objects">
         <img src="/images/food1.png" alt="Fruit" class="float-object food-1" ref="food1" />
         <img src="/images/food2.png" alt="Vegetable" class="float-object food-2" ref="food2" />
         <img src="/images/food3.png" alt="Fruit" class="float-object food-3" ref="food3" />
-      </div>
+      </div> -->
     </section>
     
     <section class="features" ref="featuresSection">
@@ -51,10 +55,10 @@
       <h2>Quick Actions</h2>
       <div class="steps">
         <div class="step" v-for="(step, index) in steps" :key="index" ref="stepItems">
-          <div class="step-number">{{ index + 1 }}</div>
+          <!-- <div class="step-number">{{ index + 1 }}</div> -->
           <h3>{{ step.title }}</h3>
           <p>{{ step.description }}</p>
-          <button @click="navigateTo(step.path)">Go to {{ step.title }}</button>
+          <button class="quick-action-btn btn btn-success" @click="navigateTo(step.path)">Go to {{ step.title }}</button>
         </div>
       </div>
     </section>
@@ -113,8 +117,8 @@ const howItWorksSection = ref(null);
 const stepItems = ref([]);
 const ctaSection = ref(null);
 const food1 = ref(null);
-const food2 = ref(null);
-const food3 = ref(null);
+// const food2 = ref(null);
+// const food3 = ref(null);
 const scrollProgress = ref(null);
 const recommendedRecipesSection = ref(null);
 
@@ -168,6 +172,7 @@ const features = ref([
   { icon: 'images/dinnericon.png', title: 'Dinner', description: '', image: '' },
 ]);
 
+
 const getTodayMeals = async () => {
   try {
     const todayIndex = new Date().getDay(); 
@@ -179,7 +184,7 @@ const getTodayMeals = async () => {
       return;
     }
 
-    const userDocRef = doc(db, 'users', user.uid);
+    const userDocRef = doc(db, 'users', user.uid); //getting current user id
     const userDoc = await getDoc(userDocRef);
     
     if (!userDoc.exists()) {
@@ -188,7 +193,7 @@ const getTodayMeals = async () => {
     }
 
     const userData = userDoc.data();
-    const todayMeals = userData.mealPlan[daysOfWeek[todayIndex]] || {};
+    const todayMeals = userData.mealPlan[daysOfWeek[todayIndex]] || {}; //to get individual day
 
 
     const meals = {
@@ -203,7 +208,9 @@ const getTodayMeals = async () => {
       dinner: "No image",
     }
 
-    if (todayMeals.Breakfast[0] && todayMeals.Breakfast[0].label) {
+    //accessing the meal data
+
+    if (todayMeals.Breakfast[0] && todayMeals.Breakfast[0].label) { 
       meals.breakfast = todayMeals.Breakfast[0].label;
       image.breakfast = todayMeals.Breakfast[0].image;
     }
@@ -231,12 +238,12 @@ const getTodayMeals = async () => {
   const steps = [
     { 
       title: 'Change Meal Preferences', 
-      description: 'Tell us about your dietary preferences, allergies, and health goals.', 
+      description: 'Tell us about your dietary preferences, allergies, and favourite type of cuisines.', 
       path: '/profile' 
     },
     { 
       title: 'View weekly meal plan', 
-      description: 'Receive a personalized weekly meal plan based on your profile.', 
+      description: 'Plan your meals for the week', 
       path: '/meal-preferences' 
     },
     { 
@@ -270,9 +277,9 @@ onMounted(async() => {
   gsap.from(heroImage.value, { opacity: 0, x: 100, duration: 1, delay: 1.1 });
 
   // Floating objects animations
-  gsap.to(food1.value, { y: -40, rotation: 10, duration: 2, repeat: -1, yoyo: true, ease: "power1.inOut" });
-  gsap.to(food2.value, { y: 30, rotation: -5, duration: 2.5, repeat: -1, yoyo: true, ease: "power1.inOut" });
-  gsap.to(food3.value, { y: -35, rotation: -12, duration: 1.8, repeat: -1, yoyo: true, ease: "power1.inOut" });
+  gsap.to(food1.value, { y: -30, rotation: 25, duration: 2, repeat: -1, yoyo: true, ease: "power1.inOut" });
+  // gsap.to(food2.value, { y: 30, rotation: -5, duration: 2.5, repeat: -1, yoyo: true, ease: "power1.inOut" });
+  // gsap.to(food3.value, { y: -35, rotation: -12, duration: 1.8, repeat: -1, yoyo: true, ease: "power1.inOut" });
 
   // Bidirectional scroll animations
   const animateSections = (elements, props) => {
@@ -364,6 +371,26 @@ onUnmounted(() => {
 * {
   font-family: 'Open Sans', sans-serif;
 }
+
+.bowl-container {
+  position: relative;
+  width: 100%; 
+}
+
+.bowl {
+  width: 100%; /* make sure the bowl scales with the container */
+  height: auto;
+}
+
+.spoon {
+  position: absolute;
+  top: 5px; 
+  left: 55%;
+  transform: translateX(-50%);
+  width: 65%; 
+  height: auto;
+  z-index: 1;
+}
 .homepage {
   font-family: 'Arial', sans-serif;
   color: #333;
@@ -385,8 +412,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 100vh;
-  padding: 5% 5%;
+  padding-left: 5%;
   background-color: #ffffff;
   position: relative;
   overflow: hidden;
@@ -432,19 +458,18 @@ p {
 }
 
 .hero-image {
-  max-width: 45%;
+  max-width: 100%;
   border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   z-index: 2;
 }
-
+/* 
 .floating-objects {
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
-}
+} */
 
 .float-object {
   position: absolute;
