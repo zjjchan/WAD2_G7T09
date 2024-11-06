@@ -5,12 +5,21 @@
 
 <script>
 import { db } from '../firebase';
-import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, collection, getDocs, getDoc } from 'firebase/firestore';
+import { getAuth,  onAuthStateChanged } from "firebase/auth";
 import { onMounted, ref } from 'vue';
 // import { Chart } from 'chart.js'; DO NOT UNCOMMENT
 
 export default {
     setup() {
+        // const db = getFirestore(); // to get firestore instance
+        // const userDocRef = doc(db, 'users', user.uid);
+        // console.log(userDocRef);
+        // const userDoc = getDoc(userDocRef);
+        // console.log(userDoc);
+        // const userData = userDoc.data();
+        // console.log(userData);
+
         const nutritionData = ref({}); // Reactive variable to store nutrition data
         const totalCalories = ref([]); // storing total calories per day
 
@@ -148,7 +157,7 @@ export default {
 </script>
 
 <style scoped>
-    /* #overviewchart {
+/* #overviewchart {
         padding-top: 50px;
     } */
 </style>
