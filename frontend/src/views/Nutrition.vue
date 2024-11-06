@@ -29,6 +29,9 @@
             </div>
         </div>
     </div>
+    <div>
+        <NEWNutritionOverview />
+    </div>
 
 
 </template>
@@ -37,6 +40,7 @@
 import Navbar from "@/components/Navbar.vue";
 import MealPlanCard from "@/components/Meal Preferences Components/MealPlanCard.vue";
 import NutritionOverview from "@/components/NutritionOverview.vue";
+import NEWNutritionOverview from "@/components/NEWNutritionOverview.vue";
 </script>
 
 <script>
