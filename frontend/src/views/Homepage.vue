@@ -21,7 +21,7 @@
     </section>
     
     <section class="features" ref="featuresSection">
-    <h2>Your meals for today!</h2>
+    <h2 class="feature-header">Your meals for today ⬇</h2>
     <div class="features-grid">
       <div 
         class="feature" 
@@ -78,10 +78,6 @@
           <Navigation />
         </template>
       </Carousel>
-    </section>
-    
-    <section class="cta-section" ref="ctaSection">
-      <button class="cta-button">return</button>
     </section>
   </div>
 </template>
@@ -277,7 +273,7 @@ onMounted(async() => {
   gsap.from(heroImage.value, { opacity: 0, x: 100, duration: 1, delay: 1.1 });
 
   // Floating objects animations
-  gsap.to(food1.value, { y: -30, rotation: 25, duration: 2, repeat: -1, yoyo: true, ease: "power1.inOut" });
+  gsap.to(food1.value, { y: -30, rotation: 20, duration: 2, repeat: -1, yoyo: true, ease: "power1.inOut" });
   // gsap.to(food2.value, { y: 30, rotation: -5, duration: 2.5, repeat: -1, yoyo: true, ease: "power1.inOut" });
   // gsap.to(food3.value, { y: -35, rotation: -12, duration: 1.8, repeat: -1, yoyo: true, ease: "power1.inOut" });
 
@@ -382,12 +378,15 @@ onUnmounted(() => {
   height: auto;
 }
 
+.feature-header {
+  margin-top: 20px;
+}
 .spoon {
   position: absolute;
-  top: 5px; 
-  left: 55%;
+  left: 65%;
+  top: -40px;
   transform: translateX(-50%);
-  width: 65%; 
+  width: 80%; 
   height: auto;
   z-index: 1;
 }
@@ -419,7 +418,6 @@ onUnmounted(() => {
 }
 
 .hero-content {
-  max-width: 50%;
   z-index: 2;
 }
 
