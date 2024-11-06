@@ -7,6 +7,7 @@
     import { db } from "../firebase";
     import redirect from "@/assets/images/redirect.png";
     
+    
     let isAddingItem = ref(false);
     let groceryList = ref([]);
     let itemAdded = ref();
@@ -14,6 +15,7 @@
     let isEditingItem = ref(false);
     let amazonList = ref([]);
     let editItemIndex = -1;
+    let isLoading = ref(false);
     const auth = getAuth();
     const user = auth.currentUser;
 
@@ -226,22 +228,20 @@
     }
 
     async function loadAmazonListings() {
-        const scraperKey = import.meta.env.SCRAPERAPI_KEY;
+        const scraperKey = import.meta.env.VITE_SCRAPERAPI_KEY;
         amazonList.value = [];
+        isLoading.value = true;
 
         for (let item of groceryList.value) {
-            console.log(item.itemname);
-            console.log(item.quantity);
-
             let para = {
                 api_key: scraperKey,
-                query: item.itemname,
+                query: `${item.itemname} grocery`,
                 country: "sg",
-                tld: "com.sg",
+                tld: "sg",
                 page: 1
             }
 
-            await axios.get("https://api.scraperapi.com/structured/amazon/search", {params: para})
+            await axios.get(`https://api.scraperapi.com/structured/amazon/search?`, {params: para})
             .then(response => {
                 let listings = response.data.results;
                 for (let l of listings) {
@@ -249,20 +249,36 @@
                         let name = l.name;
                         let image = l.image;
                         let price = l.price_string;
-                        let asin = url.slice(8).split("/")[3];
+                        let asin = l.url.slice(8).split("/")[3];
 
-                        amazonList.value.push([name, image, price, asin]);
+                        amazonList.value.push([name, image, price, asin, item.quantity]);
                     }
                 }
-
-                console.log(amazonList.value);
             })
         }
+
+        isLoading.value = false;
     }
 
     function redirectToAmazon() {
+        if (groceryList.value.length == 0) {
+            alert("There is nothing in your grocery list to add to cart!");
+            return;
+        }
+
+        let urlString = "https://www.amazon.sg/gp/aws/cart/add.html?AssociateTag=your_tag&tag=your_tagQ"
+
+        let counter = 1;
+
+        for (let l of amazonList.value) {
+            let temp = `&ASIN.${counter}=${l[3]}&Quantity.${counter}=${l[4]}`;
+            urlString = urlString.concat(temp);
+
+            counter++;
+        }
+
         window.open(
-            "https://www.amazon.sg",
+            urlString,
             "_blank"
         );
     }
@@ -348,7 +364,7 @@
             <div class="col-md-1"></div>
             <div class="actions col d-flex justify-content-center">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#genRec">Generate a grocery list for me</button>
-                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkout" @click="loadAmazonListings">Add items to my Amazon Cart</button>
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkout" @click="loadAmazonListings" :disabled="groceryList.length == 0">Add items to my Amazon Cart</button>
             </div>
             <div class="col-md-1"></div>
         </div>
@@ -376,8 +392,24 @@
                         <h1 class="modal-title fs-5" id="staticBackdropLabel">Add items to Amazon Cart</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        ...
+                    <div v-if="isLoading" class="modal-body">
+                        Loading...
+                    </div>
+                    <div v-else class="modal-body">
+                        <div v-for="list in amazonList" class="card mb-3" style="max-width: 540px;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                <img :src=list[1] class="img-fluid rounded-start" alt="product img">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ list[0] }}</h5>
+                                        <p class="card-text">Price: {{ list[2] }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-body-secondary">Note that some items may not be available for order.</small>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
