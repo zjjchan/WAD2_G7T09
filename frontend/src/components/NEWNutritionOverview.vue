@@ -18,7 +18,6 @@ export default {
         });
 
         onMounted(async () => {
-            // Initialize Firebase Firestore and Auth
             const mealdb = getFirestore();
             const auth = getAuth();
             const user = auth.currentUser;
@@ -28,18 +27,21 @@ export default {
                 const userDoc = await getDoc(userDocRef);
                 const userData = userDoc.data();
 
-                // Extract and organize calorie data by dividing by "yield"
                 daysOfWeek.forEach(day => {
                     mealtypes.forEach(meal => {
                         const mealData = userData?.mealPlan?.[day]?.[meal];
-                        const totalCalories = mealData?.reduce((sum, item) => sum + item.calories, 0) || 0;
-                        const yieldValue = mealData?.[0]?.yield || 1; // Default yield to 1 if not provided
-                        const caloriesPerServing = totalCalories / yieldValue;
-                        caloriesData.value[meal].push(caloriesPerServing);
+
+                        // Calc T. calories + factor in yield
+                        const totalCalories = mealData?.reduce((sum, item) => sum + (item.calories / (item.yield || 1)), 0) || 0;
+                        const mealNames = mealData?.map(item => item.label).join(', ') || 'Unnamed Meal';
+
+                        caloriesData.value[meal].push(totalCalories);
+                        if (!caloriesData.value.mealNames) caloriesData.value.mealNames = {};
+                        if (!caloriesData.value.mealNames[meal]) caloriesData.value.mealNames[meal] = [];
+                        caloriesData.value.mealNames[meal].push(mealNames);
                     });
                 });
 
-                // Create the chart
                 const ctx = document.getElementById('overviewchart2').getContext('2d');
                 new Chart(ctx, {
                     type: 'bar',
@@ -51,21 +53,24 @@ export default {
                                 data: caloriesData.value.Breakfast,
                                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
                                 borderWidth: 1,
-                                borderColor: 'rgba(255, 99, 132, 1)'
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                mealNames: caloriesData.value.mealNames.Breakfast,
                             },
                             {
                                 label: 'Lunch',
                                 data: caloriesData.value.Lunch,
                                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                                 borderWidth: 1,
-                                borderColor: 'rgba(54, 162, 235, 1)'
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                mealNames: caloriesData.value.mealNames.Lunch,
                             },
                             {
                                 label: 'Dinner',
                                 data: caloriesData.value.Dinner,
                                 backgroundColor: 'rgba(255, 206, 86, 0.5)',
                                 borderWidth: 1,
-                                borderColor: 'rgba(255, 206, 86, 1)'
+                                borderColor: 'rgba(255, 206, 86, 1)',
+                                mealNames: caloriesData.value.mealNames.Dinner,
                             }
                         ]
                     },
@@ -73,29 +78,25 @@ export default {
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            x: {
-                                stacked: true
-                            },
+                            x: { stacked: true },
                             y: {
                                 stacked: true,
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Calories Per Serving'
+                                    text: 'Calories'
                                 }
                             }
                         },
                         plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            },
+                            legend: { display: true, position: 'top' },
                             tooltip: {
                                 callbacks: {
                                     label: function (context) {
-                                        let label = context.dataset.label || '';
-                                        let value = context.raw || 0;
-                                        return `${label}: ${value} Calories per Serving`;
+                                        const datasetLabel = context.dataset.label || 'Unnamed Meal';
+                                        const mealName = context.dataset.mealNames[context.dataIndex] || 'Unnamed Meal';
+                                        const calories = Math.round(context.raw || 0, 0);
+                                        return `${datasetLabel} (${mealName}): ${calories} Calories per serving`;
                                     }
                                 }
                             }
@@ -113,6 +114,7 @@ export default {
 </script>
 
 <style scoped></style>
+
 
 <!-- <template>
     <canvas class="targetchart" id="overviewchart2" style="width:100%; max-width:800px"></canvas>
