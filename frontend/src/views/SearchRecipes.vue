@@ -1,38 +1,29 @@
 <template>
   <Navbar />
   <div class="container-fluid">
-
     <div class="row">
-
-      <!-- Sidebar for filters -->
       <div class="col-2 sidebar">
-        <h3><strong>Filters</strong></h3>
-
+        <h5><strong>Recipe Filters</strong></h5>
         <div class="filter-section" v-for="(items, section) in filterSections" :key="section">
-          <h5>{{ section }}</h5>
+          <p id="section_name">{{ section }}</p>
           <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item">
-            <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]"
-              :checked="isPreferenceSelected(section, item)" @change="toggleCheckbox(section, item)" />
-            <label :for="item">{{ item }}</label>
+            <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]" />
+            <label id="options_name" :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)">
+              {{ item }}
+            </label>
           </div>
-
           <button v-if="items.length > 3" @click="toggleExpand(section)" class="toggle-button">
             {{ filterExpand[section] ? 'Show Less' : 'Show More' }}
           </button>
         </div>
-
       </div>
-      <!-- search -->
       <div class="col-10">
         <div>
-
           <div class="container-fluid" id="searchbar">
             <div class="search-wrapper">
               <img class="btn" id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search" />
-
               <input id="search" v-model="query" placeholder="Search recipe" @input="filterSuggestions"
                 @keyup.enter="handleSearch" />
-              <!-- Dropdown suggestions -->
               <ul v-if="filteredSuggestions.length && showSuggestions" class="suggestions-dropdown">
                 <li v-for="(suggestion, index) in filteredSuggestions" :key="index"
                   @click="selectSuggestion(suggestion)">
@@ -41,143 +32,62 @@
               </ul>
             </div>
           </div>
-
           <br><br>
           <div v-if="isLoading">
             <Loading />
           </div>
           <div v-else>
-
             <div class="card-columns">
-              <!-- Display filtered and paginated results -->
+              <h4>Recipes For You</h4>
+              <Recommendation />
               <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3 col-5">
-                <h5 class="card-title">{{ recipe.label }}
-                  <FavoriteButton :recipe="recipe" />
+                <h5 class="card-title">
+                  {{ recipe.label }}
+                  <FavoriteButton :recipe="recipe" :isFavorite="recipe.isFavorite || false"
+                    @updateFavorites="handleUpdateFavorites" />
                 </h5>
-
-
-                <h6>{{ capitalise(recipe.cuisineType.join(' ')) }} &nbsp &nbsp &nbsp&nbsp &nbsp &nbsp &nbsp {{
+                <h6>{{ capitalise(recipe.cuisineType.join(' ')) }} &nbsp &nbsp &nbsp {{
                   capitalise(recipe.mealType.join(', ')) }}</h6>
-
-
                 <img id="recipe_img" :src="recipe.image" alt="Recipe Image" />
                 <div class="card-body">
                   <p><strong>Calories Count:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
                   <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
                   <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
                 </div>
-                <!-- Pass the recipe URI instead of the label -->
                 <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
-                  class="btn btn-primary">
-                  More Info
-                </RouterLink>
-
-
+                  class="btn btn-primary">More Info</RouterLink>
               </div>
-              <!-- Pagination Controls -->
               <div class="pagination-controls">
                 <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-
-                <!-- Numbered Pagination Buttons -->
                 <button v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }"
                   @click="goToPage(page)">
                   {{ page }}
                 </button>
-
                 <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
               </div>
-
             </div>
           </div>
-          <!-- Error message -->
           <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
         </div>
       </div>
     </div>
-
   </div>
-
 </template>
 
 <script setup>
+
 import FavoriteButton from "@/components/FavoriteButton.vue"; // Import the FavoriteButton component
 import Navbar from "@/components/Navbar.vue";
 import axios from "axios";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { RouterLink, useRoute } from 'vue-router';
+import { db } from "../firebase";
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
 import Loading from "@/components/Loading.vue"; // Import the Loading component
-
-import { ref, onMounted, computed, watch, reactive } from 'vue';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-const route = useRoute();
-const selectedDietType = ref([]);
-const selectedLabels = ref([]);
-const selectedCuisine = ref([]);
-const selectedFilters = reactive({
-  MealTypes: [],
-  DietLabels: [],
-  HealthLabels: [],
-  CuisineTypes: []
-});
-const filterExpand = reactive({
-  MealTypes: false,
-  DietLabels: false,
-  HealthLabels: false,
-  CuisineTypes: false
-});
-const auth = getAuth();
-const userId = ref(null);
-const db = getFirestore();
-const user = auth.currentUser;
-
-const userDietType = computed(() => selectedDietType.value || []);
-const userLabels = computed(() => selectedLabels.value || []);
-const userCuisine = computed(() => selectedCuisine.value || []);
-const fetchUserData = async () => {
-  if (user) {
-    const userRef = doc(db, 'users', user.uid);
-    try {
-      const userDoc = await getDoc(userRef);
-      if (userDoc.exists()) {
-        selectedDietType.value = userDoc.data().healthGoals || [];
-        selectedLabels.value = userDoc.data().dietaryPreferences || [];
-        selectedCuisine.value = userDoc.data().cuisineTypes || [];
-
-        // Initialize selectedFilters based on user preferences
-        selectedFilters.DietLabels = [...selectedDietType.value];
-        selectedFilters.HealthLabels = [...selectedLabels.value];
-        selectedFilters.CuisineTypes = [...selectedCuisine.value];
-      } else {
-        console.log('No such document!');
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  } else {
-    console.log('User not authenticated');
-  }
-};
-onMounted(fetchUserData);
-watch(
-  () => [selectedDietType.value, selectedLabels.value, selectedCuisine.value],
-  ([newDietType, newLabels, newCuisine]) => {
-    selectedFilters.DietLabels = [...newDietType];
-    selectedFilters.HealthLabels = [...newLabels];
-    selectedFilters.CuisineTypes = [...newCuisine];
-  },
-  { immediate: true }
-);
-
-function isPreferenceSelected(section, item) {
-  return selectedFilters[section].includes(item);
-}
-
-function toggleExpand(section) {
-  filterExpand[section] = !filterExpand[section];
-}
-
+import Recommendation from "@/components/Recommendation.vue";
 </script>
 <script>
+const route = useRoute();
 function capitalise(word) {
   if (word.includes(" ") || word.includes("/")) {
     if (word.includes(" ")) {
@@ -197,12 +107,6 @@ function capitalise(word) {
 export default {
   data() {
     return {
-      selectedFilters: {
-        MealTypes: [],
-        DietLabels: [],
-        HealthLabels: [],
-        CuisineTypes: []
-      },
       query: '', // Holds the user's search query
       submittedQuery: '', // Holds the submitted search query for filtering
       showSuggestions: false,
@@ -213,7 +117,7 @@ export default {
       errorMessage: '', // Error message to display if the API request fails
       uniqueRecipes: [], // Holds unique recipes after removing duplicates
       apiUrl: 'https://api.edamam.com/search', // Replace with the actual API URL
-      apiKey: import.meta.env.VITE_EDAMAM_API_KEY, // Replace with your actual API key
+      apiKey: import.meta.env.VITE_EDAMAM_API_KEY,  // Replace with your actual API key
       appId: import.meta.env.VITE_EDAMAM_APP_ID, // Replace with your actual App ID
       recipesPerPage: 15, // Number of recipes per page in the UI
       currentPage: 1, // Track current page number
@@ -222,7 +126,12 @@ export default {
       isLoading: false,
 
       // Initializing selected filters and expand toggle options
-
+      selectedFilters: {
+        MealTypes: [],
+        DietLabels: [],
+        HealthLabels: [],
+        CuisineTypes: []
+      },
       filterExpand: {
         MealTypes: false,
         DietLabels: false,
@@ -245,7 +154,6 @@ export default {
     };
   },
   computed: {
-
     filteredRecipes() {
       return this.recipes.filter(recipe => {
         const matchesQuery = this.submittedQuery
@@ -267,6 +175,7 @@ export default {
             recipe.cuisineType.map(c => c.toLowerCase()).includes(type.toLowerCase())
           );
 
+
         const matchesMeal = !this.selectedFilters.MealTypes.length ||
           this.selectedFilters.MealTypes.some(meal =>
             recipe.mealType.some(m => m.toLowerCase().includes(meal.toLowerCase()))
@@ -275,6 +184,12 @@ export default {
         return matchesQuery && matchesDiet && matchesHealth && matchesCuisine && matchesMeal;
       });
 
+    },
+    favoritesSet() {
+      return new Set(this.favoriteRecipes.map(recipe => recipe.uri));
+    },
+    isFavorite(recipe) {
+      return this.favoritesSet.has(recipe.uri);  // Adjusted to check directly in the Set
     },
     paginatedRecipes() {
       const start = (this.currentPage - 1) * this.recipesPerPage;
@@ -288,11 +203,40 @@ export default {
   mounted() {
     // Call the API to get all recipes in alphabetical order when the component is loaded
     this.handleSearch();
+    this.fetchFavoriteRecipes(); // Fetch user's favorited recipes
   },
 
-
   methods: {
+    async fetchFavoriteRecipes() {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            this.favoriteRecipes = userDoc.data().favoritedRecipes || [];
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    },
 
+    handleUpdateFavorites(updatedRecipe) {
+      // Find the recipe by URI and update the isFavorite property
+      const recipe = this.recipes.find(r => r.uri === updatedRecipe.uri);
+      if (recipe) {
+        recipe.isFavorite = updatedRecipe.isFavorited;
+      }
+
+      // Manage favoriteRecipes list to ensure consistency
+      const index = this.favoriteRecipes.findIndex(fav => fav.uri === updatedRecipe.uri);
+      if (updatedRecipe.isFavorited && index === -1) {
+        this.favoriteRecipes.push(updatedRecipe);
+      } else if (!updatedRecipe.isFavorited && index > -1) {
+        this.favoriteRecipes.splice(index, 1);
+      }
+    },
     toggleFavorite(recipe) {
       const index = this.favoriteRecipes.findIndex(fav => fav.uri === recipe.uri);
       if (index > -1) {
@@ -300,25 +244,27 @@ export default {
       } else {
         this.favoriteRecipes.push(recipe); // Add if not already a favorite
       }
-    }, isFavorite(recipe) {
-      return this.favoriteRecipes.some(fav => fav.uri === recipe.uri);
+    },
+    isFavorite(recipe) {
+      return this.favoritesSet.has(recipe.uri);
     },
     toggleExpand(section) {
-      // Access `this.filterExpand` directly instead of using `filterExpand.value`
       this.filterExpand[section] = !this.filterExpand[section];
     },
-    toggleCheckbox(section, item) {
-      console.log(`Toggling ${item} in section ${section}`);
-      const index = this.selectedFilters[section].indexOf(item);
+    toggleCheckbox(list, item) {
+      // Toggle selection
+      const index = list.indexOf(item);
       if (index > -1) {
-        this.selectedFilters[section].splice(index, 1);
+        list.splice(index, 1);
       } else {
-        this.selectedFilters[section].push(item);
+        list.push(item);
       }
-      console.log('Updated selectedFilters:', this.selectedFilters);
+      // Set loading state and refresh recipes based on filters
+      this.isLoading = true;
+      this.handleSearch();
     },
     async handleSearch() {
-
+      this.isLoading = true;
       this.from = 0; // Reset pagination when starting a new search
       this.submittedQuery = this.query; // Set submittedQuery to query for filtering
       this.uniqueRecipes = []; // Reset unique recipes
@@ -329,8 +275,10 @@ export default {
       this.to = 100;
       await this.getData(); // Fetch the data based on query
       this.recipes = this.removeDuplicates(this.recipes);
+      this.isLoading = false;
     },
     async getData() {
+
       this.isLoading = true;
 
       try {
@@ -371,6 +319,8 @@ export default {
     }, removeDuplicates(recipes) {
       const uniqueRecipes = [];
       const seenRecipes = new Set();
+
+
 
       recipes.forEach(recipe => {
         const normalizedLabel = recipe.label.trim().toLowerCase();
@@ -417,9 +367,7 @@ export default {
     },
   }
 };
-const userDietType = computed(() => selectedDietType.value || []);
-const userLabels = computed(() => selectedLabels.value || []);
-const userCuisine = computed(() => selectedCuisine.value || []);
+
 </script>
 
 <style scoped>
@@ -552,7 +500,29 @@ const userCuisine = computed(() => selectedCuisine.value || []);
   padding-bottom: 10px;
 }
 
+.filter-section {
+  border-top: #727272 solid 1.5px;
+
+
+}
+
+input[type="checkbox"]:hover {
+  color: blue;
+  border: solid 1px;
+  font-size: large;
+}
+
+#options_name {
+  font-size: 14px;
+}
+
 button {
   margin-left: 30px;
+}
+
+#section_name {
+  padding-top: 10px;
+  color: #363636;
+  font-weight: 500;
 }
 </style>

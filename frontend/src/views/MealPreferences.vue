@@ -1,23 +1,28 @@
 <template>
   <div class="home-page">
     <Navbar />
-    <div class="container-wrapper">
-      <div class="layout-container">
-        <div class="meal-plan-section">
-          <MealPlanCard />
-        </div>
-        <div class="saved-recipes-section">
-          <SavedRecipesCard />
-        </div>
-        <div class="preferences-section">
-          <Preferences />
-        </div>
+  <div class="mx-5 my-2 p-4 meal-plan-section" style="background-color: #DAE2BC;">
+    <MealPlanCard />
+  </div>
+  <!-- Second row with Saved Recipes and Preferences -->
+  <div class="row mx-5">
+    <div class="col-lg-6 col-md-12 p-1">
+      <div class="saved-recipes-section m-1 h-100">
+        <SavedRecipesCard />
       </div>
     </div>
+    <div class="col-lg-6 col-md-12 p-1">
+      <div class="preferences-section m-1 h-100">
+        <Preferences />
+      </div>
+    </div>
+    <div class="sign-out-container col-12">
+        <button @click="handleSignOut" class="btn btn-danger">
+          Sign Out
+        </button>
+    </div>
   </div>
-  <button @click="handleSignOut" class="btn btn-danger">
-                Sign Out
-                </button>
+  </div>
 </template>
 
 <script setup>
@@ -28,14 +33,15 @@ import Preferences from "@/components/Meal Preferences Components/Preferences.vu
 import { onMounted } from 'vue';
 import { gsap } from "gsap";
 import { getAuth, signOut } from 'firebase/auth';
-import { useRouter} from 'vue-router';
+import { useRouter } from 'vue-router';
+
 const router = useRouter();
 const auth = getAuth();
 
-
 onMounted(() => {
-  gsap.to(".container-wrapper", { duration: 1, y: 20 });
+  gsap.to(".container-wrapper", { duration: 1, y: -10 });
 });
+
 const handleSignOut = async () => {
   try {
     await signOut(auth);
@@ -48,45 +54,53 @@ const handleSignOut = async () => {
 
 <style scoped>
 .home-page {
-  height: 100vh; 
   background-color: #ffffff;
   font-family: 'Poppins', sans-serif;
   width: 100%;
-  overflow-x: hidden;
-  overflow-y: scroll; 
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
 .container-wrapper {
+  flex: 1;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  height: calc(100vh - 64px); /* Adjust based on navbar height */
   padding: 1rem;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .layout-container {
   display: grid;
-  grid-template-columns: 1fr 1fr; 
-  grid-template-rows: auto auto; 
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: 1.5rem;
+  height: auto;
 }
 
 .meal-plan-section {
-  grid-column: 1 / span 2; 
-  grid-row: 1; 
+  grid-column: 1 / span 2; /* Span across both columns */
+  grid-row: 1;
   background-color: #DAE2BC;
   border-radius: 2.5rem;
   padding: 1.5rem;
   box-sizing: border-box;
+  overflow: auto;
 }
 
 .saved-recipes-section {
-  grid-column: 1; 
+  grid-column: 1;
   grid-row: 2;
   background-color: #DAE2BC;
   border-radius: 2.5rem;
   padding: 1.5rem;
   box-sizing: border-box;
+  overflow: auto;
 }
 
 .preferences-section {
@@ -96,13 +110,30 @@ const handleSignOut = async () => {
   border-radius: 2.5rem;
   padding: 1.5rem;
   box-sizing: border-box;
+  overflow: auto;
 }
 
-@media (max-width: 768px) {
+.sign-out-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+  .container-wrapper {
+    height: auto;
+  }
+
   .layout-container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
   }
-}
+
+  .meal-plan-section,
+  .saved-recipes-section,
+  .preferences-section {
+    height: auto;
+    max-height: none; /* Ensure no constraints on height */
+  }
+
 </style>

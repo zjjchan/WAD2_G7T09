@@ -16,7 +16,8 @@
       <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
       <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
       <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
-
+      <p><strong>Serving Size:</strong> {{ recipe.yield }}</p>
+      <p><strong>Preparation Link</strong> {{ recipe.url }}</p>
     </div>
 
     <h3>Nutrition Facts</h3>
