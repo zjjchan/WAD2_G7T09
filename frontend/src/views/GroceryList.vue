@@ -232,32 +232,36 @@
         amazonList.value = [];
         isLoading.value = true;
 
-        for (let item of groceryList.value) {
-            let para = {
-                api_key: scraperKey,
-                query: `${item.itemname} grocery`,
-                country: "sg",
-                tld: "sg",
-                page: 1
-            }
-
-            await axios.get(`https://api.scraperapi.com/structured/amazon/search?`, {params: para})
-            .then(response => {
-                let listings = response.data.results;
-                for (let l of listings) {
-                    if (l.position == 1) {
-                        let name = l.name;
-                        let image = l.image;
-                        let price = l.price_string;
-                        let asin = l.url.slice(8).split("/")[3];
-
-                        amazonList.value.push([name, image, price, asin, item.quantity]);
-                    }
+        try {
+            for (let item of groceryList.value) {
+                let para = {
+                    api_key: scraperKey,
+                    query: `${item.itemname} grocery`,
+                    country: "sg",
+                    tld: "sg",
+                    page: 1
                 }
-            })
-        }
 
-        isLoading.value = false;
+                await axios.get(`https://api.scraperapi.com/structured/amazon/search?`, {params: para})
+                .then(response => {
+                    let listings = response.data.results;
+                    for (let l of listings) {
+                        if (l.position == 1) {
+                            let name = l.name;
+                            let image = l.image;
+                            let price = l.price_string;
+                            let asin = l.url.slice(8).split("/")[3];
+
+                            amazonList.value.push([name, image, price, asin, item.quantity]);
+                        }
+                    }
+                })
+            }
+        } catch (error) {
+            alert("There was an error in getting the amazon listings. Please try again later.");
+        } finally {
+            isLoading.value = false;
+        }
     }
 
     function redirectToAmazon() {
@@ -413,7 +417,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-warning" data-bs-dismiss="modal" @click="redirectToAmazon">Take me to Amazon <img :src=redirect style="height: 18px; margin-bottom: 2px"></button>
+                        <button type="button" class="btn btn-warning" data-bs-dismiss="modal" @click="redirectToAmazon" :disabled="isLoading">Take me to Amazon <img :src=redirect style="height: 18px; margin-bottom: 2px"></button>
                     </div>
                 </div>
             </div>
