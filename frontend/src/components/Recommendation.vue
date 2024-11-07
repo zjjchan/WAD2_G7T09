@@ -50,8 +50,23 @@ const appId = import.meta.env.VITE_EDAMAM_APP_ID;
 
 // Carousel configuration options
 const carouselConfig = {
-    itemsToShow: 5, // Show 5 items at once
-    loop: true,
+    loop:true,
+  transition: 500,
+  breakpointMode: 'carousel',
+  breakpoints: {
+    480: {
+      itemsToShow: 2.75,
+      snapAlign: 'center',
+    },
+    768: {
+      itemsToShow: 2,
+      snapAlign: 'center',
+    },
+    1024: {
+      itemsToShow: 4.75,
+      snapAlign: 'center',
+    },
+  },
 };
 async function fetchUserPreferences() {
     if (!user) return null;
