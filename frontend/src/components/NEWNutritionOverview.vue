@@ -33,7 +33,7 @@ export default {
 
                 // Check if mealPlan exists in userData
                 if (userData?.mealPlan) {
-                    // Process calorie data only if exists
+                    // Process calorie data only if existsn
                     daysOfWeek.forEach(day => {
                         mealtypes.forEach(meal => {
                             const mealData = userData.mealPlan[day]?.[meal];
