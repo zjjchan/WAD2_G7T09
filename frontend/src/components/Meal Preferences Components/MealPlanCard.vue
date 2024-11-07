@@ -21,15 +21,15 @@
                 </button>
               </div>
               <Draggable
-              v-model="mealPlan[day][mealTime]"
-              :group="{ name: 'recipes', pull: true, put: true }"
-              :sort="true"
-              item-key="uri"
-              class="meal-drop-zone"
-              ghost-class="ghost-item"
-              drag-class="dragging-item"
-              :animation="200"
-              @change="handleDragChange"
+                v-model="mealPlan[day][mealTime]"
+                :group="{ name: 'recipes', pull: true, put: true }"
+                :sort="true"
+                item-key="uri"
+                class="meal-drop-zone"
+                ghost-class="ghost-item"
+                drag-class="dragging-item"
+                :animation="200"
+                @change="handleDragChange"
               >
                 <template #item="{ element, index }">
                   <div
@@ -99,7 +99,6 @@ const removeMeal = async (day, mealTime, meal) => {
   }
 };
 
-// Handle drag changes and save to Firestore
 const handleDragChange = async (evt) => {
   if (evt.added) {
     evt.added.element.uri = `${evt.added.element.uri}_${Date.now()}`;
@@ -108,7 +107,6 @@ const handleDragChange = async (evt) => {
   await saveMealPlan();
 };
 
-// Save meal plan to Firestore
 const saveMealPlan = async () => {
   const user = auth.currentUser;
   if (!user) return;
@@ -122,7 +120,6 @@ const saveMealPlan = async () => {
     console.error('Error saving meal plan:', error);
   }
 };
-
 
 const loadMealPlan = async () => {
   const user = auth.currentUser;
@@ -146,165 +143,237 @@ auth.onAuthStateChanged((user) => {
 });
 </script>
 
-
-
-
 <style scoped>
 .meal-plan-card {
   width: 100%;
+  height: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
+
 .title {
   color: #4A5240;
   font-size: clamp(1.25rem, 2vw, 1.5rem);
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
+
 .scroll-wrapper {
-  width: 100%;
-  height: 60vh;
-  overflow-x: auto;
-  padding: 0 1rem;
+  flex-grow: 1;
+  overflow: auto;
+  padding: 0 0.5rem;
 }
+
 .meal-plan-grid {
-  display: flex;
-  gap: 1rem;
-  padding-bottom: 6rem;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(7, 1fr); /* 7 columns for 7 days */
+  grid-template-rows: auto;
+  overflow-x: auto;
+  min-width: min-content;
 }
+
 .day-column {
-  flex: 0 0 260px;
   display: flex;
   flex-direction: column;
 }
+
 .day-title-wrapper {
   position: sticky;
   top: 0;
   background-color: #4A5240;
   z-index: 10;
-  width: 120px;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  margin-top: 10px;
-  margin-left:74px;
+  width: 100px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  align-self: center;
 }
+
 .day-title {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
   text-align: center;
   color: #FFE5D9;
-  margin:auto;
+  margin: auto;
 }
+
 .meal-times-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  overflow-y: auto;
+  gap: 0.5rem;
 }
+
 .meal-slot {
   background-color: #FFE5D9;
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-  margin-bottom:20px;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 10px;
 }
+
 .meal-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
+
 .meal-time-title {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+  margin: 0;
 }
+
 .meal-name {
-  font-size: 10px;
+  font-size: 0.75rem;
+  margin: 0;
 }
+
 .dropdown-toggle {
   background-color: #4A5240;
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  font-size: 0.625rem;
   cursor: pointer;
   transition: background-color 0.2s;
 }
+
 .dropdown-toggle:hover {
   background-color: #5a6350;
 }
-.dropdown-toggle .arrow {
-  font-size: 0.625rem;
-  transition: transform 0.2s;
-}
-.dropdown-toggle.is-open .arrow {
-  transform: rotate(180deg);
-}
+
 .meal-item {
   background-color: white;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   width: 100%;
   box-sizing: border-box;
 }
+
 .meal-image {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   object-fit: cover;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
 }
+
 .meal-details {
   flex: 1;
+  overflow: hidden;
 }
+
 .remove-btn {
   background-color: #e53935;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  font-size: 1rem;
+  width: 18px;
+  height: 18px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
+
+.meal-drop-zone {
+  min-height: 40px;
+  transition: background-color 0.2s ease;
+}
+
+.meal-drop-zone:empty {
+  padding: 5px;
+  border: 1px dashed #ccc;
+  border-radius: 0.25rem;
+}
+
+.ghost-item {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
+
+.dragging-item {
+  cursor: grabbing;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+.meal-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-.meal-item.in-dropdown {
-  animation: slideDown 0.3s ease;
-}
-.meal-drop-zone {
-  min-height: 60px;
-  transition: background-color 0.2s ease;
-}
-.meal-drop-zone:empty {
-  padding: 10px;
-  border: 2px dashed #ccc;
-  border-radius: 0.5rem;
-}
-.ghost-item {
-  opacity: 0.5;
-  background: #c8ebfb;
-}
-.dragging-item {
-  cursor: grabbing;
-  transform: scale(0.2); 
-  height: auto; 
-  transition: transform 0.2s ease; 
-}
 
-.meal-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.meal-item.in-dropdown {
+  animation: slideDown 0.2s ease;
 }
 
 * {
   transition: all 0.2s ease;
 }
+
+@media (max-width: 1024px) {
+  .meal-plan-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 items per row for medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .meal-plan-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 items per row for smaller screens */
+  }
+
+  .meal-plan-card {
+    width: 100%;
+  }
+
+  .scroll-wrapper {
+    overflow-x: auto;
+  }
+
+  .meal-plan-grid {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    min-width: max-content;
+    overflow-x: auto;
+  }
+
+  .day-column {
+    min-width: 200px; /* Adjust size for mobile */
+  }
+
+  .meal-times-wrapper {
+    gap: 0.25rem;
+  }
+
+  .meal-image {
+    width: 24px;
+    height: 24px;
+  }
+
+  .remove-btn {
+    width: 16px;
+    height: 16px;
+    font-size: 0.625rem;
+  }
+}
+
 </style>
