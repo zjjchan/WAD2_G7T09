@@ -82,7 +82,7 @@ onMounted(() => {
           </li>
         </ul>
       </div>
-      <div class="pfp ms-3">
+      <div class="pfp m-0">
         <RouterLink to="/meal-preferences" class="btn border-0">
           <img :src="profilepic" alt="Profile Picture" class="profile-img" />
         </RouterLink>
@@ -101,6 +101,7 @@ onMounted(() => {
   font-family: 'Shrikhand', cursive;
   font-size: 2rem;
   color: rgb(9, 56, 9);
+  margin: 0;
 }
 
 .navbar-nav .nav-link {
@@ -170,6 +171,8 @@ onMounted(() => {
 
   .navbar-toggler {
     order: 1;
+    width: 54px;
+    border: none;
   }
 
   .nav-logo {
