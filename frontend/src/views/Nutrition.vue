@@ -32,6 +32,9 @@
     <div>
         <NEWNutritionOverview />
     </div>
+    <div>
+        <NEWPolarAreaChart />>
+    </div>
 
 
 </template>
@@ -41,13 +44,13 @@ import Navbar from "@/components/Navbar.vue";
 import MealPlanCard from "@/components/Meal Preferences Components/MealPlanCard.vue";
 import NutritionOverview from "@/components/NutritionOverview.vue";
 import NEWNutritionOverview from "@/components/NEWNutritionOverview.vue";
+import NEWPolarAreaChart from "@/components/NEWPolarAreaChart.vue";
 </script>
 
 <script>
 import { db } from '../firebase';
 import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import NutritionPie from "@/components/NutritionPie.vue";
-
 </script>
 
 
