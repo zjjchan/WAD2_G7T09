@@ -306,15 +306,17 @@ import { ref, onMounted, nextTick} from 'vue';
 };
 
   
-  const closeModal = () => {
-    gsap.to(modalOverlay.value, {
-      duration: 0.3,
-      backgroundColor: 'rgba(0, 0, 0, 0)',
-      onComplete: () => {
-        showModal.value = false;
-      }
-    });
-  };
+const closeModal = () => {
+  gsap.to(modalOverlay.value, {
+    duration: 0.3,
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    onComplete: () => {
+      showModal.value = false; // Hide the modal after animation
+      emit('close'); // Emit the close event
+    }
+  });
+};
+
   </script>
   
   <style scoped>
