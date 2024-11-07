@@ -1,5 +1,5 @@
 <template>
-    <canvas class="targetchart" id="overviewchart2" style="width:100%; max-width:800px"></canvas>
+    <canvas class="targetchart" id="overviewchart2" style="width:100%; max-width:800px; max-height:1000px;"></canvas>
 </template>
 
 <script>
