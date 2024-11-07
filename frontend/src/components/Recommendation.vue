@@ -1,7 +1,5 @@
 <template>
     <div class="recommendations">
-   
-
         <div v-if="isLoading">
             <Loading />
         </div>
@@ -53,11 +51,8 @@ const appId = import.meta.env.VITE_EDAMAM_APP_ID;
 // Carousel configuration options
 const carouselConfig = {
     itemsToShow: 5, // Show 5 items at once
-
     loop: true,
-
 };
-
 async function fetchUserPreferences() {
     if (!user) return null;
 
@@ -66,15 +61,18 @@ async function fetchUserPreferences() {
 
     if (userDoc.exists()) {
         return {
-            dietLabels: userDoc.data().dietaryPreferences || [],
-            healthLabels: userDoc.data().healthGoals || [],
-            cuisineTypes: userDoc.data().cuisineTypes || []
+            dietLabels: Array.isArray(userDoc.data().dietaryPreferences) ? userDoc.data().dietaryPreferences : [],
+            healthLabels: Array.isArray(userDoc.data().healthGoals) ? userDoc.data().healthGoals : [],
+            cuisineTypes: Array.isArray(userDoc.data().cuisineTypes) ? userDoc.data().cuisineTypes : []
         };
     }
 
-    return null;
+    return {
+        dietLabels: [],
+        healthLabels: [],
+        cuisineTypes: []
+    };
 }
-
 async function fetchRecommendedRecipes() {
     isLoading.value = true;
     recommendations.value = [];
@@ -85,7 +83,11 @@ async function fetchRecommendedRecipes() {
         return;
     }
 
-    const { dietLabels, healthLabels, cuisineTypes } = preferences;
+    // Ensure each property is an array or set to an empty array
+    const dietLabels = Array.isArray(preferences.dietLabels) ? preferences.dietLabels : [];
+    const healthLabels = Array.isArray(preferences.healthLabels) ? preferences.healthLabels : [];
+    const cuisineTypes = Array.isArray(preferences.cuisineTypes) ? preferences.cuisineTypes : [];
+
     const params = {
         app_id: appId,
         app_key: apiKey,
@@ -108,7 +110,6 @@ async function fetchRecommendedRecipes() {
         isLoading.value = false;
     }
 }
-
 onMounted(fetchRecommendedRecipes);
 </script>
 

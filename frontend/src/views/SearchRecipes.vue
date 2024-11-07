@@ -79,7 +79,10 @@
 import FavoriteButton from "@/components/FavoriteButton.vue"; // Import the FavoriteButton component
 import Navbar from "@/components/Navbar.vue";
 import axios from "axios";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { RouterLink, useRoute } from 'vue-router';
+import { db } from "../firebase";
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
 import Loading from "@/components/Loading.vue"; // Import the Loading component
 import Recommendation from "@/components/Recommendation.vue";
 </script>
