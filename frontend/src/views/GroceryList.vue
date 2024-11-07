@@ -217,9 +217,6 @@
 
                                 addItem(item, qty);
                             }
-                        })
-                        .finally(() => {
-                            loadList();
                         });
                     }
                 }
