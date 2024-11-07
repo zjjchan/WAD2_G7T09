@@ -1,6 +1,6 @@
 <template>
     <div>
-        <canvas v-if="hasData" class="targetchart" id="overviewchart2" style="width:100%; max-width:800px; max-height:1000px;"></canvas>
+        <canvas v-if="hasData" class="targetchart" id="overviewchart2" style="width:100%; max-width:100%; max-height:450px;"></canvas>
         <p v-else class="placeholder-text">Nothing has been added to your Meal Planner yet.
             <br>
             <br>

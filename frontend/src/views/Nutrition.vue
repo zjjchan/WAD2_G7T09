@@ -3,8 +3,9 @@
     <div class="m-4 p-3 border rounded" style="background-color: #DAE2BC;">
         <MealPlanCard />
     </div>
+
     <!-- OLD CHARTS -->
-    <div class="row m-1">
+    <!-- <div class="row m-1">
         <div class="col-lg-6 col-md-12 p-1">
             <div class="m-1 h-100">
                 <div id="piecharttext" class="p-1">
@@ -29,7 +30,8 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
+
     <!-- NEW CHARTS -->
     <div class="row m-1">
         <div class="col-lg-6 col-md-12 p-1">
@@ -84,6 +86,7 @@ import NutritionPie from "@/components/NutritionPie.vue";
 
 
 .chart-container {
+    overflow: hidden;
     height: 500px;
 }
 h4 {

@@ -1,10 +1,12 @@
 <template>
     <div>
-        <canvas v-if="hasData" class="targetchart" id="overviewchart3" style="width:100%; max-width:800px; max-height:1000px;"></canvas>
+        <canvas v-if="hasData" class="targetchart" id="overviewchart3"
+            style="width:100%; max-width:100%; max-height:450px;"></canvas>
         <p v-else class="placeholder-text">Nothing has been added to your Meal Planner yet.
             <br>
             <br>
-            Please add your meals to view your calorie consumption for each day and meal of the week.</p>
+            Please add your meals to view your calorie consumption for each day and meal of the week.
+        </p>
     </div>
 </template>
 
@@ -37,7 +39,7 @@ export default {
                         ['Breakfast', 'Lunch', 'Dinner'].forEach(meal => {
                             const mealData = userData?.mealPlan?.[day]?.[meal];
                             const totalCalories = mealData?.reduce(
-                                (sum, item) => sum + (item.calories / (item.yield || 1)), 
+                                (sum, item) => sum + (item.calories / (item.yield || 1)),
                                 0
                             ) || 0;
                             dailyCalories += totalCalories;
@@ -56,20 +58,21 @@ export default {
                                     label: 'Calories per Day (adjusted by yield)',
                                     data: caloriesData.value,
                                     backgroundColor: [
-                                        'rgba(255, 99, 132, 0.5)',
-                                        'rgba(54, 162, 235, 0.5)',
-                                        'rgba(255, 206, 86, 0.5)',
-                                        'rgba(75, 192, 192, 0.5)',
-                                        'rgba(153, 102, 255, 0.5)',
-                                        'rgba(255, 159, 64, 0.5)',
-                                        'rgba(100, 181, 246, 0.5)'
+                                        "rgba(50, 50, 255, 0.5)",
+                                        "rgba(54, 162, 200, 0.5)",
+                                        "rgba(0, 185, 0, 0.5)",
+                                        "rgba(100, 190, 150, 0.5)",
+                                        "rgba(255, 206, 86, 0.5)",
+                                        "rgba(255, 159, 64, 0.5)",
+                                        "rgba(255, 99, 102, 0.5)"
                                     ],
                                     borderWidth: 1
                                 }
                             ]
                         },
                         options: {
-                            responsive: false,
+                            responsive: true,
+                            maintainAspectRatio: false,
                             plugins: {
                                 legend: {
                                     display: true,
@@ -108,4 +111,5 @@ export default {
     font-size: 18px;
     margin-top: 20px;
 }
+
 </style>
