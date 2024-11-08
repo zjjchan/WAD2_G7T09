@@ -38,6 +38,7 @@
             <span class="label-text">{{ type }}</span>
           </label>
         </div>
+        <button class="modal-button clear-btn" @click="clearSelection('diet')">Clear Selection</button>
         <div class="modal-buttons" ref="buttonContainer">
           <button class="modal-button secondary" @click="goBack">Back</button>
           <button class="modal-button primary" @click="goToNextStep">Next</button>
@@ -67,6 +68,7 @@
             <span class="label-text">{{ label }}</span>
           </label>
         </div>
+        <button class="modal-button clear-btn" @click="clearSelection('health')">Clear Selection</button>
         <div class="modal-buttons" ref="buttonContainer">
           <button class="modal-button secondary" @click="goBack">Back</button>
           <button class="modal-button primary" @click="goToNextStep">Next</button>
@@ -96,6 +98,7 @@
             <span class="label-text">{{ label }}</span>
           </label>
         </div>
+        <button class="modal-button clear-btn" @click="clearSelection('cuisine')">Clear Selection</button>
         <div class="modal-buttons" ref="buttonContainer">
           <button class="modal-button secondary" @click="goBack">Back</button>
           <button class="modal-button primary" @click="submitPreferences">Save Preferences</button>
@@ -256,9 +259,38 @@ const closeModal = () => {
     }
   });
 };
+
+const clearSelection = (step) => {
+  if (step === 'diet') {
+    selectedDietType.value = [];
+  } else if (step === 'health') {
+    selectedLabels.value = [];
+  } else if (step === 'cuisine') {
+    selectedCuisine.value = [];
+  }
+};
+
+
 </script>
 
 <style scoped>
+.clear-btn {
+  background: #f44336; 
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.clear-btn:hover {
+  background: #d32f2f;
+}
+
+
 .preferences-screen {
   height: 100%;
 }
