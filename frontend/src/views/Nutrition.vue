@@ -1,6 +1,6 @@
 <template>
     <Navbar />
-    <div class="m-4 p-3 border rounded" style="background-color: #DAE2BC;">
+    <div class="m-4 p-3 ">
         <MealPlanCard />
     </div>
 
