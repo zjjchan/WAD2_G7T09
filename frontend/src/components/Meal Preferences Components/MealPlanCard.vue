@@ -28,7 +28,7 @@
                 class="meal-drop-zone"
                 ghost-class="ghost-item"
                 drag-class="dragging-item"
-                :animation="200"
+                :animation="400"
                 @change="handleDragChange"
               >
                 <template #item="{ element, index }">
@@ -214,6 +214,11 @@ auth.onAuthStateChanged((user) => {
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin-bottom: 10px;
+  /* Set a fixed height */
+  height: 80px; /* Adjust this value as needed */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center the content */
 }
 
 .meal-header {
@@ -258,6 +263,7 @@ auth.onAuthStateChanged((user) => {
   gap: 0.5rem;
   width: 100%;
   box-sizing: border-box;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .meal-image {
@@ -287,7 +293,12 @@ auth.onAuthStateChanged((user) => {
 }
 
 .meal-drop-zone {
-  min-height: 40px;
+  min-height: 40px; /* Keeps a minimum height for empty drop zones */
+  height: 100%; /* Ensures the drop zone fills the meal-slot container */
+  overflow: hidden; /* Prevents expansion of the container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 0.2s ease;
 }
 
@@ -299,13 +310,14 @@ auth.onAuthStateChanged((user) => {
 
 .ghost-item {
   opacity: 0.5;
+  transform: scale(0.95);
   background: #c8ebfb;
 }
 
 .dragging-item {
   cursor: grabbing;
-  transform: scale(0.95);
-  transition: transform 0.2s ease;
+  transform: scale(1.05); /* Slightly larger */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .meal-item:hover {
