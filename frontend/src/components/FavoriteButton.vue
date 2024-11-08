@@ -97,8 +97,8 @@ const showNotificationMessage = (message) => {
 </script>
 
 <style scoped>
-.btn {
-    cursor: pointer;
+svg:hover{
+  cursor: pointer;
 }
 
 .favorited {

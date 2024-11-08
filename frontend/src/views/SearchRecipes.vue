@@ -7,8 +7,9 @@
         <div class="filter-section" v-for="(items, section) in filterSections" :key="section">
           <p id="section_name">{{ section }}</p>
           <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item">
-            <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]" />
-            <label id="options_name" :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)">
+            <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]"
+              style=":hover{color: blue}">
+            <label id="filters_name" :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)">
               {{ item }}
             </label>
           </div>
@@ -42,7 +43,17 @@
                 <h4>Recipes For You</h4>
                 <Recommendation />
               </div>
-              <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3 col-5">
+              <div v-if="filteredRecipes.length === 0" class="text-center py-8">
+                <h5>No recipes found</h5>
+                <p class="text-gray-600">
+                  {{ getNoResultsMessage() }}
+                </p>
+                <button @click="clearFilters" class="btn btn-primary mt-4">
+                  Clear Filters
+                </button>
+              </div>
+
+              <!-- <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3 col-5">
                 <h5 class="card-title">
                   {{ recipe.label }}
                   <FavoriteButton :recipe="recipe" :isFavorite="recipe.isFavorite || false"
@@ -59,7 +70,39 @@
                 <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
                   class="btn btn-primary">More Info</RouterLink>
               </div>
-              <div class="pagination-controls">
+ -->
+
+              <div class="row">
+                <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="col-md-4 col-sm-6 col-xs-12">
+
+                  <!-- Wrap the card with RouterLink -->
+                  <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
+                    class="card-link">
+                    <div class="card">
+                      <!-- Hidden image for preloading or accessibility (optional) -->
+                      <img id="recipe_img" :src="recipe.image" alt="Recipe Image" style="display: none;" />
+
+                      <div class="cover item-a" :style="{ backgroundImage: `url(${recipe.image})` }">
+                        <h1>{{ recipe.label }}</h1>
+                        <span class="card-sub">
+                          {{ capitalise(recipe.cuisineType.join(' ')) }} &nbsp;&nbsp;&nbsp;
+                          {{ capitalise(recipe.mealType.join(', ')) }}
+                        </span>
+                        <div class="card-back">
+                          <div class="card-back-content">
+                            <FavoriteButton :recipe="recipe" :isFavorite="recipe.isFavorite || false"
+                              @updateFavorites="handleUpdateFavorites" />
+                            <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
+                            <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </RouterLink>
+                </div>
+              </div>
+
+              <div v-if="filteredRecipes.length > recipesPerPage" class="pagination-controls">
                 <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
                 <button v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }"
                   @click="goToPage(page)">
@@ -214,6 +257,37 @@ export default {
   },
 
   methods: {
+    getNoResultsMessage() {
+      let message = 'Try adjusting your filters. ';
+
+      // Add specific suggestions based on active filters
+      if (this.query) {
+        message += `Search term "${this.query}" `;
+      }
+
+      const activeFilters = [];
+      Object.entries(this.selectedFilters).forEach(([category, filters]) => {
+        if (filters.length > 0) {
+          activeFilters.push(`${category}: ${filters.join(', ')}`);
+        }
+      });
+
+      if (activeFilters.length > 0) {
+        message += `Active filters: ${activeFilters.join(' | ')}`;
+      }
+
+      return message;
+    },
+
+    clearFilters() {
+      // Reset all filters and search
+      this.query = '';
+      Object.keys(this.selectedFilters).forEach(key => {
+        this.selectedFilters[key] = [];
+      });
+      this.handleSearch();
+    },
+
     async fetchFavoriteRecipes() {
       try {
         const auth = getAuth();
@@ -285,11 +359,9 @@ export default {
       this.isLoading = false;
     },
     async getData() {
-
       this.isLoading = true;
 
       try {
-
         const params = {
           q: this.query || 'recipe',
           app_id: this.appId,
@@ -297,41 +369,68 @@ export default {
           from: this.from,
           to: this.to,
         };
-        if (this.selectedFilters.MealTypes.length) {
-          params.mealType = this.selectedFilters.MealTypes.join(',');
-        }
+
+        // For diet labels, we need to make separate API calls for each label
+        // and combine the results, since the API treats multiple diet params as AND
         if (this.selectedFilters.DietLabels.length) {
-          params.diet = this.selectedFilters.DietLabels.map(label =>
-            label.toLowerCase()
-          ).join(',');
+          let allRecipes = [];
+
+          // Make separate API calls for each diet label
+          const dietRequests = this.selectedFilters.DietLabels.map(async (diet) => {
+            const dietParams = {
+              ...params,
+              diet: diet.toLowerCase()
+            };
+            try {
+              const response = await axios.get(this.apiUrl, { params: dietParams });
+              return response.data.hits.map(hit => hit.recipe);
+            } catch (error) {
+              console.error(`Error fetching recipes for diet ${diet}:`, error);
+              return [];
+            }
+          });
+
+          // Wait for all requests to complete
+          const results = await Promise.all(dietRequests);
+
+          // Combine all results
+          allRecipes = results.flat();
+
+          // Update recipes with combined results
+          this.recipes = allRecipes;
+        } else {
+          // If no diet filters, make normal API call
+          if (this.selectedFilters.HealthLabels.length) {
+            params.health = this.selectedFilters.HealthLabels.map(label =>
+              label.toLowerCase()
+            ).join(',');
+          }
+
+          if (this.selectedFilters.MealTypes.length) {
+            params.mealType = this.selectedFilters.MealTypes.join(',');
+          }
+
+          if (this.selectedFilters.CuisineTypes.length) {
+            params.cuisineType = this.selectedFilters.CuisineTypes.join(',');
+          }
+
+          console.log('API params:', params);
+          const response = await axios.get(this.apiUrl, { params });
+          console.log('API Response:', response.data);
+
+          if (response.data.hits.length) {
+            this.recipes = response.data.hits.map(hit => hit.recipe);
+          }
         }
 
-        // Format health labels to maintain hyphens but convert to lowercase
-        if (this.selectedFilters.HealthLabels.length) {
-          params.health = this.selectedFilters.HealthLabels.map(label =>
-            label.toLowerCase()
-          ).join(',');
-        }
-        if (this.selectedFilters.CuisineTypes.length) {
-          params.cuisineType = this.selectedFilters.CuisineTypes.join(',');
-        }
-        console.log('API params:', params);
-        const response = await axios.get(this.apiUrl, { params });
-        console.log('API Response:', response.data);
-        if (response.data.hits.length) {
-          this.recipes = [...this.recipes, ...response.data.hits.map(hit => hit.recipe)];
+        // Post-process the recipes
+        if (this.recipes.length) {
           this.uniqueRecipes = this.removeDuplicates(this.recipes);
-
-          this.from += 50;
-          this.to += 50;
-          console.log('Sample dietLabels:', response.data.hits[0].recipe.dietLabels);
-          console.log('Sample healthLabels:', response.data.hits[0].recipe.healthLabels);
+          this.sortRecipesAlphabetically();
         }
 
-        this.sortRecipesAlphabetically();
         this.errorMessage = '';
-      }
-      catch (error) {
+      } catch (error) {
         console.error(error);
         this.errorMessage = 'Failed to retrieve data. Please try again later.';
       } finally {
@@ -410,7 +509,7 @@ export default {
 }
 
 .pagination-controls .active {
-  background-color: #007bff;
+  background-color: #6dafa5;
   color: white;
   border-radius: 5px;
 }
@@ -427,16 +526,16 @@ export default {
   padding: 5px 10px;
 }
 
-#recipe_img {
+/* #recipe_img {
   width: 250px;
   height: 250px;
   margin: auto;
   object-fit: cover;
-}
+} */
 
-.card-columns h5 {
+/* .card-columns h5 {
   font-weight: bold;
-}
+} */
 
 .toggle-button {
   background: none;
@@ -448,7 +547,7 @@ export default {
   margin-top: 5px;
 }
 
-.card-body {
+/* .card-body {
   border-radius: 10px;
   margin-top: 30px;
   margin-bottom: 10px;
@@ -458,9 +557,26 @@ export default {
 .card-body p {
   justify-content: left;
 
+} */
+
+.text-center {
+  text-align: center;
 }
 
-.card {
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.text-gray-600 {
+  color: #666;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+/* .card {
   padding-top: 10px;
   background-color: #a4c694;
   display: inline-block;
@@ -469,7 +585,7 @@ export default {
   height: 740px;
   overflow: hidden;
   text-align: center;
-}
+} */
 
 .favorited {
   fill: red;
@@ -540,14 +656,17 @@ export default {
 
 }
 
-input[type="checkbox"]:hover {
+#filters_name:hover {
   color: blue;
-  border: solid 1px;
-  font-size: large;
+  cursor: pointer;
 }
 
-#options_name {
+#filters_name {
   font-size: 14px;
+}
+
+input[type=checkbox]:hover {
+  color: blue
 }
 
 button {
@@ -558,5 +677,182 @@ button {
   padding-top: 10px;
   color: #363636;
   font-weight: 500;
+}
+
+
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200;600&display=swap");
+
+body {
+  font-family: "Oswald", sans-serif;
+  background-color: #212121;
+}
+
+body section {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+body section .row {
+  align-items: center;
+  height: 100vh;
+}
+
+.card {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  margin: 10px 0;
+  transition: ease all 2.3s;
+  perspective: 1200px;
+}
+
+.card:hover .cover {
+  transform: rotateX(0deg) rotateY(-180deg);
+}
+
+.card:hover .cover:before {
+  transform: translateZ(30px);
+}
+
+.card:hover .cover:after {
+  background-color: black;
+}
+
+.card:hover .cover h1 {
+  transform: translateZ(100px);
+}
+
+.card:hover .cover .card-sub {
+  transform: translateZ(60px);
+}
+
+.card:hover .cover a {
+  transform: translateZ(-60px) rotatey(-180deg);
+}
+
+.card .cover {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: ease all 2.3s;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.card .cover:before {
+  content: "";
+  position: absolute;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2;
+  transition: ease all 2.3s;
+  transform-style: preserve-3d;
+  transform: translateZ(0px);
+}
+
+.card .cover:after {
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 2;
+  transition: ease all 1.3s;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.card .cover.item-a {
+  background-image: url("https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?auto=format&fit=crop&w=600&q=80");
+}
+
+.card .cover h1 {
+  font-weight: 400;
+  position: absolute;
+  bottom: 55px;
+  left: 50px;
+  color: white;
+  transform-style: preserve-3d;
+  transition: ease all 2.3s;
+  z-index: 3;
+  font-size: 1.5em;
+  transform: translateZ(0px);
+}
+
+.card .cover .card-sub {
+  font-weight: 200;
+  position: absolute;
+  top: 55px;
+  right: 50px;
+  color: white;
+  transform-style: preserve-3d;
+  transition: ease all 2.3s;
+  z-index: 4;
+  font-size: 1.2em;
+  transform: translateZ(0px);
+}
+
+.card .card-back {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: #ccd0c9;
+  transform-style: preserve-3d;
+  transition: ease all 2.3s;
+  transform: translateZ(-1px) rotateY(-180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  /* Ensures it's above other elements */
+}
+
+.card .card-back-content {
+  text-align: center;
+  padding: 20px;
+  color: #333;
+}
+
+.card .card-back p {
+  margin: 10px 0;
+  font-size: 0.9em;
+  color: #333;
+}
+
+.card .card-back a.btn-primary {
+  transform: rotateY(180deg);
+  /* Correct orientation */
+  display: inline-block;
+  padding: 10px 20px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  margin-top: 10px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 5;
+  /* Ensure it's above other elements */
+}
+
+.card .card-back a.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.card-link {
+  text-decoration: none;
+  /* Removes underline from link */
+  color: inherit;
+  /* Inherit color so it doesn’t change */
+}
+
+.card-link .card:hover .card-back a.btn-primary {
+  background-color: #0056b3;
 }
 </style>
