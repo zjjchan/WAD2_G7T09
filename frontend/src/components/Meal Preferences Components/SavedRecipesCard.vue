@@ -1,10 +1,8 @@
-```vue
 <template>
   <div class="saved-recipes-container">
-    <div class="title-container">
-      <h3>Saved Recipes</h3>
-    </div>
-    <Draggable 
+      <h3 class="title-container">Saved Recipes</h3>
+      <div class="scroll-wrapper">
+      <Draggable 
       v-model="favoritedRecipes" 
       :group="{ name: 'recipes', pull: true, put: false }"
       item-key="uri"
@@ -33,6 +31,7 @@
         </div>
       </template>
     </Draggable>
+    </div>
   </div>
 </template>
 
@@ -120,26 +119,45 @@ const onDragEnd = () => {
 };
 </script>
 
-
 <style scoped>
 .saved-recipes-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  height: 300px;
-  overflow-y: scroll;
+  max-width: 750px;
+  margin: auto;
+  padding: 1.5rem;
+  height: 310px;
+  overflow-y: auto;
+  background-color: #DAE2BC;
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .title-container {
+  color: #4A5240;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 600;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 0.5rem;
+  position: sticky;
+  top: 0;
+  background-color: #DAE2BC;
+  padding: 0.5rem;
+  z-index: 1;
+}
+
+.scroll-wrapper {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
 }
 
 .recipes-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 1rem;
   width: 100%;
   grid-template-columns: 1fr;
+  padding-bottom: 1rem;
 }
 
 @media (min-width: 640px) {
@@ -155,17 +173,18 @@ const onDragEnd = () => {
 }
 
 .recipe-card-wrapper {
-  width: 100%;
+  width: 90%;
+  margin: auto;
 }
 
 .card {
   width: 100%;
-  height: 100%;
   transition: transform 0.2s;
   cursor: grab;
   background: white;
-  border-radius: 8px;
+  border-radius: 10%;
   overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card:active {
@@ -178,8 +197,10 @@ const onDragEnd = () => {
 
 .card-img-top {
   width: 100%;
-  height: 95px;
+  height: 60px;
   object-fit: cover;
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
 }
 
 .remove-button {
@@ -196,23 +217,28 @@ const onDragEnd = () => {
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  line-height: 1;
-  padding: 0;
   color: #ffffff;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
+
+.remove-button:hover {
+  background-color: #ff6666;
+}
+
 .card-body {
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
 .card-title {
-  font-size: 1.1rem;
+  font-size: 14px;
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  color: #333;
+  font-weight: 500;
 }
 
 .card-text {
