@@ -1,18 +1,18 @@
 <template>
   <div class="home-page">
     <Navbar />
-  <div class="mx-5 my-2 p-4 meal-plan-section" style="background-color: #DAE2BC;">
+  <div class="mx-5  p-4">
     <MealPlanCard />
   </div>
   <!-- Second row with Saved Recipes and Preferences -->
   <div class="row mx-5">
     <div class="col-lg-6 col-md-12 p-1">
-      <div class="saved-recipes-section m-1 h-100">
+      <div class="saved-recipes-section m-1">
         <SavedRecipesCard />
       </div>
     </div>
     <div class="col-lg-6 col-md-12 p-1">
-      <div class="preferences-section m-1 h-100">
+      <div class="preferences-section m-1">
         <Preferences />
       </div>
     </div>
@@ -39,7 +39,7 @@ const router = useRouter();
 const auth = getAuth();
 
 onMounted(() => {
-  gsap.to(".container-wrapper", { duration: 1, y: -10 });
+  gsap.to(".container-wrapper", { duration: 1, y: -20 });
 });
 
 const handleSignOut = async () => {
@@ -62,56 +62,42 @@ const handleSignOut = async () => {
   overflow: auto;
 }
 
-.container-wrapper {
+/* .container-wrapper {
   flex: 1;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  height: calc(100vh - 64px); /* Adjust based on navbar height */
+  height: calc(100vh - 64px);
   padding: 1rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
+} */
+/* 
 .layout-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
   gap: 1.5rem;
   height: auto;
-}
-
+} */
+/* 
 .meal-plan-section {
-  grid-column: 1 / span 2; /* Span across both columns */
-  grid-row: 1;
   background-color: #DAE2BC;
   border-radius: 2.5rem;
-  padding: 1.5rem;
-  box-sizing: border-box;
-  overflow: auto;
-}
+} */
 
-.saved-recipes-section {
+/* .saved-recipes-section {
   grid-column: 1;
   grid-row: 2;
-  background-color: #DAE2BC;
-  border-radius: 2.5rem;
-  padding: 1.5rem;
-  box-sizing: border-box;
-  overflow: auto;
 }
 
 .preferences-section {
   grid-column: 2;
   grid-row: 2;
-  background-color: #DAE2BC;
-  border-radius: 2.5rem;
-  padding: 1.5rem;
-  box-sizing: border-box;
-  overflow: auto;
-}
+
+} */
 
 .sign-out-container {
   margin-top: 20px;
@@ -119,21 +105,13 @@ const handleSignOut = async () => {
   justify-content: center;
 }
 
-  .container-wrapper {
+  /* .container-wrapper {
     height: auto;
-  }
+  } */
 
-  .layout-container {
+  /* .layout-container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-  }
-
-  .meal-plan-section,
-  .saved-recipes-section,
-  .preferences-section {
-    height: auto;
-    max-height: none; /* Ensure no constraints on height */
-  }
-
+  } */
 </style>
