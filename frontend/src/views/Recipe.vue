@@ -8,44 +8,47 @@
 
   <!-- Recipe Content -->
   <div class="container" v-else-if="recipe">
+
     <!-- Row 1: Image and Charts -->
     <div class="row">
-      <!-- Image Column -->
-      <div class="col-md-4">
-        <div class="image-container">
-          <h3>{{ recipe.label }}
-            <FavoriteButton :recipe="recipe" />
-          </h3>
-          <img :src="recipe.image" alt="Recipe Image" class="recipe-image" />
-        </div>
-      </div>
-
-      <!-- Charts Column -->
-      <div class="col-md-8">
-        <div class="row">
-          <!-- Chart 1: Macro Summary -->
-          <div class="col-md-6">
-            <h4 class="text-center">Summary of Important Macros</h4>
-            <div class="chart-container bg-light border rounded">
-              <PieIndivRecipe v-if="recipe" :recipe="recipe" />
-            </div>
-          </div>
-          <!-- Chart 2: Fat Composition -->
-          <div class="col-md-6">
-            <h4 class="text-center">Fat Types Composition</h4>
-            <div class="chart-container bg-light border rounded">
-              <RadialIndivRecipe v-if="recipe" :recipe="recipe" />
-            </div>
-          </div>
-        </div>
-      </div>
+      <h3>{{ recipe.label }}
+        <FavoriteButton :recipe="recipe" />
+      </h3>
     </div>
 
-    <!-- Row 2: Calories Info and Nutrition Facts -->
-    <div class="row mt-4">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="image-container">
+          <img :src="recipe.image" alt="Recipe Image" class="recipe-image" />
+        </div>
+        <!-- Calories Info Block -->
+        <div>
+          <div id="info" class="p-3">
+            <p><strong>Calories:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
+            <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
+            <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
+            <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
+            <p><strong>Serving Size:</strong> {{ recipe.yield }}</p>
+            <p><strong>Preparation Link:</strong> <a :href="recipe.url" target="_blank">{{ recipe.url }}</a></p>
+          </div>
+        </div>
+      </div>
 
-      <!-- Nutrition Facts Block -->
-      <div class="col-md-6">
+      <div class="col-lg-4">
+        <h4 class="text-center">Summary of Important Macros</h4>
+        <div class="chart-container bg-light border rounded">
+          <PieIndivRecipe v-if="recipe" :recipe="recipe" />
+        </div>
+        
+        <div>
+          <h4 class="text-center">Fat Types Composition</h4>
+          <div class="chart-container bg-light border rounded">
+            <RadialIndivRecipe v-if="recipe" :recipe="recipe" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
         <div class="nutrition-facts p-3">
           <h3>Nutrition Facts</h3>
           <div v-for="(nutrient, index) in recipe.digest" :key="index">
@@ -58,21 +61,7 @@
           </div>
         </div>
       </div>
-
-      <!-- Calories Info Block -->
-      <div class="col-md-6">
-        <div id="info" class="p-3">
-          <p><strong>Calories:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
-          <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
-          <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
-          <p><strong>Cuisine Type:</strong> {{ recipe.cuisineType.join(', ') }}</p>
-          <p><strong>Serving Size:</strong> {{ recipe.yield }}</p>
-          <p><strong>Preparation Link:</strong> <a :href="recipe.url" target="_blank">{{ recipe.url }}</a></p>
-        </div>
-      </div>
-
     </div>
-    
   </div>
 
   <div v-else>
