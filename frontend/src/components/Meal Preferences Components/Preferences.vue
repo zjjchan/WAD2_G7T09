@@ -1,28 +1,30 @@
 <template>
   <WelcomeModal v-if="showModal" @close="showModal = false" @preferencesUpdated="fetchUserData" />
   <div class="preferences-container">
-    <h2>Your Preferences</h2>
-    <div>
-      Selected Diet Type(s):
-      {{ selectedDietType }}
+    <h2 class="preferences-title">Your Preferences</h2>
+    
+    <div class="preferences-section">
+      <span class="section-title">Diet Type:</span>
+      <span class="section-content">{{ selectedDietType?.join(', ') || 'Not selected' }}</span>
     </div>
-    <div>
-      Health Label(s):
-      <ul>
-      <li v-for="label of selectedLabels">
-        {{ label }}
-      </li>
-    </ul>
+    
+    <div class="preferences-section">
+      <span class="section-title">Health Labels:</span>
+      <span v-if="selectedLabels?.length" class="section-content">
+        {{ selectedLabels.join(', ') }}
+      </span>
+      <span v-else class="section-content">None</span>
     </div>
-    <div>
-      Cuisine(s):
-      <ul>
-      <li v-for="cuisine of selectedCuisine">
-        {{ cuisine }}
-      </li>
-    </ul>
+    
+    <div class="preferences-section">
+      <span class="section-title">Cuisines:</span>
+      <span v-if="selectedCuisine?.length" class="section-content">
+        {{ selectedCuisine.join(', ') }}
+      </span>
+      <span v-else class="section-content">Not selected</span>
     </div>
-    <button @click="openModal">Edit Preferences</button>
+    
+    <button @click="openModal" class="edit-button">Edit Preferences</button>
   </div>
 </template>
 
@@ -34,22 +36,22 @@ import { getAuth } from 'firebase/auth';
 
 const showModal = ref(false);
 const auth = getAuth();
-const userId = ref(null);   
 const db = getFirestore();
-const user = auth.currentUser; 
-const selectedDietType = ref(null); 
-const selectedLabels = ref(null); 
-const selectedCuisine = ref(null);
+const user = auth.currentUser;
+
+const selectedDietType = ref([]);
+const selectedLabels = ref([]);
+const selectedCuisine = ref([]);
 
 const fetchUserData = async () => {
   if (user) {
-    const userRef = doc(db, 'users', user.uid); 
+    const userRef = doc(db, 'users', user.uid);
     try {
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
-        selectedDietType.value = userDoc.data().healthGoals;
-        selectedLabels.value = userDoc.data().dietaryPreferences;
-        selectedCuisine.value = userDoc.data().cuisineTypes;
+        selectedDietType.value = userDoc.data().healthGoals || [];
+        selectedLabels.value = userDoc.data().dietaryPreferences || [];
+        selectedCuisine.value = userDoc.data().cuisineTypes || [];
       } else {
         console.log('No such document!');
       }
@@ -61,13 +63,101 @@ const fetchUserData = async () => {
   }
 };
 
-onMounted(fetchUserData); 
+onMounted(fetchUserData);
+
 const openModal = () => {
   showModal.value = true;
 };
-
 </script>
 
-<style>
-/* Add your styles here */
+<style scoped>
+.preferences-container {
+  background-color: #DAE2BC;
+  border-radius: 1.5rem;
+  max-width: 750px;
+  margin: auto;
+  padding: 1rem;
+  height: 310px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preferences-title {
+  color: #4A5240;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.preferences-section {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #4A5240;
+}
+
+.section-title {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.section-content {
+  color: #666;
+  text-align: right;
+  flex: 1;
+}
+
+.edit-button {
+  background-color: #4A5240;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: center;
+}
+
+.edit-button:hover {
+  background-color: #6d7658;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .preferences-container {
+    padding: 0.75rem;
+  }
+
+  .preferences-title {
+    font-size: 1.15rem;
+  }
+
+  .preferences-section {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.85rem;
+  }
+
+  .section-title {
+    margin-right: 0;
+    font-weight: 500;
+  }
+
+  .section-content {
+    text-align: left;
+  }
+
+  .edit-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
 </style>
