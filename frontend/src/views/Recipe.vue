@@ -37,15 +37,15 @@
       <div class="col-lg-4 col-md-6 col-sm-12">
         <div class="mb-3">
           <h4 class="text-center">Summary of Important Macros</h4>
-          <div class="chart-container border rounded">
+          <div class="chart-container">
             <PieIndivRecipe v-if="recipe" :recipe="recipe" />
           </div>
         </div>
 
         <div class="mt-3">
           <h4 class="text-center">Fat Types Composition</h4>
-          <div class="chart-container border rounded">
-            <RadialIndivRecipe v-if="recipe" :recipe="recipe" />
+          <div class="chart-container">
+            <RadialIndivRecipe v-if="recipe" :recipe="recipe"/>
           </div>
         </div>
       </div>
@@ -142,22 +142,14 @@ onMounted(async () => {
   /* Includes padding and border in element's total width */
 }
 
-
+/* Ensure chart container adapts to different screen sizes */
 .chart-container {
   padding: 10px;
   text-align: center;
+  width: 100%;  /* Ensure the container takes full width */
   max-height: 100%;
-  /* Constrain the chart height to its container */
-  overflow: hidden;
-  /* Hide any overflow */
   box-sizing: border-box;
-  /* Include padding in the container size */
+  overflow: hidden;
 }
 
-.chart-container canvas {
-  width: 100% !important;
-  /* Forces chart to take full width of container */
-  height: auto !important;
-  /* Maintains aspect ratio for chart height */
-}
 </style>

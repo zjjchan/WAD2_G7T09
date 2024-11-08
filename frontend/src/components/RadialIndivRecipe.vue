@@ -1,5 +1,5 @@
 <template>
-        <canvas id="fatRadarChart" style="width:100%; max-width:800px; max-height:800px;"></canvas>
+    <canvas id="fatRadarChart" style="width:100%; max-width:800px; max-height:800px;"></canvas>
 </template>
 
 <script>
@@ -57,6 +57,7 @@ export default {
                         data: fatSubData.value,
                         options: {
                             responsive: true,
+                            aspectRatio: 1.2,
                             maintainAspectRatio: false,
                             scales: {
                                 r: {
@@ -120,3 +121,5 @@ export default {
     },
 };
 </script>
+
+<style ></style>
