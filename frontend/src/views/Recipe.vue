@@ -10,15 +10,18 @@
   <div class="container" v-else-if="recipe">
 
     <!-- Row 1: Image and Charts -->
-    <div class="row p-2 mb-3">
-      <h3>{{ recipe.label }}
-        <FavoriteButton :recipe="recipe" />
-      </h3>
+    <div class="row p-1 mb-3" >
+      <div class="col-1">
+        <div id="favbutton"> <FavoriteButton :recipe="recipe" /> </div>
+      </div>
+      <div class="col-11">
+        <h3 style="text-shadow: 5px 5px 5px lightgrey;">{{ recipe.label }}</h3>
+      </div>
     </div>
 
     <div class="row mb-3">
       <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="image-container mb-5">
+        <div class="image-container mb-5" style="box-shadow: 8px 8px 5px grey;">
           <img :src="recipe.image" alt="Recipe Image" class="recipe-image" />
         </div>
         <!-- Calories Info Block -->
@@ -116,6 +119,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
 .recipe-image {
   width: 100%;
   border-radius: 8px;

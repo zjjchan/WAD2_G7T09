@@ -4,43 +4,15 @@
         <MealPlanCard />
     </div>
 
-    <!-- OLD CHARTS -->
-    <!-- <div class="row m-1">
-        <div class="col-lg-6 col-md-12 p-1">
-            <div class="m-1 h-100">
-                <div id="piecharttext" class="p-1">
-                    <h4 class="text-center pt-2">Calories Consumed each Day of the Week</h4>
-                </div>
-                <div>
-                    <div id="piechart" class="mt-2 p-4 chartbg border rounded border-2 chart-container">
-                        <NutritionPie />
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-12 p-1">
-            <div class="m-1 h-100">
-                <div id="barcharttext" class="p-1">
-                    <h4 id="" class="text-center pt-2">Calorie Consumption for each meal and day of the Week</h4>
-                </div>
-                <div>
-                    <div class="mt-2 p-4 chartbg border rounded border-2 chart-container">
-                        <NutritionOverview />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
-    <!-- NEW CHARTS -->
+    <!-- CHARTS -->
     <div class="row m-1">
         <div class="col-lg-6 col-md-12 p-1">
             <div class="m-1 h-100">
                 <div id="piecharttext2" class="p-1">
-                    <h4 class="text-center pt-2">Calories Consumed each Day of the Week</h4>
+                    <h4 class="text-center pt-2">Calories Consumed (Days of the Week)</h4>
                 </div>
                 <div>
-                    <div id="piechart" class="mt-2 p-4 chartbg border rounded border-2 chart-container">
+                    <div id="piechart" class="mt-2 p-4 chartbg border rounded border-1 chart-container">
                         <NEWPolarAreaChart />
                     </div>
                 </div>
@@ -49,10 +21,10 @@
         <div class="col-lg-6 col-md-12 p-1">
             <div class="m-1 h-100">
                 <div id="barcharttext2" class="p-1">
-                    <h4 id="" class="text-center pt-2">Calorie Consumption for meal and day of the Week</h4>
+                    <h4 id="" class="text-center pt-2">Calorie Consumed (Meals & Days of the Week)</h4>
                 </div>
                 <div>
-                    <div class="mt-2 p-4 chartbg border rounded border-2 chart-container">
+                    <div class="mt-2 p-4 chartbg border rounded border-1 chart-container">
                         <NEWNutritionOverview />
                     </div>
                 </div>

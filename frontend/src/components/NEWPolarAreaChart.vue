@@ -66,7 +66,7 @@ export default {
                                         "rgba(255, 159, 64, 0.5)",
                                         "rgba(255, 99, 102, 0.5)"
                                     ],
-                                    borderWidth: 1
+                                    borderWidth: 0
                                 }
                             ]
                         },
@@ -83,7 +83,7 @@ export default {
                                         label: function (context) {
                                             const day = context.label || '';
                                             const calories = context.raw || 0;
-                                            return `${day}: ${Math.round(calories)} Calories`;
+                                            return `${day}: ${Math.round(calories)} Calories consumed`;
                                         }
                                     }
                                 }
