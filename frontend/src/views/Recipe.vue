@@ -10,20 +10,20 @@
   <div class="container" v-else-if="recipe">
 
     <!-- Row 1: Image and Charts -->
-    <div class="row">
+    <div class="row p-2 mb-3">
       <h3>{{ recipe.label }}
         <FavoriteButton :recipe="recipe" />
       </h3>
     </div>
 
-    <div class="row">
-      <div class="col-lg-4">
-        <div class="image-container">
+    <div class="row mb-3">
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="image-container mb-5">
           <img :src="recipe.image" alt="Recipe Image" class="recipe-image" />
         </div>
         <!-- Calories Info Block -->
-        <div>
-          <div id="info" class="p-3">
+        <div class="caloriesblock my-3">
+          <div id="info" class="p-4 c-1">
             <p><strong>Calories:</strong> {{ recipe.calories.toFixed(0) }} kcals</p>
             <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
             <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
@@ -34,22 +34,24 @@
         </div>
       </div>
 
-      <div class="col-lg-4">
-        <h4 class="text-center">Summary of Important Macros</h4>
-        <div class="chart-container bg-light border rounded">
-          <PieIndivRecipe v-if="recipe" :recipe="recipe" />
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="mb-3">
+          <h4 class="text-center">Summary of Important Macros</h4>
+          <div class="chart-container border rounded">
+            <PieIndivRecipe v-if="recipe" :recipe="recipe" />
+          </div>
         </div>
-        
-        <div>
+
+        <div class="mt-3">
           <h4 class="text-center">Fat Types Composition</h4>
-          <div class="chart-container bg-light border rounded">
+          <div class="chart-container border rounded">
             <RadialIndivRecipe v-if="recipe" :recipe="recipe" />
           </div>
         </div>
       </div>
 
-      <div class="col-lg-4">
-        <div class="nutrition-facts p-3">
+      <div class="col-lg-4 col-md-12  col-sm-12">
+        <div class="nutrition-facts p-4">
           <h3>Nutrition Facts</h3>
           <div v-for="(nutrient, index) in recipe.digest" :key="index">
             <p><strong>{{ nutrient.label }}:</strong> {{ nutrient.total.toFixed(2) }} {{ nutrient.unit }}</p>
@@ -121,14 +123,41 @@ onMounted(async () => {
 
 #info,
 .nutrition-facts {
-  background-color: rgb(245, 247, 249);
+  background-color: rgb(193, 225, 187);
   border-radius: 8px;
   padding: 15px;
   border: 1px solid #ddd;
 }
 
+#info {
+  overflow-wrap: break-word;
+  /* Wraps long words or URLs to the next line */
+  word-break: break-word;
+  /* Adds breaks within words if necessary */
+  white-space: normal;
+  /* Ensures text wraps within the container */
+  padding: 15px;
+  /* Keeps consistent padding */
+  box-sizing: border-box;
+  /* Includes padding and border in element's total width */
+}
+
+
 .chart-container {
   padding: 10px;
   text-align: center;
+  max-height: 100%;
+  /* Constrain the chart height to its container */
+  overflow: hidden;
+  /* Hide any overflow */
+  box-sizing: border-box;
+  /* Include padding in the container size */
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  /* Forces chart to take full width of container */
+  height: auto !important;
+  /* Maintains aspect ratio for chart height */
 }
 </style>

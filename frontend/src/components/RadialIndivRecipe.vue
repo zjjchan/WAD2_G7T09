@@ -1,7 +1,5 @@
 <template>
-    <div>
         <canvas id="fatRadarChart" style="width:100%; max-width:800px; max-height:800px;"></canvas>
-    </div>
 </template>
 
 <script>
@@ -47,11 +45,11 @@ export default {
                     const ctx = canvas.getContext('2d');
 
                     // Setting background image
-                    canvas.style.backgroundImage =
-                        "linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.1)), url('../src/assets/images/xxx.png')";
-                    canvas.style.backgroundSize = '40%';
-                    canvas.style.backgroundRepeat = 'no-repeat';
-                    canvas.style.backgroundPosition = '70% 55%';
+                    // canvas.style.backgroundImage =
+                    //     "linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.1)), url('../src/assets/images/xxx.png')";
+                    // canvas.style.backgroundSize = '40%';
+                    // canvas.style.backgroundRepeat = 'no-repeat';
+                    // canvas.style.backgroundPosition = '70% 55%';
 
                     // Create the radar chart with improved layout
                     new Chart(ctx, {
@@ -76,7 +74,7 @@ export default {
                                         font: {
                                             size: 15, // Adjust label font size to prevent overlap
                                         },
-                                        padding: 15, // Increase padding to space out labels
+                                        padding: 20, // Increase padding to space out labels
                                     },
                                     grid: {
                                         color: 'rgba(0, 0, 0, 0.2)', // Change grid line color
