@@ -59,6 +59,7 @@ export default {
                         data: fatSubData.value,
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false,
                             scales: {
                                 r: {
                                     beginAtZero: true,
@@ -79,8 +80,8 @@ export default {
                                     },
                                     grid: {
                                         color: 'rgba(0, 0, 0, 0.2)', // Change grid line color
-                                        lineWidth: 2, // Increase grid line width
-                                        circular: false, // If you want circular grid lines
+                                        lineWidth: 0.5, // Increase grid line width
+                                        // circular: false, // If you want circular grid lines
                                     },
                                 },
                             },

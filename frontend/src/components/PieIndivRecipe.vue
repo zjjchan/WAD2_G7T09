@@ -141,6 +141,7 @@ export default {
             data: nutritionData.value,
             options: {
               responsive: true,
+              maintainAspectRatio: false,
               plugins: {
                 legend: { position: 'top' },
                 tooltip: {
