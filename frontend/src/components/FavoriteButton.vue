@@ -1,6 +1,6 @@
 <template>
-    <svg @click="toggleFavorite" :class="{ favorited: isFavorited }" xmlns="http://www.w3.org/2000/svg" width="70"
-        height="70" :fill="isFavorited ? 'red' : 'white'" stroke="black" viewBox="0 0 24 24">
+    <svg @click="toggleFavorite" :class="{ favorited: isFavorited }" xmlns="http://www.w3.org/2000/svg" width="40"
+        height="40" :fill="isFavorited ? 'red' : 'white'" stroke="black" viewBox="0 0 24 24">
         <path d="M6 2a2 2 0 0 0-2 2v18l8-4.5 8 4.5V4a2 2 0 0 0-2-2H6z" />
     </svg>
     <Notification v-if="showNotification" :message="notificationMessage" :show="showNotification"
@@ -102,6 +102,6 @@ const showNotificationMessage = (message) => {
 }
 
 .favorited {
-    fill: red; /* Ensures button is red when favorited */
+    fill: rgb(113, 139, 176); /* Ensures button is red when favorited */
 }
 </style>

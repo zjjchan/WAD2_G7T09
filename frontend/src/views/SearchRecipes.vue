@@ -38,8 +38,10 @@
           </div>
           <div v-else>
             <div class="card-columns">
-              <h4>Recipes For You</h4>
-              <Recommendation />
+              <div v-if="showRecommendations">
+                <h4>Recipes For You</h4>
+                <Recommendation />
+              </div>
               <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="container-fluid card mb-3 col-5">
                 <h5 class="card-title">
                   {{ recipe.label }}
@@ -154,6 +156,11 @@ export default {
     };
   },
   computed: {
+    showRecommendations() {
+      // Check if search query is empty and no filters are selected
+      const noFilters = Object.values(this.selectedFilters).every(filterArray => filterArray.length === 0);
+      return !this.query && noFilters;
+    },
     filteredRecipes() {
       return this.recipes.filter(recipe => {
         const matchesQuery = this.submittedQuery
@@ -282,29 +289,45 @@ export default {
       this.isLoading = true;
 
       try {
-        while (true) {
-          const response = await axios.get(this.apiUrl, {
-            params: {
-              q: this.query || 'recipe',
-              app_id: this.appId,
-              app_key: this.apiKey,
-              from: this.from,
-              to: this.to,
-            },
-          });
 
-          // If no results are returned, break out of the loop
-          if (!response.data.hits.length) break;
+        const params = {
+          q: this.query || 'recipe',
+          app_id: this.appId,
+          app_key: this.apiKey,
+          from: this.from,
+          to: this.to,
+        };
+        if (this.selectedFilters.MealTypes.length) {
+          params.mealType = this.selectedFilters.MealTypes.join(',');
+        }
+        if (this.selectedFilters.DietLabels.length) {
+          params.diet = this.selectedFilters.DietLabels.map(label =>
+            label.toLowerCase()
+          ).join(',');
+        }
 
-          // Add new recipes to the existing list
+        // Format health labels to maintain hyphens but convert to lowercase
+        if (this.selectedFilters.HealthLabels.length) {
+          params.health = this.selectedFilters.HealthLabels.map(label =>
+            label.toLowerCase()
+          ).join(',');
+        }
+        if (this.selectedFilters.CuisineTypes.length) {
+          params.cuisineType = this.selectedFilters.CuisineTypes.join(',');
+        }
+        console.log('API params:', params);
+        const response = await axios.get(this.apiUrl, { params });
+        console.log('API Response:', response.data);
+        if (response.data.hits.length) {
           this.recipes = [...this.recipes, ...response.data.hits.map(hit => hit.recipe)];
-          // Remove duplicates
           this.uniqueRecipes = this.removeDuplicates(this.recipes);
 
-          // Update `from` and `to` for the next batch
           this.from += 50;
           this.to += 50;
+          console.log('Sample dietLabels:', response.data.hits[0].recipe.dietLabels);
+          console.log('Sample healthLabels:', response.data.hits[0].recipe.healthLabels);
         }
+
         this.sortRecipesAlphabetically();
         this.errorMessage = '';
       }
@@ -334,8 +357,7 @@ export default {
       });
 
       return uniqueRecipes;
-    }, sortRecipesAlphabetically() {
-      this.recipes.sort((a, b) => a.label.localeCompare(b.label));
+
     }, goToPage(page) {
       this.currentPage = page;
     },
@@ -348,6 +370,16 @@ export default {
       if (this.currentPage > 1) {
         this.currentPage--;
       }
+    },
+    toggleFilter(section, item) {
+      const list = this.selectedFilters[section];
+      const index = list.indexOf(item);
+      if (index > -1) {
+        list.splice(index, 1);
+      } else {
+        list.push(item);
+      }
+      this.handleSearch(); // Trigger search with updated filters
     },
     filterSuggestions() {
       if (this.query.length > 0) {
@@ -365,6 +397,8 @@ export default {
       this.showSuggestions = false; // Hide suggestions after selecting one
       this.handleSearch(); // Optionally trigger search on selection
     },
+  }, mounted() {
+    this.handleSearch();
   }
 };
 
