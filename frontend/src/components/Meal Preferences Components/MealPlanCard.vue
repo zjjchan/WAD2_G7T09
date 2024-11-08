@@ -145,11 +145,14 @@ auth.onAuthStateChanged((user) => {
 
 <style scoped>
 .meal-plan-card {
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  background-color: #DAE2BC;
+  border-radius: 2.5rem;
+  padding: 20px;
 }
 
 .title {
