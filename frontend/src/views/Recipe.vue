@@ -127,7 +127,7 @@ onMounted(async () => {
 
 #info,
 .nutrition-facts {
-  background-color: rgb(193, 225, 187);
+  background-color: #dae2bc;
   border-radius: 8px;
   padding: 15px;
   border: 1px solid #ddd;
