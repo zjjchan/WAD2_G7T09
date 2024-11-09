@@ -763,7 +763,7 @@ body section .row {
   height: 400px;
   width: 100%;
   margin: 10px 0;
-  transition: ease all 2.3s;
+  transition: ease all 1s;
   perspective: 1200px;
 }
 
@@ -796,7 +796,7 @@ body section .row {
   height: 100%;
   width: 100%;
   transform-style: preserve-3d;
-  transition: ease all 2.3s;
+  transition: ease all 1s;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -812,7 +812,7 @@ body section .row {
   right: 20px;
   bottom: 20px;
   z-index: 2;
-  transition: ease all 2.3s;
+  transition: ease all 1.3s;
   transform-style: preserve-3d;
   transform: translateZ(0px);
 }
@@ -840,7 +840,7 @@ body section .row {
   left: 30px;
   color: white;
   transform-style: preserve-3d;
-  transition: ease all 2.3s;
+  transition: ease all 1.3s;
   z-index: 3;
   font-size: 1.5em;
   transform: translateZ(0px);
@@ -853,7 +853,7 @@ body section .row {
   right: 50px;
   color: white;
   transform-style: preserve-3d;
-  transition: ease all 2.3s;
+  transition: ease all 1.3s;
   z-index: 4;
   font-size: 1.2em;
   transform: translateZ(0px);
@@ -865,7 +865,7 @@ body section .row {
   width: 100%;
   background: #ccd0c9;
   transform-style: preserve-3d;
-  transition: ease all 2.3s;
+  transition: ease all 1s;
   transform: translateZ(-1px) rotateY(-180deg);
   display: flex;
   align-items: center;
