@@ -98,13 +98,17 @@ const carouselConfig = {
             snapAlign: 'start',
         },
         // Large devices
-        992: {
-            itemsToShow: 3,
+        1000: {
+            itemsToShow: 2,
             snapAlign: 'start',
         },
         // Extra large devices
         1200: {
-            itemsToShow: 4,
+            itemsToShow: 2.5,
+            snapAlign: 'start',
+        },
+        1600: {
+            itemsToShow: 3.75,
             snapAlign: 'start',
         }
     },
@@ -232,12 +236,17 @@ onMounted(fetchAndFilterRecipes);
 }
 
 .image-container {
-    width: 100%;
+    width: 280px;
     height: 200px;
     overflow: hidden;
     position: relative;
+    margin: 0 auto; 
 }
-
+img{
+    width: 100%; /* Ensure the image fills the width of the container */
+    height: 100%;
+    object-fit: cover;
+}
 .recipe-image {
     width: 100%;
     height: 100%;
@@ -303,6 +312,10 @@ onMounted(fetchAndFilterRecipes);
 
 /* Responsive Adjustments */
 @media (max-width: 576px) {
+    .image-container {
+        width: 200px; /* Adjust width for small screens */
+        height: 150px;
+    }
     .recommendations {
         padding: 10px;
     }
@@ -319,7 +332,12 @@ onMounted(fetchAndFilterRecipes);
         height: 180px;
     }
 }
-
+@media (min-width: 577px) and (max-width: 768px) {
+    .image-container {
+        width: 240px; /* Adjust width for medium screens */
+        height: 180px;
+    }
+}
 @media (min-width: 577px) and (max-width: 768px) {
     .carousel__slide {
         height: 360px;
