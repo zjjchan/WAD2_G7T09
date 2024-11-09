@@ -633,6 +633,7 @@ export default {
   align-items: center;
   gap: 5px;
   margin-top: 20px;
+  padding-bottom: 30px;
 }
 
 .pagination-controls button {
