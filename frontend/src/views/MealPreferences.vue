@@ -1,17 +1,21 @@
 <template>
-  <div class="home-page">
+  <div class="row">
+    <div class="col-lg-1 col-md-1 col-sm-0"></div>
+  <div class="col-lg-10 col-md-10 col-sm-12">
+    <div class="home-page">
     <Navbar />
-  <div class="mx-5  p-4">
+  <div class="components-wrapper">
+    <div class="mx-4 my-4">
     <MealPlanCard />
   </div>
   <!-- Second row with Saved Recipes and Preferences -->
-  <div class="row mx-5">
-    <div class="col-lg-6 col-md-12 p-1">
+  <div class="row mx-4">
+    <div class="col-lg-6 col-md-12">
       <div class="saved-recipes-section m-1">
         <SavedRecipesCard />
       </div>
     </div>
-    <div class="col-lg-6 col-md-12 p-1">
+    <div class="col-lg-6 col-md-12">
       <div class="preferences-section m-1">
         <Preferences />
       </div>
@@ -23,6 +27,12 @@
     </div>
   </div>
   </div>
+  </div>
+  </div>
+  <div class="col-lg-1 col-md-1 col-sm-0"></div>
+  </div>
+
+  
 </template>
 
 <script setup>
@@ -38,9 +48,9 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const auth = getAuth();
 
-onMounted(() => {
-  gsap.to(".container-wrapper", { duration: 1, y: -20 });
-});
+// onMounted(() => {
+//   gsap.to(".components-wrapper", { duration: 1, y: -20 });
+// });
 
 const handleSignOut = async () => {
   try {
