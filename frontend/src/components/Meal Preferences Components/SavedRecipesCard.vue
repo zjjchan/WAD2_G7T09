@@ -4,12 +4,11 @@
       <div class="scroll-wrapper">
       <Draggable 
       v-model="favoritedRecipes" 
-      :group="{ name: 'recipes', pull: true, put: false }"
+      :group="{ name: 'recipes', pull:'clone', put:false }"
       item-key="uri"
       class="recipes-grid"
       @start="onDragStart"
       @end="onDragEnd"
-      @remove="handleRemove" 
     >
       <template #item="{ element, index }">
         <div class="recipe-card-wrapper">
@@ -162,7 +161,7 @@ const onDragEnd = () => {
 
 @media (min-width: 640px) {
   .recipes-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
