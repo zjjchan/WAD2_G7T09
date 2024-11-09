@@ -22,7 +22,7 @@
               </div>
               <Draggable
                 v-model="mealPlan[day][mealTime]"
-                :group="{ name: 'recipes', pull: true, put: true }"
+                :group="{ name: 'recipes', pull: true, put: mealPlan[day][mealTime].length === 0 }"
                 :sort="true"
                 item-key="uri"
                 class="meal-drop-zone"
