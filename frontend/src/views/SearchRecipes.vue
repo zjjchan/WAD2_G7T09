@@ -9,7 +9,7 @@
         </button>
       </div>
 
-      <div :class="['col-2 sidebar', { 'd-none': !showFilter, 'd-sm-block': true }]">
+      <div :class="['col-2 sidebar', { 'd-none': !showFilter, 'd-sm-block': true }]" >
 
         <div class="d-sm-none">
           <!-- Back Button to close filter section on small screens -->
@@ -51,7 +51,7 @@
         <div v-if="isLoading">
           <Loading />
         </div>
-        <div v-else>
+        <div col-sm-5 v-else>
           <div class="card-columns col-lg-11">
             <div v-if="showRecommendations">
               <h4>Recipes For You</h4>
@@ -66,9 +66,9 @@
                 Clear Filters
               </button>
             </div>
-
+            <!-- Recipe Cards -->
             <div class="row">
-              <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="col-md-4 col-sm-5 col-sm-12">
+              <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="col-md-6 col-lg-4 col-sm-12 mb-4">
 
                 <!-- Wrap the card with RouterLink -->
                 <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }" class="card-link">
@@ -159,10 +159,10 @@ export default {
       apiUrl: 'https://api.edamam.com/search', // Replace with the actual API URL
       apiKey: import.meta.env.VITE_EDAMAM_API_KEY,  // Replace with your actual API key
       appId: import.meta.env.VITE_EDAMAM_APP_ID, // Replace with your actual App ID
-      recipesPerPage: 15, // Number of recipes per page in the UI
+      recipesPerPage: 12, // Number of recipes per page in the UI
       currentPage: 1, // Track current page number
       from: 0, // Pagination start index
-      to: 100, // Number of results to fetch
+      to: 150, // Number of results to fetch
       isLoading: false,
 
       // Initializing selected filters and expand toggle options
@@ -566,6 +566,9 @@ export default {
   h1 {
     font-size: 100px
   }
+  #right-section .col-md-6 {
+    padding-right: 0; /* Removes extra space */
+  }
 }
 
 @media (max-width: 576px) {
@@ -611,9 +614,13 @@ export default {
 }
 
 .sidebar {
-  padding-left: 50px
+  padding-left: 50px;
+  padding-right: 10px;
 }
-
+.active {
+  font-weight: bold;
+  color: #007bff;
+}
 .pagination-controls .active {
   background-color: #6dafa5;
   color: white;
@@ -624,6 +631,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 5px;
   margin-top: 20px;
 }
 
@@ -728,7 +736,9 @@ button {
   font-weight: 500;
 }
 
-
+#right-section {
+  padding-left: 0 !important;
+}
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200;600&display=swap");
 
 body {
