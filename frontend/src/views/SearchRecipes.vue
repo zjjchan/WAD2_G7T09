@@ -415,9 +415,9 @@ export default {
             params.cuisineType = this.selectedFilters.CuisineTypes.join(',');
           }
 
-          console.log('API params:', params);
+          // console.log('API params:', params);
           const response = await axios.get(this.apiUrl, { params });
-          console.log('API Response:', response.data);
+          // console.log('API Response:', response.data);
 
           if (response.data.hits.length) {
             this.recipes = response.data.hits.map(hit => hit.recipe);
