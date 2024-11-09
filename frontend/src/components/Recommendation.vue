@@ -50,24 +50,33 @@ const appId = import.meta.env.VITE_EDAMAM_APP_ID;
 
 // Carousel configuration options
 const carouselConfig = {
-    loop:true,
-  transition: 500,
-  breakpointMode: 'carousel',
-  breakpoints: {
-    480: {
-      itemsToShow: 2.75,
-      snapAlign: 'center',
+    loop: true,
+    transition: 500,
+    breakpointMode: 'carousel',
+    breakpoints: {
+        480: {
+            itemsToShow: 1,
+            snapAlign: 'center',
+        },
+        576: {
+            itemsToShow: 2,
+            snapAlign: 'center',
+        },
+        768: {
+            itemsToShow: 3,
+            snapAlign: 'center',
+        },
+        992: {
+            itemsToShow: 3,
+            snapAlign: 'center',
+        },
+        1240: {
+            itemsToShow: 4.5,
+            snapAlign: 'center',
+        },
     },
-    768: {
-      itemsToShow: 2,
-      snapAlign: 'center',
-    },
-    1024: {
-      itemsToShow: 4.75,
-      snapAlign: 'center',
-    },
-  },
 };
+
 async function fetchUserPreferences() {
     if (!user) return null;
 
@@ -117,7 +126,7 @@ async function fetchRecommendedRecipes() {
     try {
         const response = await axios.get(apiUrl, { params });
         const recipes = response.data.hits.map(hit => hit.recipe);
-        const randomSelection = recipes.sort(() => 0.5 - Math.random()).slice(0, 10); // Fetch 10 random recipes
+        const randomSelection = recipes.sort(() => 0.5 - Math.random()).slice(0, 5); // Fetch 10 random recipes
         recommendations.value = randomSelection;
     } catch (error) {
         console.error('Error fetching recommended recipes:', error);
