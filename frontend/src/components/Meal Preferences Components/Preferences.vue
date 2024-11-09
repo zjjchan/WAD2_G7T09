@@ -2,8 +2,8 @@
   <WelcomeModal v-if="showModal" @close="showModal = false" @preferencesUpdated="fetchUserData" />
   <div class="preferences-container">
     <h2 class="preferences-title">Your Preferences</h2>
-    
-    <div class="preferences-section">
+    <div class="selected-preferences">
+      <div class="preferences-section">
       <span class="section-title">Diet Type:</span>
       <span class="section-content">{{ selectedDietType?.join(', ') || 'Not selected' }}</span>
     </div>
@@ -23,6 +23,8 @@
       </span>
       <span v-else class="section-content">Not selected</span>
     </div>
+    </div>
+
     
     <button @click="openModal" class="edit-button">Edit Preferences</button>
   </div>
@@ -71,6 +73,10 @@ const openModal = () => {
 </script>
 
 <style scoped>
+
+.selected-preferences {
+  overflow-y: scroll;
+}
 .preferences-container {
   background-color: #DAE2BC;
   border-radius: 1.5rem;
