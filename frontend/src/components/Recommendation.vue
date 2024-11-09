@@ -6,22 +6,21 @@
 
         <div v-else>
             <div v-if="recommendations.length">
-                <Carousel v-bind="carouselConfig">
+                <!-- Carousel component with arrow navigation and looping enabled -->
+                <Carousel v-bind="carouselConfig" v-slot="{ goPrev, goNext }">
                     <Slide v-for="(recipe, index) in recommendations" :key="index">
-                        <div class="carousel__item">
-                            <img :src="recipe.image" :alt="recipe.label" class="recipe-image" />
-                            <h6>{{ recipe.label }}</h6>
-                            <p><strong>Cuisine:</strong> {{ recipe.cuisineType.join(', ') }}</p>
-                            <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
-                                class="btn btn-primary">
-                                View Recipe
-                            </RouterLink>
-                        </div>
+                        <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
+                            class="card-link">
+                            <div class="carousel__item">
+                                <img :src="recipe.image" :alt="recipe.label" class="recipe-image" />
+                                <h6>{{ recipe.label }}</h6>
+                                <p><strong>Cuisine:</strong> {{ recipe.cuisineType.join(', ') }}</p>
+                            </div>
+                        </RouterLink>
                     </Slide>
-
-                    <template #addons>
-                        <Navigation />
-                    </template>
+                    <!-- Custom navigation arrows -->
+                    <button @click="goPrev" class="carousel__navigation-button prev">‹</button>
+                    <button @click="goNext" class="carousel__navigation-button next">›</button>
                 </Carousel>
             </div>
             <p v-else>No recommendations available based on your preferences.</p>
@@ -37,6 +36,7 @@ import { getAuth } from 'firebase/auth';
 import { RouterLink } from 'vue-router';
 import Loading from '@/components/Loading.vue';
 import { Carousel, Slide, Navigation } from 'vue3-carousel';
+import Preferences from "@/components/Meal Preferences Components/Preferences.vue";
 
 const db = getFirestore();
 const auth = getAuth();
@@ -48,35 +48,38 @@ const apiUrl = 'https://api.edamam.com/search';
 const apiKey = import.meta.env.VITE_EDAMAM_API_KEY;
 const appId = import.meta.env.VITE_EDAMAM_APP_ID;
 
-// Carousel configuration options
 const carouselConfig = {
-    loop: true,
-    transition: 500,
-    breakpointMode: 'carousel',
+    loop: true,               // Enables looping
+    autoplay: true,           // Enables autoplay
+    autoplayTimeout: 3000,    // Autoplay timeout in ms
+    transition: 5000,          // Slide transition time
+    navigationEnabled: true,  // Enables navigation arrows
+    plugins: [Navigation],
     breakpoints: {
         480: {
             itemsToShow: 1,
             snapAlign: 'center',
         },
         576: {
-            itemsToShow: 2,
+            itemsToShow: 1.5,
             snapAlign: 'center',
         },
         768: {
-            itemsToShow: 3,
+            itemsToShow: 2,
             snapAlign: 'center',
         },
         992: {
-            itemsToShow: 3,
+            itemsToShow: 2.5,
             snapAlign: 'center',
         },
         1240: {
-            itemsToShow: 4.5,
+            itemsToShow: 4,
             snapAlign: 'center',
         },
     },
 };
 
+// Fetches user preferences from the Firestore database
 async function fetchUserPreferences() {
     if (!user) return null;
 
@@ -97,48 +100,78 @@ async function fetchUserPreferences() {
         cuisineTypes: []
     };
 }
-async function fetchRecommendedRecipes() {
+
+// Fetches recipes from the API without filtering, then applies user preferences locally
+async function fetchAndFilterRecipes() {
     isLoading.value = true;
     recommendations.value = [];
-
     const preferences = await fetchUserPreferences();
-    if (!preferences) {
-        isLoading.value = false;
-        return;
-    }
-
-    // Ensure each property is an array or set to an empty array
-    const dietLabels = Array.isArray(preferences.dietLabels) ? preferences.dietLabels : [];
-    const healthLabels = Array.isArray(preferences.healthLabels) ? preferences.healthLabels : [];
-    const cuisineTypes = Array.isArray(preferences.cuisineTypes) ? preferences.cuisineTypes : [];
-
     const params = {
         app_id: appId,
         app_key: apiKey,
         from: 0,
-        to: 50,
-        q: cuisineTypes.length ? cuisineTypes.join(' ') : 'recipe',
+        to: 100,
+        q: 'recipe',
     };
-
-    if (dietLabels.length) params.diet = dietLabels.join(',');
-    if (healthLabels.length) params.health = healthLabels.join(',');
 
     try {
         const response = await axios.get(apiUrl, { params });
         const recipes = response.data.hits.map(hit => hit.recipe);
-        const randomSelection = recipes.sort(() => 0.5 - Math.random()).slice(0, 5); // Fetch 10 random recipes
-        recommendations.value = randomSelection;
+        console.log('All recipes:', recipes);
+        console.log('User preferences:', preferences);
+
+        const filteredRecipes = recipes.filter(recipe => {
+            // First, let's log the actual values we're working with
+            console.log('Recipe:', {
+                dietLabels: recipe.dietLabels,
+                healthLabels: recipe.healthLabels,
+                cuisineType: recipe.cuisineType
+            });
+            console.log('User Preferences:', preferences);
+
+            // Normalize the data (handle potential undefined values)
+            const recipeDietLabels = (recipe.dietLabels || []).map(d => d.toLowerCase());
+            const recipeHealthLabels = (recipe.healthLabels || []).map(h => h.toLowerCase());
+            const recipeCuisineTypes = (recipe.cuisineType || []).map(c => c.toLowerCase());
+
+            const userDietLabels = (preferences.dietLabels || []).map(d => d.toLowerCase());
+            const userHealthLabels = (preferences.healthLabels || []).map(d => d.toLowerCase());
+            const userCuisineTypes = (preferences.cuisineTypes || []).map(d => d.toLowerCase());
+
+            // Diet label matching
+            const dietMatch = userDietLabels.length === 0 || userDietLabels.some(userLabel => {
+
+                return recipeDietLabels.includes(userLabel);
+            });
+
+            // Health label matching
+            const healthMatch = userHealthLabels.length === 0 || userHealthLabels.some(userLabel => {
+
+                return recipeHealthLabels.includes(userLabel.toLowerCase());
+            });
+
+            // Cuisine type matching
+            const cuisineMatch = userCuisineTypes.length === 0 || userCuisineTypes.some(userType => {
+
+                return recipeCuisineTypes.includes(userType);
+            });
+            // Return true if ANY of the conditions match (not all)
+            return dietMatch || healthMatch || cuisineMatch;  // Changed from AND (&&) to OR (||)
+        });
+
+        recommendations.value = filteredRecipes.slice(0, 5);
+        console.log('Filtered recipes:', recommendations.value);
     } catch (error) {
         console.error('Error fetching recommended recipes:', error);
     } finally {
         isLoading.value = false;
     }
 }
-onMounted(fetchRecommendedRecipes);
+onMounted(fetchAndFilterRecipes);
 </script>
 
 <style scoped>
-.recommended-recipes {
+.recommendations {
     padding: 5% 5%;
     background-color: #ffffff;
 }
@@ -160,48 +193,69 @@ onMounted(fetchRecommendedRecipes);
     margin-bottom: 1rem;
 }
 
-.carousel__slide {
-    padding: 5px;
-}
-
 .carousel__viewport {
     perspective: 2000px;
 }
 
-.carousel__track {
+.carousel__slide {
+    padding: 5px;
+    opacity: 0.9;
     transform-style: preserve-3d;
 }
 
-.carousel__slide--sliding {
-    transition: 0.5s;
-}
-
-.carousel__slide {
-    opacity: 0.9;
-    transform: rotateY(-20deg) scale(0.9);
-}
-
-.carousel__slide--active~.carousel__slide {
-    transform: rotateY(20deg) scale(0.9);
-}
-
-.carousel__slide--prev {
-    opacity: 1;
-    transform: rotateY(-10deg) scale(0.95);
-}
-
-.carousel__slide--next {
-    opacity: 1;
-    transform: rotateY(10deg) scale(0.95);
-}
-
 .carousel__slide--active {
+    transform: scale(1);
     opacity: 1;
-    transform: rotateY(0) scale(1);
 }
 
-h2 {
-    font-size: 1.5em;
-    margin-bottom: 1em;
+/* Custom styles for navigation arrows */
+.carousel__navigation-button {
+    position: absolute;
+    top: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    transition: background-color 0.3s;
+}
+
+.carousel__navigation-button.prev {
+    left: -20px;
+    /* Adjust position to suit design */
+}
+
+.carousel__navigation-button.next {
+    right: -20px;
+    /* Adjust position to suit design */
+}
+
+.carousel__navigation-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: rgb(165, 70, 70);
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+a {
+    text-decoration: none;
+
+}
+
+.carousel__navigation-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
 }
 </style>
