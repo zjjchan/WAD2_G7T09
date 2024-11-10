@@ -197,7 +197,7 @@ auth.onAuthStateChanged((user) => {
   font-weight: 500;
   padding: 0.25rem 0;
   text-align: center;
-  color: #FFE5D9;
+  color: #ffffff;
   margin: auto;
 }
 
@@ -208,7 +208,7 @@ auth.onAuthStateChanged((user) => {
 }
 
 .meal-slot {
-  background-color: #FFE5D9;
+  background-color:#FFFFFF ;
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin-bottom: 10px;
