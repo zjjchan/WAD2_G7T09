@@ -2,124 +2,126 @@
   <Navbar />
   <div class="container-fluid">
     <div class="row">
-
       <div class="col-10 d-md-none">
         <button @click="showFilter = !showFilter" class="btn btn-outline-secondary w-100 my-2">
           <i class="fas fa-filter"></i> Recipe Filters
         </button>
       </div>
 
+      <!-- Flex container for sidebar and content -->
+      <div class="content-wrapper d-flex">
+        <div :class="[
+          'sidebar',
+          'd-md-block',
+          {
+            'd-none': !showFilter,
+            'show': showFilter,
+            'mobile-sidebar': showFilter
+          }
+        ]">
+          <div class="d-md-none">
+            <!-- Back Button to close filter section on small screens -->
+            <button @click="closeFilter" class="btn btn-link">
+              <i class="fas fa-arrow-left"></i>
+            </button>
 
-      <div :class="[
-        'sidebar',
-        'd-md-block',
-        {
-          'd-none': !showFilter,
-          'show': showFilter,
-          'mobile-sidebar': showFilter
-        }
-      ]">
-        <div class="d-md-none">
-          <!-- Back Button to close filter section on small screens -->
-          <button @click="closeFilter" class="btn btn-link">
-            <i class="fas fa-arrow-left"></i>
-          </button>
-        </div>
-
-        <h5><strong>Recipe Filters</strong></h5>
-        <div class="filter-section" v-for="(items, section) in filterSections" :key="section">
-          <p id="section_name">{{ section }}</p>
-          <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item">
-            <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]"
-              style=":hover{color: blue}">
-            <label id="filters_name" :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)">
-              {{ item }}
-            </label>
           </div>
-          <button v-if="items.length > 3" @click="toggleExpand(section)" class="toggle-button">
-            {{ filterExpand[section] ? 'Show Less' : 'Show More' }}
-          </button>
-        </div>
-      </div>
 
-      <div id="right-section" :class="['col-12 col-md-9']">
-        <div class="d-flex justify-content-center mb-4">
-          <div class="search-wrapper">
-            <img class="btn" id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search" />
-            <input id="search" v-model="query" placeholder="Search recipe" @input="filterSuggestions"
-              @keyup.enter="handleSearch" />
-            <ul v-if="filteredSuggestions.length && showSuggestions" class="suggestions-dropdown">
-              <li v-for="(suggestion, index) in filteredSuggestions" :key="index" @click="selectSuggestion(suggestion)">
-                {{ suggestion }}
-              </li>
-            </ul>
+          <h5><strong>Recipe Filters</strong></h5>
+          <div class="filter-section" v-for="(items, section) in filterSections" :key="section">
+            <p id="section_name">{{ formatSectionName(section) }}</p>
+            <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item">
+              <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]">
+              <label id="filters_name" :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)">
+                {{ item }}
+              </label>
+            </div>
+            <button v-if="items.length > 3" @click="toggleExpand(section)" class="toggle-button">
+              {{ filterExpand[section] ? 'Show Less' : 'Show More' }}
+            </button>
           </div>
         </div>
-        <br><br>
-        <div v-if="isLoading">
-          <Loading />
-        </div>
-        <div col-md-5 v-else>
-          <div class="card-columns col-lg-11">
-            <div v-if="showRecommendations">
-              <h4>Recipes For You</h4>
-              <Recommendation />
-            </div>
-            <div v-if="filteredRecipes.length === 0" class="text-center py-8">
-              <h5>No recipes found</h5>
-              <p class="text-gray-600">
-                {{ getNoResultsMessage() }}
-              </p>
-              <button @click="clearFilters" class="btn btn-primary mt-4">
-                Clear Filters
-              </button>
-            </div>
-            <!-- Recipe Cards -->
-            <div class="row justify-content-center">
-              <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="col-md-6 col-lg-4 col-sm-12 mb-4">
 
-                <!-- Wrap the card with RouterLink -->
-                <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }" class="card-link">
+        <!-- Right section content -->
+        <div id="right-section" class="col-12 col-md-9">
+          <div class="d-flex justify-content-center mb-4">
+            <div class="search-wrapper">
+              <img class="btn" id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search" />
+              <input id="search" v-model="query" placeholder="Search recipe" @input="filterSuggestions"
+                @keyup.enter="handleSearch" />
+              <ul v-if="filteredSuggestions.length && showSuggestions" class="suggestions-dropdown">
+                <li v-for="(suggestion, index) in filteredSuggestions" :key="index"
+                  @click="selectSuggestion(suggestion)">
+                  {{ suggestion }}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <br><br>
+          <div v-if="isLoading">
+            <Loading />
+          </div>
+          <div col-md-5 v-else>
+            <div class="card-columns col-lg-11">
+              <div v-if="showRecommendations">
+                <h4>Recipes For You</h4>
+                <Recommendation />
+              </div>
+              <div v-if="filteredRecipes.length === 0" class="text-center py-8">
+                <h5>No recipes found</h5>
+                <p class="text-gray-600">
+                  {{ getNoResultsMessage() }}
+                </p>
+                <button @click="clearFilters" class="btn btn-primary mt-4">
+                  Clear Filters
+                </button>
+              </div>
+              <!-- Recipe Cards -->
+              <div class="row justify-content-center">
+                <div v-for="(recipe, index) in paginatedRecipes" :key="index"
+                  class="recipe-card-wrapper col-md-6 col-lg-4 col-sm-12 mb-4">
                   <div class="card">
-                    <!-- Hidden image for preloading or accessibility (optional) -->
-                    <img id="recipe_img" :src="recipe.image" alt="Recipe Image" style="display: none;" />
-
-                    <div class="cover item-a" :style="{ backgroundImage: `url(${recipe.image})` }">
-                      <h1>{{ recipe.label }}</h1>
-                      <span class="card-sub">
-                        {{ capitalise(recipe.cuisineType.join(' ')) }} &nbsp;&nbsp;&nbsp;
-                        {{ capitalise(recipe.mealType.join(', ')) }}
-                      </span>
-                      <div class="card-back">
-                        <div class="card-back-content">
-                          <FavoriteButton :recipe="recipe" :isFavorite="recipe.isFavorite || false"
-                            @updateFavorites="handleUpdateFavorites" />
-                          <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
-                          <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
+                    <div class="favorite-button-area" @click.stop>
+                      <FavoriteButton :recipe="recipe" :isFavorite="recipe.isFavorite || false"
+                        @updateFavorites="handleUpdateFavorites" class="favorite-button" @click.stop />
+                    </div>
+                    <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
+                      class="card-link">
+                      <div class="cover" :style="{ backgroundImage: `url(${recipe.image})` }">
+                        <h1>{{ recipe.label }}</h1>
+                        <span class="card-sub">
+                          {{ capitalise(recipe.cuisineType.join(' ')) }} &nbsp;&nbsp;&nbsp;
+                          {{ capitalise(recipe.mealType.join(', ')) }}
+                        </span>
+                        <div class="card-back">
+                          <div class="card-back-content">
+                            <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
+                            <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </RouterLink>
                   </div>
-                </RouterLink>
+                </div>
 
-              </div>
-
-              <div v-if="filteredRecipes.length > recipesPerPage" class="pagination-controls">
-                <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-                <button v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }"
-                  @click="goToPage(page)">
-                  {{ page }}
-                </button>
-                <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+                <div v-if="filteredRecipes.length > recipesPerPage" class="pagination-controls">
+                  <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+                  <button v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }"
+                    @click="goToPage(page)">
+                    {{ page }}
+                  </button>
+                  <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
+            <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
           </div>
-          <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup>
 
@@ -186,6 +188,7 @@ export default {
         HealthLabels: false,
         CuisineTypes: false
       },
+      
       // Filter sections with default options
       filterSections: {
         MealTypes: ["Breakfast", "Brunch", "Lunch", "Dinner", "Snack", "Teatime"],
@@ -260,6 +263,10 @@ export default {
   },
 
   methods: {
+    formatSectionName(section) {
+      // Insert a space before capital letters and trim any leading space
+      return section.replace(/([A-Z])/g, ' $1').trim();
+    },
     closeFilter() {
       this.showFilter = false;
     },
@@ -519,17 +526,6 @@ export default {
   margin-left: auto;
 }
 
-.sidebar {
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
-  background-color: #fff;
-  padding: 20px;
-  border-right: 1px solid #e0e0e0;
-  width: 250px;
-  z-index: 1000;
-  transition: transform 0.3s ease;
-}
 
 #right-section {
   margin-left: 250px;
@@ -627,9 +623,6 @@ export default {
     padding: 10px;
   }
 
-  .card {
-    width: 100%;
-  }
 
   /* Show filter button for mobile */
   .filter-button {
@@ -640,11 +633,16 @@ export default {
 }
 
 @media (min-width: 769px) {
+  .filter-button {
+    display: none;
+  }
+
   .sidebar {
     position: fixed;
     left: 0;
-    width: 250px;
+    width: 240px;
     transform: none;
+
   }
 
   #right-section {
@@ -694,17 +692,7 @@ export default {
   }
 }
 
-@media (min-width: 769px) {
-  .filter-button {
-    display: none;
-  }
 
-  .card-columns {
-    column-count: 1;
-    margin: auto;
-    align-items: center;
-  }
-}
 
 .filter-section {
   border-top: #727272 solid 1.5px;
@@ -776,7 +764,6 @@ button {
   cursor: not-allowed;
 }
 
-
 .text-center {
   text-align: center;
 }
@@ -794,9 +781,6 @@ button {
   margin-top: 1rem;
 }
 
-.favorited {
-  fill: red;
-}
 
 .suggestions-dropdown {
   position: absolute;
@@ -840,35 +824,94 @@ body section .row {
 }
 
 /* Cards */
+.recipe-card-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 0 10px;
+}
+
+@media (min-width: 1400px) {
+  .col-lg-4 {
+    width: calc(33.333% - 24px);
+  }
+
+  .card {
+    max-width: 500px;
+    margin: 0 auto 30px;
+  }
+
+  .card .cover h1 {
+    font-size: 1.3em;
+  }
+
+  .card-sub {
+    font-size: 1.1em;
+  }
+}
+
+/* Responsive grid settings with larger cards */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .col-lg-4 {
+    width: calc(33.333% - 24px);
+  }
+
+  .card {
+    max-width: 450px;
+    /* Increased from 350px */
+    margin: 0 auto 24px;
+  }
+
+  .card .cover h1 {
+    font-size: 1.6em;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199.5px) {
+  .col-md-6 {
+    width: calc(50% - 20px);
+  }
+
+  .card {
+    max-width: 400px;
+    margin: 0 auto 20px;
+  }
+
+  .card .cover h1 {
+    font-size: 1.6em;
+  }
+
+}
+
+@media (max-width: 767px) {
+  .col-sm-12 {
+    width: calc(100% - 20px);
+  }
+
+  .card {
+    max-width: 350px;
+    margin: 0 auto 20px;
+  }
+}
+
+
 .card {
   position: relative;
-  height: 400px;
   width: 100%;
-  margin: 10px 0;
-  transition: ease all 1s;
-  perspective: 1200px;
   padding-bottom: 100%;
-  margin-bottom: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
+  /* Slightly increased */
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.row {
-  gap: 20px;
-  width: 100%;
-}
-
-.col-md-6.col-lg-4.col-sm-12 {
-  width: 45%;
-  padding: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Enhanced shadow */
+  transform-style: preserve-3d;
 }
 
 .card .cover {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
-  padding-bottom: 100%;
   transform-style: preserve-3d;
   transition: ease all 1s;
   background-size: cover;
@@ -876,7 +919,105 @@ body section .row {
   background-repeat: no-repeat;
 }
 
-.card .card-back {
+.card-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  z-index: 1;
+  transform-style: preserve-3d;
+}
+
+/* Fixed Favorite button implementation */
+.favorite-button {
+  position: absolute;
+  top: 15px;
+  /* Slightly adjusted */
+  right: 15px;
+  z-index: 100;
+  transform: translateZ(100px);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.favorite-button-area {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  /* Increased clickable area */
+  height: 70px;
+  z-index: 99;
+  pointer-events: all;
+}
+
+
+/* Make sure RouterLink doesn't interfere with button clicks */
+.card-link {
+  pointer-events: all;
+}
+
+
+
+.card .cover:before {
+  content: "";
+  position: absolute;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2;
+  transition: ease all 1.1s;
+  transform-style: preserve-3d;
+  transform: translateZ(0px);
+}
+
+.card .cover:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  transition: ease all 1.1s;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.card .cover h1 {
+  font-weight: 500;
+  position: absolute;
+  bottom: 65px;
+  left: 35px;
+  right: 35px;
+  color: white;
+  transform-style: preserve-3d;
+  transition: ease all 1.3s;
+  z-index: 3;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  transform: translateZ(0px);
+}
+
+.card-sub {
+  font-weight: 300;
+  position: absolute;
+  bottom: 25px;
+  left: 35px;
+  color: white;
+  transform-style: preserve-3d;
+  transition: ease all 1.1s;
+  z-index: 3;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  transform: translateZ(0px);
+}
+
+
+.card-back {
   position: absolute;
   top: 0;
   left: 0;
@@ -890,9 +1031,16 @@ body section .row {
   align-items: center;
   justify-content: center;
   z-index: 3;
-  /* Ensures it's above other elements */
 }
 
+.card-back-content {
+  text-align: center;
+  padding: 20px;
+  color: #333;
+  font-size: 0.7rem;
+}
+
+/* Card flip animation */
 .card:hover .cover {
   transform: rotateX(0deg) rotateY(-180deg);
 }
@@ -901,139 +1049,149 @@ body section .row {
   transform: translateZ(30px);
 }
 
-.card:hover .cover:after {
-  background-color: black;
-}
-
 .card:hover .cover h1 {
   transform: translateZ(100px);
 }
 
-.card:hover .cover .card-sub {
+.card:hover .card-sub {
   transform: translateZ(60px);
 }
 
-.card:hover .cover a {
-  transform: translateZ(-60px) rotatey(-180deg);
-}
-
-.card .cover {
-  position: absolute;
+.sidebar {
+  position: relative;
+  /* Remove fixed positioning */
   height: 100%;
-  width: 100%;
-  transform-style: preserve-3d;
-  transition: ease all 1s;
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-}
-
-.card .cover:before {
-  content: "";
-  position: absolute;
-  border: 5px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  z-index: 2;
-  transition: ease all 1.3s;
-  transform-style: preserve-3d;
-  transform: translateZ(0px);
-}
-
-.card .cover:after {
-  content: "";
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  z-index: 2;
-  transition: ease all 1.3s;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.card .cover.item-a {
-  background-image: url("https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?auto=format&fit=crop&w=600&q=80");
-}
-
-.card-sub {
-  position: absolute;
-  bottom: 20px;
-
-  color: white;
-  font-size: 0.9rem;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-.card .cover h1 {
-  font-weight: 400;
-  position: absolute;
-  bottom: 55px;
-  left: 30px;
-  color: white;
-  transform-style: preserve-3d;
-  transition: ease all 1.3s;
-  z-index: 3;
-  font-size: 1.5em;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-  transform: translateZ(0px);
-}
-
-.card .cover .card-sub {
-  font-weight: 200;
-  position: absolute;
-  top: 55px;
-  right: 50px;
-  color: white;
-  transform-style: preserve-3d;
-  transition: ease all 1.3s;
-  z-index: 4;
-  font-size: 1.2em;
-  transform: translateZ(0px);
-}
-
-.card .card-back-content {
-  text-align: center;
+  /* Full height of the sidebar container */
+  overflow-y: auto;
+  /* Enable scrolling if content overflows */
+  background-color: #fff;
   padding: 20px;
-  color: #333;
-}
+  border-right: 1px solid #e0e0e0;
+  width: 250px;
+  z-index: 1000;
+  transition: transform 0.3s ease;
 
-.card .card-back p {
-  margin: 10px 0;
-  font-size: 0.9em;
-  color: #333;
-}
-
-.card .card-back a.btn-primary {
-  transform: rotateY(180deg);
-  /* Correct orientation */
-  display: inline-block;
-  padding: 10px 20px;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  margin-top: 10px;
-  text-decoration: none;
-  border-radius: 4px;
-  z-index: 5;
-  /* Ensure it's above other elements */
+  /* Optional: Hide scrollbar styles for a cleaner look */
+  scrollbar-width: thin;
+  /* for Firefox */
+  scrollbar-color: transparent transparent;
 }
 
 
-.card-link {
-  height: 100%;
-  display: block;
-  text-decoration: none;
-  /* Removes underline from link */
-  color: inherit;
-  /* Inherit color so it doesn’t change */
-
+#right-section {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  padding: 20px;
+  transition: margin-left 0.3s ease;
 }
 
+/* Base sidebar styles */
+.sidebar {
+  background-color: #fff;
+  padding: 20px;
+  border-right: 1px solid #e0e0e0;
+  width: 250px;
+  transition: all 0.3s ease;
+  overflow-y: auto;
+}
 
+/* Phone layout (max-width: 576px) */
+@media (max-width: 576px) {
+  .sidebar {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 300px;
+    height: auto;
+    max-height: 80vh;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+
+  .sidebar.d-md-block {
+    display: none !important;
+  }
+
+  .sidebar.show {
+    display: block !important;
+  }
+
+  #right-section {
+    margin-left: 0;
+    width: 100%;
+    padding: 10px;
+  }
+}
+
+/* Tablet layout (577px - 768px) */
+@media (min-width: 577px) and (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    background: #fff;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  #right-section {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* Desktop layout (min-width: 769px) */
+@media (min-width: 769px) {
+  .content-wrapper {
+    position: relative;
+    display: flex;
+    width: 100%;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 10;
+    left: 0;
+    height: 100vh;
+    transform: none;
+  }
+
+  #right-section {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+  }
+}
+
+/* Overlay for mobile filter */
+.mobile-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar.show+.mobile-overlay {
+    opacity: 1;
+  }
+}
 
 /* 
 
