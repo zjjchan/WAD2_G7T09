@@ -16,10 +16,12 @@
     let quantityAdded = ref("");
     let isEditingItem = ref(false);
     let amazonList = ref([]);
+    let genListErrorLabels = ref([]);
     let editItemIndex = -1;
     let isLoading = ref(false); // loading for amazon listings
     let isLoadingGen = ref(false); // loading for list generation
     let isListEmpty = ref(false);
+
     const auth = getAuth();
     const user = auth.currentUser;
     const router = useRouter();
@@ -210,6 +212,7 @@
             return;
         } else {
             isLoadingGen.value = true;
+            genListErrorLabels.value = [];
 
             for (let day in meals) {
                 for (let mealType in meals[day]) {
@@ -226,18 +229,22 @@
                                 },
                             })
                             .then(response => {
-                                let ingrs = response.data[0].ingredients;
-                                for (let ingr of ingrs) {
-                                    let qty = "";
-                                    let item = "";
-                                    if (ingr.measure == "<unit>") {
-                                        qty = ingr.quantity;
-                                    } else {
-                                        qty = 1;
-                                    }
-                                    item = ingr.food;
+                                try {
+                                    let ingrs = response.data[0].ingredients;
+                                    for (let ingr of ingrs) {
+                                        let qty = "";
+                                        let item = "";
+                                        if (ingr.measure == "<unit>") {
+                                            qty = ingr.quantity;
+                                        } else {
+                                            qty = 1;
+                                        }
+                                        item = ingr.food;
 
-                                    addItem(item, qty);
+                                        addItem(item, qty);
+                                    }
+                                } catch (error) {
+                                    genListErrorLabels.value.push(m.label);
                                 }
                             });
                         }
@@ -246,6 +253,10 @@
             }
             isListEmpty.value = false;
             isLoadingGen.value = false;
+
+            if (genListErrorLabels.value.length > 0) {
+                new bootstrap.Modal(document.querySelector("#genErr")).show();
+            }
 
             if (emptyCounter == 21) {
                 new bootstrap.Modal(document.querySelector("#err")).show();
@@ -488,6 +499,28 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="router.push('/meal-preferences')">Take me to Meal Planner</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="genErr" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Oops!</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Some ingredients for your planned meals might be missing.<br><br>We couldn't generate the ingredients for:
+                        <ul>
+                            <li v-for="recipe in genListErrorLabels">
+                                {{ recipe }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="router.push('/meal-preferences')">Edit Meal Planner</button>
                     </div>
                 </div>
             </div>
