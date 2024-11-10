@@ -67,17 +67,17 @@ onMounted(() => {
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <RouterLink to="/search-recipes" class="nav-link" :class="{ active: isActiveLink('/search-recipes') }">
-              recipes<span class="underline"></span>
+              Recipes<span class="underline"></span>
             </RouterLink>
           </li>
           <li class="nav-item">
             <RouterLink to="/grocery-list" class="nav-link" :class="{ active: isActiveLink('/grocery-list') }">
-              grocery list<span class="underline"></span>
+              Grocery List<span class="underline"></span>
             </RouterLink>
           </li>
           <li class="nav-item">
             <RouterLink to="/nutrition" class="nav-link" :class="{ active: isActiveLink('/nutrition') }">
-              nutrition<span class="underline"></span>
+              Nutrition<span class="underline"></span>
             </RouterLink>
           </li>
         </ul>
