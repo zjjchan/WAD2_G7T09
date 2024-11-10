@@ -5,7 +5,7 @@
     <div class="scroll-progress" ref="scrollProgress"></div>
     <section class="hero">
       <div class="hero-content">
-        <h1 class="hero-title" ref="heroTitle">Welcome to back Mealmate</h1>
+        <h1 class="hero-title" ref="heroTitle">Welcome back to Mealmate</h1>
         <!-- <p ref="heroSubtitle">Your personal assistant for meal planning, grocery shopping, and nutrition</p> -->
         <TypeWriter ref="heroSubtitle"/>
       </div>
@@ -366,6 +366,10 @@ onUnmounted(() => {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Gluten:wght@600&family=Space+Mono&display=swap");
+
+body {
+  overflow: hidden; /* Hide scrollbars */
+}
 
 * {
   font-family: 'Open Sans', sans-serif;
