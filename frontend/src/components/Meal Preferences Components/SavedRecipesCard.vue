@@ -165,6 +165,12 @@ const onDragEnd = () => {
   }
 }
 
+@media (min-width: 400px) {
+  .recipes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (min-width: 1024px) {
   .recipes-grid {
     grid-template-columns: repeat(3, 1fr);
