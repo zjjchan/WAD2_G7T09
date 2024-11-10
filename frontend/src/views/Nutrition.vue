@@ -1,36 +1,44 @@
 <template>
     <Navbar />
-    <div class="m-4 p-3 ">
-        <MealPlanCard />
-    </div>
 
     <!-- CHARTS -->
     <div class="row m-1">
-        <div class="col-lg-6 col-md-12 p-1">
+        <div class="col-lg-1 col-md-1 col-1"></div>
+        <div class="col-lg-5 col-md-10 p-1">
             <div class="m-1 h-100">
                 <div id="piecharttext2" class="p-1">
                     <h4 class="text-center pt-2">Calories Consumed (Days of the Week)</h4>
                 </div>
                 <div>
-                    <div id="piechart" class="mt-2 p-4 chartbg border rounded border-1 chart-container">
+                    <div id="piechart" class="mt-2 p-4 chartbg chart-container">
                         <NEWPolarAreaChart />
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 col-md-12 p-1">
+        <div class="col-lg-5 col-md-10 p-1">
             <div class="m-1 h-100">
                 <div id="barcharttext2" class="p-1">
                     <h4 id="" class="text-center pt-2">Calorie Consumed (Meals & Days of the Week)</h4>
                 </div>
                 <div>
-                    <div class="mt-2 p-4 chartbg border rounded border-1 chart-container">
+                    <div class="mt-2 p-4 chartbg chart-container">
                         <NEWNutritionOverview />
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col-lg-1 col-md-1 col-1"></div>
     </div>
+
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-10 m-4 p-3 ">
+            <MealPlanCard />
+        </div>
+        <div class="col-1"></div>
+    </div>
+
 
 </template>
 
@@ -61,9 +69,11 @@ import NutritionPie from "@/components/NutritionPie.vue";
     overflow: hidden;
     height: 500px;
 }
+
 h4 {
     color: rgba(0, 90, 0, 1);
 }
+
 /* .chartbg {
         background-color: lightgray;
     } */
