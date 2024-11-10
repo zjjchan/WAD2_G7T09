@@ -102,6 +102,6 @@ svg:hover{
 }
 
 .favorited {
-    fill: rgb(113, 139, 176); /* Ensures button is red when favorited */
+    fill: rgba(0, 90, 0, 1); /* Ensures button is red when favorited */
 }
 </style>
