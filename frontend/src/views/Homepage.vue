@@ -21,7 +21,7 @@
     </section>
     
     <section class="features" ref="featuresSection">
-    <h2 class="feature-header">Your meals for today ⬇</h2>
+    <h2 class="feature-header">Your meals for today</h2>
     <div class="features-grid">
       <div 
         class="feature" 
@@ -421,6 +421,7 @@ onUnmounted(() => {
 
 .hero-content {
   z-index: 2;
+  padding:40px;
 }
 
 h1 {
@@ -461,6 +462,12 @@ p {
   max-width: 100%;
   border-radius: 10px;
   z-index: 2;
+}
+.hero-title {
+  color: rgba(0, 90, 0, 1);
+  font-weight: bold;
+  margin-bottom:40px
+;
 }
 /* 
 .floating-objects {
