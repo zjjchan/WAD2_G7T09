@@ -4,7 +4,7 @@
         <p v-else class="placeholder-text">Nothing has been added to your Meal Planner yet.
             <br>
             <br>
-            Please add your meals to view your calorie consumption for each day of the week.</p>
+            Please add your meals to view your calorie consumption for each meal and day of the week.</p>
     </div>
 </template>
 
