@@ -59,7 +59,7 @@
 
           <h3>{{ step.title }}</h3>
           <p>{{ step.description }}</p>
-          <button class="quick-action-btn btn btn-success" @click="navigateTo(step.path)">Go to {{ step.title }}</button>
+          <button class="quick-action-btn btn" @click="navigateTo(step.path)">Go to {{ step.title }}</button>
         </div>
       </div>
     </section>
@@ -383,7 +383,7 @@ onUnmounted(() => {
 
 .feature-header {
   margin-top: 20px;
-  color: #226925;
+  color: #4A5240;
   font-weight:bold;
 }
 .spoon {
@@ -467,7 +467,7 @@ p {
   z-index: 2;
 }
 .hero-title {
-  color: rgba(0, 90, 0, 1);
+  color: #4A5240;
   font-weight: bold;
   margin-bottom:40px
 ;
@@ -575,6 +575,7 @@ p {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.3s ease, transform 0.3s ease;
+  color: #4A5240;
 }
 
 .feature-description {
@@ -647,9 +648,18 @@ p {
 }
 
 .quick-action-title {
-  color: #226925;
+  color:#4A5240;
   font-weight:bold;
 }
+
+.quick-action-btn {
+  background-color: #DAE2BC;
+}
+
+.quick-action-btn:hover {
+  background-color: #dffb7b;
+}
+
 
 .cta-section {
   background-color: #226925;
@@ -736,7 +746,7 @@ p {
 }
 
 .recommended-recipes-title {
-  color: #226925;
+  color: #4A5240;
   font-weight:bold;
 }
 /* 
