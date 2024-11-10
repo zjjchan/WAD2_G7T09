@@ -2,22 +2,27 @@
     import Navbar from "@/components/Navbar.vue";
     import axios from 'axios';
     import { ref, onMounted } from "vue";
+    import { useRouter } from "vue-router";
     import { doc, setDoc, getDoc, updateDoc, arrayUnion, deleteField, deleteDoc } from "firebase/firestore";
     import { getAuth } from "firebase/auth";
     import { db } from "../firebase";
+    import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
     import redirect from "@/assets/images/redirect.png";
     
     
     let isAddingItem = ref(false);
     let groceryList = ref([]);
-    let itemAdded = ref();
-    let quantityAdded = ref();
+    let itemAdded = ref("");
+    let quantityAdded = ref("");
     let isEditingItem = ref(false);
     let amazonList = ref([]);
     let editItemIndex = -1;
-    let isLoading = ref(false);
+    let isLoading = ref(false); // loading for amazon listings
+    let isLoadingGen = ref(false); // loading for list generation
+    let isListEmpty = ref(false);
     const auth = getAuth();
     const user = auth.currentUser;
+    const router = useRouter();
 
     onMounted(() => {
         loadList();
@@ -42,7 +47,14 @@
 
         try {
             groceryList.value = docSnap.data().itemlist;
+
+            if (groceryList.value.length > 0) {
+                isListEmpty.value = false;
+            } else {
+                isListEmpty.value = true;
+            }
         } catch (error) {
+            isListEmpty.value = true;
             return;
         }
     }
@@ -160,6 +172,10 @@
             itemlist: listData
         });
 
+        if (itemAdded.value == item) {
+            cancelAddItem();
+        }
+
         loadList();
     }
 
@@ -180,6 +196,7 @@
 
     async function generateList() {
         const uid = user.uid;
+        let emptyCounter = 0;
         await deleteDoc(doc(db, "grocerylist", uid));
         loadList();
 
@@ -189,37 +206,51 @@
         const meals = docSnap.data().mealPlan;
 
         if (meals == null) {
-            alert("You have no recipes added to your meal planner");
+            new bootstrap.Modal(document.querySelector("#err")).show();
             return;
         } else {
+            isLoadingGen.value = true;
+
             for (let day in meals) {
                 for (let mealType in meals[day]) {
-                    for (let m of meals[day][mealType]) {
-                        let mealUri = m.uri.slice(0, m.uri.lastIndexOf("_"));
-                        await axios.get(`https://api.edamam.com/search`, {
-                            params: {
-                                r: decodeURIComponent(mealUri),
-                                app_id: appId,
-                                app_key: apiKey,
-                            },
-                        })
-                        .then(response => {
-                            let ingrs = response.data[0].ingredients;
-                            for (let ingr of ingrs) {
-                                let qty = "";
-                                let item = "";
-                                if (ingr.measure == "<unit>") {
-                                    qty = ingr.quantity;
-                                } else {
-                                    qty = 1;
-                                }
-                                item = ingr.food;
+                    if (meals[day][mealType].length == 0) {
+                        emptyCounter++;
+                    } else {
+                        for (let m of meals[day][mealType]) {
+                            let mealUri = m.uri.slice(0, m.uri.lastIndexOf("_"));
+                            await axios.get(`https://api.edamam.com/search`, {
+                                params: {
+                                    r: decodeURIComponent(mealUri),
+                                    app_id: appId,
+                                    app_key: apiKey,
+                                },
+                            })
+                            .then(response => {
+                                let ingrs = response.data[0].ingredients;
+                                for (let ingr of ingrs) {
+                                    let qty = "";
+                                    let item = "";
+                                    if (ingr.measure == "<unit>") {
+                                        qty = ingr.quantity;
+                                    } else {
+                                        qty = 1;
+                                    }
+                                    item = ingr.food;
 
-                                addItem(item, qty);
-                            }
-                        });
+                                    addItem(item, qty);
+                                }
+                            });
+                        }
                     }
                 }
+            }
+            isListEmpty.value = false;
+            isLoadingGen.value = false;
+
+            if (emptyCounter == 21) {
+                new bootstrap.Modal(document.querySelector("#err")).show();
+                loadList();
+                return;
             }
         }
     }
@@ -233,7 +264,7 @@
             for (let item of groceryList.value) {
                 let para = {
                     api_key: scraperKey,
-                    query: `${item.itemname} grocery`,
+                    query: `${item.itemname} fresh`,
                     country: "sg",
                     tld: "sg",
                     page: 1
@@ -267,7 +298,7 @@
             return;
         }
 
-        let urlString = "https://www.amazon.sg/gp/aws/cart/add.html?AssociateTag=your_tag&tag=your_tagQ"
+        let urlString = "https://www.amazon.sg/gp/aws/cart/add.html?"
 
         let counter = 1;
 
@@ -284,6 +315,13 @@
         );
     }
 
+    function redirectToListing(asin) {
+        window.open(
+            `https://www.amazon.sg/gp/product/${asin}/`,
+            '_blank'
+        );
+    }
+
 
 </script>
 
@@ -295,15 +333,32 @@
             <div class="col d-flex flex-column align-items-center">
                 <h2>Grocery List</h2>
                 <table class="table table-hover table-borderless">
-                    <thead>
-                        <tr class="table-success">
+                    <thead v-if="!isListEmpty">
+                        <tr style="--bs-table-bg: #DAE2BC;">
                         <th scope="col">Item</th>
                         <th class="text-end" scope="col">Quantity</th>
                         <th></th>
                         <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="isListEmpty && !isLoadingGen">
+                        <tr>
+                            <td colspan="4" class="table-temps text-center">
+                                <DotLottieVue class="mx-auto d-block" style="height: 300px; width: 300px" autoplay loop src="https://lottie.host/e287e782-0510-484b-8612-6b1c2e6f99d6/bGsUZrJ03m.json" />
+                                <h5>There's nothing here. Add some items to buy!</h5>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-if="isLoadingGen">
+                        <tr>
+                            <td colspan="4" class="text-center table-temps">
+                                <div class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-else>
                         <tr v-for="(i, index) in groceryList">
                             <td :class="i.checked" @click="checkItem(i.itemname)" @mouseenter="() => {if (i.checked == 'unchecked') {i.checked = 'checked'}}"
                             @mouseout="async () => {
@@ -332,19 +387,17 @@
                             }
                         }" class="info text-end">{{ i.quantity }}</td>
                             <td class="delete-item"><button type="button" class="btn-close" @click="removeItem(i.itemname)" aria-label="Delete"></button></td>
-                            <td class="edit-item" @click="editItemProcess(i.itemname, i.quantity, index)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                            <td class="edit-item"><svg @click="editItemProcess(i.itemname, i.quantity, index)" tabindex="0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
   <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
 </svg></td>
                         </tr>
                         <tr v-if="isAddingItem" class="add-item">
                             <td colspan="4">
                                 <div class="input-group add-input">
-                                    <span class="input-group-text bg-dark-subtle">Item:</span>
-                                    <input type="text" aria-label="Item" class="form-control" style="width: 20%" v-model="itemAdded">
-                                    <span class="input-group-text bg-dark-subtle">Qty:</span>
-                                    <input type="number" aria-label="Quantity" class="form-control" v-model="quantityAdded">
-                                    <button v-if="isEditingItem" class="btn btn-warning" type="button" @click="addItem(itemAdded, quantityAdded)">Edit</button>
-                                    <button v-else class="btn btn-success" type="button" @click="addItem(itemAdded, quantityAdded)">Add</button>
+                                    <input type="text" aria-label="Item" class="form-control" style="width: 30%" v-model="itemAdded" placeholder="Item Name">
+                                    <input type="number" aria-label="Quantity" class="form-control" v-model="quantityAdded" placeholder="Qty">
+                                    <button v-if="isEditingItem" class="btn btn-warning" type="button" @click="addItem(itemAdded, quantityAdded)" :disabled="itemAdded.trim() == '' || quantityAdded == ''">Edit</button>
+                                    <button v-else class="btn btn-primary" type="button" @click="addItem(itemAdded, quantityAdded)" :disabled="itemAdded.trim() == '' || quantityAdded == ''">Add</button>
                                     <button class="btn btn-danger" type="button" @click="cancelAddItem">Cancel</button>
                                 </div>
                             </td>
@@ -381,7 +434,7 @@
                         Doing this will <strong>delete your current grocery list</strong> and generate a new grocery list based on the meals in your weekly planner.<br>Do you wish to proceed and generate?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="generateList">Generate</button>
                     </div>
                 </div>
@@ -394,14 +447,16 @@
                         <h1 class="modal-title fs-5" id="staticBackdropLabel">Add items to Amazon Cart</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div v-if="isLoading" class="modal-body">
-                        Loading...
+                    <div v-if="isLoading" class="modal-body d-flex justify-content-center">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
                     <div v-else class="modal-body">
                         <div v-for="list in amazonList" class="card mb-3" style="max-width: 540px;">
-                            <div class="row g-0">
-                                <div class="col-md-4">
-                                <img :src=list[1] class="img-fluid rounded-start" alt="product img">
+                            <div class="row g-0 listing" @click="redirectToListing(list[3])">
+                                <div class="col-md-4 d-flex justify-content-center">
+                                <img :src=list[1] class="img-fluid rounded-start" style="max-height: 160px;" alt="product img">
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
@@ -411,11 +466,28 @@
                                 </div>
                             </div>
                         </div>
-                        <small class="text-body-secondary">Note that some items may not be available for order.</small>
+                        <small class="text-body-secondary">All listings taken from <a href="https://www.amazon.sg" target="_blank">Amazon.sg</a>.<br>Note that some items may not be available for order on Amazon, but may be available on Amazon Fresh. Click on the listing to check.</small>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-warning" data-bs-dismiss="modal" @click="redirectToAmazon" :disabled="isLoading">Take me to Amazon <img :src=redirect style="height: 18px; margin-bottom: 2px"></button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-warning" @click="redirectToAmazon" :disabled="isLoading">Take me to Amazon <img :src=redirect style="height: 18px; margin-bottom: 2px"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="err" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Add recipes to your meal planner</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        We cannot generate a grocery list until you have recipes in your meal planner. Add some recipes first!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="router.push('/meal-preferences')">Take me to Meal Planner</button>
                     </div>
                 </div>
             </div>
@@ -424,22 +496,28 @@
 </template>
 
 <style scoped>
+    * {
+        font-family: 'Open Sans', sans-serif;
+    }
+
+
+    .modal {
+        font-family: 'Poppins', sans-serif;
+    }
+
     h2 {
-        color: black;
+        color: rgba(0, 90, 0, 1);
         font-size: 26px;
+        font-weight: 600;
     }
 
     .item-unchecked:hover > td {
         text-decoration: line-through;
     }
 
-    .add-item:hover > td {
+    .add-item:hover > td, .table-temps {
         box-shadow: none;
     }
-
-    /* td.checked {
-        text-decoration: line-through;
-    } */
 
     td.checked {
         position: relative;
@@ -462,18 +540,78 @@
     .delete-item {
         width: 0;
     }
+
+    .delete-item button {
+        filter: invert(31%) sepia(100%) saturate(7500%) hue-rotate(0deg) brightness(100%) contrast(101%);
+    }
+
+    .delete-item button:hover {
+        opacity: 1;
+    }
+
+    .delete-item button:focus {
+        opacity: 1;
+        outline: 2px;
+    }
     
     .edit-item {
         width: 0;
-        color: rgb(106, 106, 106);
+        color: rgb(197, 168, 24);
     }
 
     .edit-item:hover {
-        color: black;
+        color: rgb(125, 100, 19);
+    }
+
+    .edit-item svg {
+        height: 18px;
+        width: 18px;
+    }
+
+    .edit-item svg:focus {
+        color: rgb(125, 100, 19);
+        outline: none;
+        transform: scale(120%);
     }
 
     .actions button {
         margin: 0 3px;
+    }
+
+    .btn-primary {
+        background-color: #4CAF50;
+        border: none;
+    }
+
+    .btn-primary:active {
+        background-color: #265c28;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #3c963f;
+    }
+
+    .btn-secondary {
+        background-color: #F5F5F5;
+        border: none;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background-color: #dddddd;
+    }
+
+    .btn-warning:hover {
+        background-color: #eeb304;
+    }
+
+    .btn {
+        font-weight: 500;
+    }
+
+    .listing {
+        cursor: pointer;
     }
 
     input::-webkit-outer-spin-button,
@@ -481,4 +619,5 @@
     -webkit-appearance: none;
     margin: 0;
     }
+
 </style>
