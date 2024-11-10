@@ -20,8 +20,6 @@
                                     <p class="cuisine-type">
                                         <strong>Cuisine:</strong> {{ recipe.cuisineType.join(', ') }}
                                     </p>
-
-
                                 </div>
                             </div>
                         </RouterLink>
@@ -222,80 +220,7 @@ function normalizeArray(arr) {
     if (!arr) return [];
     return Array.isArray(arr) ? arr.map(item => normalizeString(item)) : [normalizeString(arr)];
 }
-function matchRecipeToPreferences(recipe, preferences) {
-    if (!preferences) return true;
 
-    // Normalize recipe labels - handle different possible data structures
-    const recipeDiet = normalizeArray(recipe.diet || recipe.dietLabels || []);
-    const recipeHealth = normalizeArray(recipe.health || recipe.healthLabels || []);
-    const recipeCuisine = normalizeArray(Array.isArray(recipe.cuisineType)
-        ? recipe.cuisineType
-        : [recipe.cuisineType].filter(Boolean));
-
-    // Normalize preference labels
-    const prefDiet = normalizeArray(preferences.dietLabels || []);
-    const prefHealth = normalizeArray(preferences.healthLabels || []);
-    const prefCuisine = normalizeArray(preferences.cuisineTypes || []);
-
-    console.log('Matching Recipe:', {
-        name: recipe.label,
-        diet: recipeDiet,
-        health: recipeHealth,
-        cuisine: recipeCuisine
-    });
-
-    console.log('Against Preferences:', {
-        diet: prefDiet,
-        health: prefHealth,
-        cuisine: prefCuisine
-    });
-
-    // Helper function to check if a recipe label matches any preference
-    const hasMatchingLabel = (recipeLabels, prefLabels) => {
-        if (prefLabels.length === 0) return true;
-
-        return prefLabels.some(pref =>
-            recipeLabels.some(label => {
-                // Handle special cases and variations
-                const normalizedPref = pref.replace(/-/g, '').toLowerCase();
-                const normalizedLabel = label.replace(/-/g, '').toLowerCase();
-
-                // Check for exact match or contained string
-                const isMatch =
-                    normalizedLabel === normalizedPref ||
-                    normalizedLabel.includes(normalizedPref) ||
-                    normalizedPref.includes(normalizedLabel);
-
-                console.log(`Comparing: ${normalizedLabel} with ${normalizedPref} - Match: ${isMatch}`);
-                return isMatch;
-            })
-        );
-    };
-
-    // Diet match - recipe must include ANY of the preferred diet labels
-    const dietMatch = hasMatchingLabel(recipeDiet, prefDiet);
-    console.log('Diet Match Result:', dietMatch);
-
-    // Health match - recipe must include ANY of the preferred health labels
-    const healthMatch = hasMatchingLabel(recipeHealth, prefHealth);
-    console.log('Health Match Result:', healthMatch);
-
-    // Cuisine match - recipe must match ANY of the preferred cuisine types
-    const cuisineMatch = hasMatchingLabel(recipeCuisine, prefCuisine);
-    console.log('Cuisine Match Result:', cuisineMatch);
-
-    const matchResult = dietMatch && healthMatch && cuisineMatch;
-
-    console.log('Final Match Result:', {
-        recipeName: recipe.label,
-        dietMatch,
-        healthMatch,
-        cuisineMatch,
-        overall: matchResult
-    });
-
-    return matchResult;
-}
 
 function shuffleArray(array) {
     const newArray = [...array];
