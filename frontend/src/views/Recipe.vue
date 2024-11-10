@@ -20,7 +20,7 @@
     </div>
 
     <div class="row mb-3">
-      <div class="col-lg-4 col-md-6 col-sm-12">
+      <div class="col-lg-6 col-md-12">
         <div class="image-container mb-5" style="box-shadow: 8px 8px 5px grey;">
           <img :src="recipe.image" alt="Recipe Image" class="recipe-image" />
         </div>
@@ -37,7 +37,7 @@
         </div>
       </div>
 
-      <div class="col-lg-4 col-md-6 col-sm-12">
+      <div class="col-lg-6 col-md-12">
         <div class="mb-3">
           <h4 class="text-center">Summary of Important Macros</h4>
           <div class="chart-container">
@@ -53,7 +53,8 @@
         </div>
       </div>
 
-      <div class="col-lg-4 col-md-12  col-sm-12">
+      <!-- Nutrition Facts REMOVED -->
+      <!-- <div class="col-lg-4 col-md-12  col-sm-12">
         <div class="nutrition-facts p-4">
           <h3>Nutrition Facts</h3>
           <div v-for="(nutrient, index) in recipe.digest" :key="index">
@@ -65,7 +66,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 
