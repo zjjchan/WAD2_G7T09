@@ -55,7 +55,7 @@
       <h2>Quick Actions</h2>
       <div class="steps">
         <div class="step" v-for="(step, index) in steps" :key="index" ref="stepItems">
-          <!-- <div class="step-number">{{ index + 1 }}</div> -->
+
           <h3>{{ step.title }}</h3>
           <p>{{ step.description }}</p>
           <button class="quick-action-btn btn btn-success" @click="navigateTo(step.path)">Go to {{ step.title }}</button>
@@ -93,7 +93,7 @@ import Navbar from "@/components/Navbar.vue";
 import { useRouter } from 'vue-router';
 import WelcomeModal from '@/components/WelcomeModal.vue';
 import 'vue3-carousel/dist/carousel.css';
-import { Carousel, Slide, Navigation } from 'vue3-carousel';
+// import { Carousel, Slide, Navigation } from 'vue3-carousel';
 import Recommendation from "@/components/Recommendation.vue";
 
 
@@ -619,6 +619,9 @@ p {
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .step-number {
