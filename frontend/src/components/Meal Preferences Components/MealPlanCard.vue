@@ -1,6 +1,6 @@
 <template>
   <div class="meal-plan-card">
-    <h3 class="title">This Week's Menu</h3>
+    <h3 class="title">Weekly Meal Plan</h3>
     <div class="scroll-wrapper">
       <div class="meal-plan-grid">
         <div v-for="day in days" :key="day" class="day-column">
@@ -145,8 +145,6 @@ auth.onAuthStateChanged((user) => {
 
 <style scoped>
 .meal-plan-card {
-  /* width: 100%;
-  height: 100%; */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -171,7 +169,7 @@ auth.onAuthStateChanged((user) => {
 .meal-plan-grid {
   display: grid;
   gap: 0.5rem;
-  grid-template-columns: repeat(7, 1fr); /* 7 columns for 7 days */
+  grid-template-columns: repeat(7, 1fr);
   grid-template-rows: auto;
   overflow-x: auto;
   min-width: min-content;
@@ -214,18 +212,16 @@ auth.onAuthStateChanged((user) => {
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin-bottom: 10px;
-  /* Set a fixed height */
-  height: 80px; /* Adjust this value as needed */
+  height: 80px;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center the content */
 }
 
 .meal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .meal-time-title {
@@ -236,6 +232,10 @@ auth.onAuthStateChanged((user) => {
 .meal-name {
   font-size: 0.75rem;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .dropdown-toggle {
@@ -256,14 +256,16 @@ auth.onAuthStateChanged((user) => {
 .meal-item {
   background-color: white;
   border-radius: 0.25rem;
-  padding: 0.5rem;
+  padding: 0.25rem;
   margin-bottom: 0.25rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   width: 100%;
   box-sizing: border-box;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 40px;
+  overflow: hidden;
 }
 
 .meal-image {
@@ -271,10 +273,11 @@ auth.onAuthStateChanged((user) => {
   height: 32px;
   object-fit: cover;
   border-radius: 0.25rem;
+  flex-shrink: 0;
 }
 
 .meal-details {
-  flex: 1;
+  flex-grow: 1;
   overflow: hidden;
 }
 
@@ -290,12 +293,13 @@ auth.onAuthStateChanged((user) => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .meal-drop-zone {
-  min-height: 40px; /* Keeps a minimum height for empty drop zones */
-  height: 100%; /* Ensures the drop zone fills the meal-slot container */
-  overflow: hidden; /* Prevents expansion of the container */
+  min-height: 40px;
+  height: 100%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -316,7 +320,7 @@ auth.onAuthStateChanged((user) => {
 
 .dragging-item {
   cursor: grabbing;
-  transform: scale(1.05); /* Slightly larger */
+  transform: scale(1.05);
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -346,13 +350,20 @@ auth.onAuthStateChanged((user) => {
 
 @media (max-width: 1024px) {
   .meal-plan-grid {
-    grid-template-columns: repeat(4, 1fr); /* 4 items per row for medium screens */
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .meal-plan-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (max-width: 768px) {
   .meal-plan-grid {
-    grid-template-columns: repeat(3, 1fr); /* 3 items per row for smaller screens */
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .meal-plan-card {
@@ -372,7 +383,7 @@ auth.onAuthStateChanged((user) => {
   }
 
   .day-column {
-    min-width: 200px; /* Adjust size for mobile */
+    min-width: 200px;
   }
 
   .meal-times-wrapper {
@@ -390,5 +401,4 @@ auth.onAuthStateChanged((user) => {
     font-size: 0.625rem;
   }
 }
-
 </style>
