@@ -3,15 +3,23 @@
   <div class="container-fluid">
     <div class="row">
 
-      <div class="col-10 d-sm-none">
+      <div class="col-10 d-md-none">
         <button @click="showFilter = !showFilter" class="btn btn-outline-secondary w-100 my-2">
           <i class="fas fa-filter"></i> Recipe Filters
         </button>
       </div>
 
-      <div :class="['col-2 sidebar', { 'd-none': !showFilter, 'd-sm-block': true }]" >
 
-        <div class="d-sm-none">
+      <div :class="[
+        'sidebar',
+        'd-md-block',
+        {
+          'd-none': !showFilter,
+          'show': showFilter,
+          'mobile-sidebar': showFilter
+        }
+      ]">
+        <div class="d-md-none">
           <!-- Back Button to close filter section on small screens -->
           <button @click="closeFilter" class="btn btn-link">
             <i class="fas fa-arrow-left"></i>
@@ -34,9 +42,9 @@
         </div>
       </div>
 
-      <div :class="['col-10', { 'col-10': !showFilter }]" id="right-section">
-        <div class=" container-fluid col-5 col-md-10" id="searchbar">
-          <div class="search-wrapper  ">
+      <div id="right-section" :class="['col-12 col-md-9']">
+        <div class="d-flex justify-content-center mb-4">
+          <div class="search-wrapper">
             <img class="btn" id="search_img" @click="handleSearch" src="../assets/images/search.png" alt="search" />
             <input id="search" v-model="query" placeholder="Search recipe" @input="filterSuggestions"
               @keyup.enter="handleSearch" />
@@ -51,7 +59,7 @@
         <div v-if="isLoading">
           <Loading />
         </div>
-        <div col-sm-5 v-else>
+        <div col-md-5 v-else>
           <div class="card-columns col-lg-11">
             <div v-if="showRecommendations">
               <h4>Recipes For You</h4>
@@ -67,7 +75,7 @@
               </button>
             </div>
             <!-- Recipe Cards -->
-            <div class="row">
+            <div class="row justify-content-center">
               <div v-for="(recipe, index) in paginatedRecipes" :key="index" class="col-md-6 col-lg-4 col-sm-12 mb-4">
 
                 <!-- Wrap the card with RouterLink -->
@@ -503,6 +511,46 @@ export default {
 </script>
 
 <style scoped>
+.container-fluid {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.sidebar {
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #fff;
+  padding: 20px;
+  border-right: 1px solid #e0e0e0;
+  width: 250px;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+#right-section {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Recommendations section */
+#right-section>div>.card-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#right-section>div>.card-columns>div:first-child {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+/* Searchbar */
 #search_img {
   position: absolute;
   left: 10px;
@@ -514,71 +562,108 @@ export default {
 }
 
 #search {
-  width: 200%;
+  width: 100%;
   padding-left: 50px;
   border: solid;
   border-radius: 10px;
   height: 45px;
 }
 
+#searchbar {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 
+}
 
 .search-wrapper {
   position: relative;
-  width: 400px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  width: 800px;
+
 }
 
 .toggle-button {
-  color: blue;
-}
-
-@media (max-width: 750px) {
-  .search-wrapper {
-    position: relative;
-    width: 155px;
-
-  }
-
-  .card-columns {
-    width: 300px;
-    margin: auto;
-    padding-left: 30px;
-  }
-
-}
-
-@media (max-width: 600px) {
-  .search-wrapper {
-    position: relative;
-    width: 155px;
-
-  }
-
-  .card-columns {
-    width: 300px;
-    margin: auto;
-    padding-left: 30px;
-  }
-
-}
-
-@media (max-width: 1200px) {
-  h1 {
-    font-size: 100px
-  }
-  #right-section .col-md-6 {
-    padding-right: 0; /* Removes extra space */
-  }
+  background: none;
+  border: none;
+  color: rgba(0, 90, 0, 1);
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0;
+  font-size: 14px;
+  margin-top: 5px;
 }
 
 @media (max-width: 576px) {
-  #searchbar {
-    float: left;
+
+  /* Phone layout */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    height: 100vh;
+  }
+
+  .sidebar.d-md-block {
+    display: none !important;
+  }
+
+  .sidebar.show {
+    left: 0;
+  }
+
+  .row {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  #right-section {
+    margin-left: 0;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  /* Show filter button for mobile */
+  .filter-button {
+    display: block;
 
   }
 
-  i {
-    font-size: 30px;
+}
+
+@media (min-width: 769px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    width: 250px;
+    transform: none;
+  }
+
+  #right-section {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+  }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    transform: translateX(-100%);
+    height: 100%;
+    background: #b5c7ae;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
   }
 
   .filter-section {
@@ -588,41 +673,83 @@ export default {
     width: 150px;
   }
 
-  .btn-link {
-    float: left;
+  .sidebar.d-md-block {
+    display: none !important;
+  }
+
+  /* When filter is shown */
+  .sidebar:not(.d-none) {
+    transform: translateX(0);
+    display: block !important;
+  }
+
+  /* Ensure the back button is visible */
+  .d-md-none {
+    display: block !important;
+  }
+
+  #right-section {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .filter-button {
+    display: none;
   }
 
   .card-columns {
-    padding-top: 30px;
-  }
-
-  .search-wrapper {
-    position: relative;
-    width: 250px;
-  }
-
-  .sidebar {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: #b5c7ae;
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-
+    column-count: 1;
+    margin: auto;
+    align-items: center;
   }
 }
 
-.sidebar {
-  padding-left: 50px;
-  padding-right: 10px;
+.filter-section {
+  border-top: #727272 solid 1.5px;
+  width: 150px;
+  margin-bottom: 20px;
 }
+
+#filters_name {
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px
+}
+
+.filter-section label {
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+
+#filters_name:hover {
+  color: blue;
+  cursor: pointer;
+}
+
+input[type=checkbox]:hover {
+  color: blue
+}
+
+button {
+  margin-left: 30px;
+}
+
+#section_name {
+  margin-bottom: 10px;
+  padding-top: 10px;
+  color: #363636;
+  font-weight: 500;
+}
+
 .active {
   font-weight: bold;
   color: #007bff;
 }
+
 .pagination-controls .active {
-  background-color: #6dafa5;
+  background-color: rgba(0, 90, 0, 1);
   color: white;
   border-radius: 5px;
 }
@@ -632,6 +759,7 @@ export default {
   justify-content: center;
   align-items: center;
   gap: 5px;
+  width: 100%;
   margin-top: 20px;
   padding-bottom: 30px;
 }
@@ -639,18 +767,13 @@ export default {
 .pagination-controls button {
   margin: 0 5px;
   padding: 5px 10px;
+  border: 1px #ddd;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-
-
-.toggle-button {
-  background: none;
-  border: none;
-  color: #007bff;
-  cursor: pointer;
-  padding: 0;
-  font-size: 14px;
-  margin-top: 5px;
+.pagination-controls button:disabled {
+  cursor: not-allowed;
 }
 
 
@@ -669,10 +792,6 @@ export default {
 
 .mt-4 {
   margin-top: 1rem;
-}
-
-.toggle-button {
-  color: blue;
 }
 
 .favorited {
@@ -704,44 +823,6 @@ export default {
   background-color: #f0f0f0;
 }
 
-.filter-section label {
-  padding-left: 10px;
-  padding-bottom: 10px;
-}
-
-.filter-section {
-  border-top: #727272 solid 1.5px;
-  width: 150px;
-}
-
-#filters_name:hover {
-  color: blue;
-  cursor: pointer;
-}
-
-#filters_name {
-  font-size: 14px;
-}
-
-input[type=checkbox]:hover {
-  color: blue
-}
-
-button {
-  margin-left: 30px;
-}
-
-#section_name {
-  padding-top: 10px;
-  color: #363636;
-  font-weight: 500;
-}
-
-#right-section {
-  padding-left: 0 !important;
-}
-@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200;600&display=swap");
-
 body {
   font-family: "Oswald", sans-serif;
   background-color: #212121;
@@ -758,6 +839,7 @@ body section .row {
   height: 100vh;
 }
 
+/* Cards */
 .card {
   position: relative;
   height: 400px;
@@ -765,6 +847,50 @@ body section .row {
   margin: 10px 0;
   transition: ease all 1s;
   perspective: 1200px;
+  padding-bottom: 100%;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.row {
+  gap: 20px;
+  width: 100%;
+}
+
+.col-md-6.col-lg-4.col-sm-12 {
+  width: 45%;
+  padding: 0;
+}
+
+.card .cover {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  padding-bottom: 100%;
+  transform-style: preserve-3d;
+  transition: ease all 1s;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.card .card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #ccd0c9;
+  transform-style: preserve-3d;
+  transition: ease all 1s;
+  transform: translateZ(-1px) rotateY(-180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  /* Ensures it's above other elements */
 }
 
 .card:hover .cover {
@@ -833,6 +959,15 @@ body section .row {
   background-image: url("https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?auto=format&fit=crop&w=600&q=80");
 }
 
+.card-sub {
+  position: absolute;
+  bottom: 20px;
+
+  color: white;
+  font-size: 0.9rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
 .card .cover h1 {
   font-weight: 400;
   position: absolute;
@@ -843,6 +978,7 @@ body section .row {
   transition: ease all 1.3s;
   z-index: 3;
   font-size: 1.5em;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
   transform: translateZ(0px);
 }
 
@@ -857,21 +993,6 @@ body section .row {
   z-index: 4;
   font-size: 1.2em;
   transform: translateZ(0px);
-}
-
-.card .card-back {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  background: #ccd0c9;
-  transform-style: preserve-3d;
-  transition: ease all 1s;
-  transform: translateZ(-1px) rotateY(-180deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-  /* Ensures it's above other elements */
 }
 
 .card .card-back-content {
@@ -903,9 +1024,110 @@ body section .row {
 
 
 .card-link {
+  height: 100%;
+  display: block;
   text-decoration: none;
   /* Removes underline from link */
   color: inherit;
   /* Inherit color so it doesn’t change */
+
 }
+
+
+
+/* 
+
+@media (max-width: 750px) {
+  .search-wrapper {
+    position: relative;
+    width: 155px;
+
+  }
+
+  .card-columns {
+    width: 300px;
+    margin: auto;
+    padding-left: 30px;
+  }
+
+} */
+/* 
+@media (max-width: 1300px) {
+  .sidebar {
+    padding-right: 10px
+  }
+
+  #right-section {
+    overflow: hidden
+  }
+} */
+/* 
+@media (max-width: 600px) {
+  .search-wrapper {
+    position: relative;
+    width: 155px;
+
+  }
+
+  .card-columns {
+    width: 300px;
+    margin: auto;
+    padding-left: 30px;
+  }
+
+} */
+
+/* @media (max-width: 1200px) {
+  h1 {
+    font-size: 100px
+  }
+
+  #right-section .col-md-6 {
+    padding-right: 0;
+  }
+} 
+*/
+
+/* 
+@media (max-width: 576px) {
+  #searchbar {
+    float: left;
+
+  }
+
+  i {
+    font-size: 30px;
+  }
+
+  .filter-section {
+    justify-content: center;
+    margin: auto;
+    border-top: #727272 solid 1.5px;
+    width: 150px;
+  }
+
+  .btn-link {
+    float: left;
+  }
+
+  .card-columns {
+    padding-top: 30px;
+  }
+
+  .search-wrapper {
+    position: relative;
+    width: 250px;
+  }
+
+  .sidebar {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #b5c7ae;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+
+  }
+} */
 </style>
