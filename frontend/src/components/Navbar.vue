@@ -134,7 +134,6 @@ onMounted(() => {
   border-bottom: 2px solid #668b57;
 }
 
-/* Profile picture and dropdown styling */
 .pfp {
   position: relative;
 }
