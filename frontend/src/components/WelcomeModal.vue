@@ -140,7 +140,7 @@ const healthLabels = [
   'Dairy-Free', 'DASH', 'Egg-Free', 'Fish-Free', 'Fodmap-Free',
   'Gluten-Free', 'Immuno-Supportive', 'Keto-Friendly', 'Kidney-Friendly',
   'Kosher', 'Low-Fat-Abs', 'Low-Potassium', 'Low-Sugar', 'Lupine-Free',
-  'Mediterranean', 'Mollusk-Free', 'Mustard-Free', 'No-oil-added',
+  'Mollusk-Free', 'Mustard-Free', 'No-oil-added',
   'Paleo', 'Peanut-Free', 'Pescatarian', 'Pork-Free', 'Red-Meat-Free',
   'Sesame-Free', 'Shellfish-Free', 'Soy-Free', 'Sugar-Conscious',
   'Sulfite-Free', 'Tree-Nut-Free', 'Vegan', 'Vegetarian', 'Wheat-Free'
