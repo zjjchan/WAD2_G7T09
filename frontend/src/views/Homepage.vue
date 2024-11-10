@@ -368,7 +368,7 @@ onUnmounted(() => {
 @import url("https://fonts.googleapis.com/css2?family=Gluten:wght@600&family=Space+Mono&display=swap");
 
 body {
-  overflow: hidden; /* Hide scrollbars */
+  overflow: hidden;
 }
 
 * {
@@ -476,27 +476,6 @@ p {
 .hero-title {
   margin-bottom:40px
 ;
-}
-/* 
-.floating-objects {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-} */
-
-.float-object {
-  position: absolute;
-  max-width: 200px;
-}
-
-.food-1 { top: 10%; left: 5%; }
-.food-2 { top: 5%; right: 10%; }
-.food-3 { bottom: 15%; left: 15%; }
-
-.features, .how-it-works, .cta-section {
-  padding: 5% 5%;
 }
 
 .features {
@@ -624,6 +603,7 @@ p {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  margin:50px;
 }
 
 .step {
@@ -639,18 +619,6 @@ p {
   justify-content: space-between;
 }
 
-.step-number {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  background-color: #226925;
-  color: white;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  line-height: 40px;
-  margin-bottom: 1rem;
-}
-
 .quick-action-btn {
   background-color: #DAE2BC;
 }
@@ -658,27 +626,6 @@ p {
 .quick-action-btn:hover {
   background-color: rgba(0, 90, 0, 1);
   color: #DAE2BC;
-}
-
-
-.cta-section {
-  background-color: #226925;
-  color: white;
-  text-align: center;
-}
-
-.cta-section h2, .cta-section p {
-  color: white;
-}
-
-.cta-section .cta-button {
-  background-color: white;
-  color: #3498db;
-  font-weight: bold;
-}
-
-.cta-section .cta-button:hover {
-  background-color: #f0f0f0;
 }
 
 @media (max-width:  1024px) {
@@ -744,66 +691,4 @@ p {
     max-width: 40px;
   }
 }
-/* 
-.recommended-recipes {
-  padding: 5% 5%;
-  background-color: #ffffff;
-}
-
-.carousel__item {
-  background-color: white;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  min-width: 250px;
-  text-align: center;
-}
-
-.recipe-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
-.carousel__slide {
-  padding: 5px;
-}
-
-.carousel__viewport {
-  perspective: 2000px;
-}
-
-.carousel__track {
-  transform-style: preserve-3d;
-}
-
-.carousel__slide--sliding {
-  transition: 0.5s;
-}
-
-.carousel__slide {
-  opacity: 0.9;
-  transform: rotateY(-20deg) scale(0.9);
-}
-
-.carousel__slide--active ~ .carousel__slide {
-  transform: rotateY(20deg) scale(0.9);
-}
-
-.carousel__slide--prev {
-  opacity: 1;
-  transform: rotateY(-10deg) scale(0.95);
-}
-
-.carousel__slide--next {
-  opacity: 1;
-  transform: rotateY(10deg) scale(0.95);
-}
-
-.carousel__slide--active {
-  opacity: 1;
-  transform: rotateY(0) scale(1);
-} */
 </style>
