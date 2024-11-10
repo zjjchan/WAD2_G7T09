@@ -6,7 +6,8 @@
     <section class="hero">
       <div class="hero-content">
         <h1 class="hero-title" ref="heroTitle">Welcome to back Mealmate</h1>
-        <p ref="heroSubtitle">Your personal assistant for meal planning, grocery shopping, and nutrition</p>
+        <!-- <p ref="heroSubtitle">Your personal assistant for meal planning, grocery shopping, and nutrition</p> -->
+        <TypeWriter ref="heroSubtitle"/>
       </div>
       <!-- <img ref="heroImage" src="/images/alphabetsoup.png" alt="MealMate Hero" class="hero-image" /> -->
       <div ref="heroImage" class="bowl-container">
@@ -52,7 +53,7 @@
 
     
     <section class="how-it-works" ref="howItWorksSection">
-      <h2>Quick Actions</h2>
+      <h2 class="quick-action-title">Quick Actions</h2>
       <div class="steps">
         <div class="step" v-for="(step, index) in steps" :key="index" ref="stepItems">
 
@@ -64,7 +65,7 @@
     </section>
     
     <section class="recommended-recipes" ref="recommendedRecipesSection">
-      <h2>Recommended Recipes</h2>
+      <h2 class="recommended-recipes-title">Recommended Recipes</h2>
       <Recommendation />
       <!-- <Carousel v-bind="carouselConfig">
         <Slide v-for="(recipe, index) in recommendedRecipes" :key="index">
@@ -95,7 +96,7 @@ import WelcomeModal from '@/components/WelcomeModal.vue';
 import 'vue3-carousel/dist/carousel.css';
 // import { Carousel, Slide, Navigation } from 'vue3-carousel';
 import Recommendation from "@/components/Recommendation.vue";
-
+import TypeWriter from '@/components/Typewriter.vue';
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -382,6 +383,8 @@ onUnmounted(() => {
 
 .feature-header {
   margin-top: 20px;
+  color: #226925;
+  font-weight:bold;
 }
 .spoon {
   position: absolute;
@@ -643,6 +646,11 @@ p {
   margin-bottom: 1rem;
 }
 
+.quick-action-title {
+  color: #226925;
+  font-weight:bold;
+}
+
 .cta-section {
   background-color: #226925;
   color: white;
@@ -725,6 +733,11 @@ p {
   .float-object {
     max-width: 40px;
   }
+}
+
+.recommended-recipes-title {
+  color: #226925;
+  font-weight:bold;
 }
 /* 
 .recommended-recipes {
