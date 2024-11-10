@@ -40,14 +40,14 @@
       <div class="col-lg-6 col-md-12">
         <div class="mb-3">
           <h4 class="text-center">Summary of Important Macros</h4>
-          <div class="chart-container">
+          <div class="chart-container d-flex justify-content-center align-items-center">
             <PieIndivRecipe v-if="recipe" :recipe="recipe" />
           </div>
         </div>
 
         <div class="mt-3">
           <h4 class="text-center">Fat Types Composition</h4>
-          <div class="chart-container">
+          <div class="chart-container d-flex justify-content-center align-items-center">
             <RadialIndivRecipe v-if="recipe" :recipe="recipe"/>
           </div>
         </div>
@@ -126,6 +126,7 @@ onMounted(async () => {
   border-radius: 8px;
 }
 
+
 #info,
 .nutrition-facts {
   background-color: #dae2bc;
@@ -151,7 +152,7 @@ onMounted(async () => {
 .chart-container {
   padding: 10px;
   text-align: center;
-  width: 100%;  /* Ensure the container takes full width */
+  width:100%;  /* Ensure the container takes full width */
   max-height: 100%;
   box-sizing: border-box;
   overflow: hidden;
