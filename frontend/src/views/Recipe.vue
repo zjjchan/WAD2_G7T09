@@ -47,7 +47,7 @@
 
         <div class="mt-3">
           <h4 class="text-center">Fat Types Composition</h4>
-          <div class="chart-container d-flex justify-content-center align-items-center">
+          <div class="chart-container">
             <RadialIndivRecipe v-if="recipe" :recipe="recipe"/>
           </div>
         </div>

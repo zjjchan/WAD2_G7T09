@@ -33,7 +33,7 @@
 
     <!-- MEAL PLAN CARD -->
     <div class="row justify-content-center">
-        <div class="col-10 col-md-10 col-lg-10 m-4 p-3 mx-auto">
+        <div class="col-10 col-md-10 col-lg-10 m-1 p-2 mx-auto">
             <MealPlanCard />
         </div>
     </div>
