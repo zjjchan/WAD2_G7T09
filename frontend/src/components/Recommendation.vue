@@ -5,7 +5,7 @@
         </div>
 
         <div v-else>
-            <div v-if="recommendations.length" class="carousel-container">
+            <div v-if="hasRecommendations" class="carousel-container">
                 <Carousel v-bind="carouselConfig" :wrap-around="true" :transition="1000" :autoplay="3000"
                     class="carousel">
                     <Slide v-for="(recipe, index) in recommendations" :key="index" class="carousel__slide">
@@ -20,6 +20,8 @@
                                     <p class="cuisine-type">
                                         <strong>Cuisine:</strong> {{ recipe.cuisineType.join(', ') }}
                                     </p>
+
+
                                 </div>
                             </div>
                         </RouterLink>
@@ -43,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
@@ -68,7 +70,6 @@ const handleNextClick = (next) => {
 };
 
 const handlePrevClick = (prev, next) => {
-
     next();
 };
 
@@ -79,8 +80,8 @@ const carouselConfig = {
     autoplay: true,
     pauseAutoplayOnHover: true,
     autoplayTimeout: 2500,
-    mouseDrag: false,
-    touchDrag: false,
+    mouseDrag: true,
+    touchDrag: true,
     breakpoints: {
         // Extra small devices
         320: {
@@ -113,95 +114,264 @@ const carouselConfig = {
         }
     },
 };
-// Fetches user preferences from the Firestore database
+
+function prioritizeRecipes(recipes, preferences) {
+    if (!preferences || (!preferences.dietLabels?.length && !preferences.healthLabels?.length && !preferences.cuisineTypes?.length)) {
+        // Case 3: No preferences at all - return random recipes
+        return shuffleArray(recipes);
+    }
+
+    // Helper function to check if a recipe matches any preference
+    const hasMatchingLabel = (recipeLabels, prefLabels) => {
+        if (!prefLabels?.length) return true;
+        return prefLabels.some(pref =>
+            recipeLabels.some(label => {
+                const normalizedPref = pref.replace(/-/g, '').toLowerCase();
+                const normalizedLabel = label.replace(/-/g, '').toLowerCase();
+                return normalizedLabel === normalizedPref ||
+                    normalizedLabel.includes(normalizedPref) ||
+                    normalizedPref.includes(normalizedLabel);
+            })
+        );
+    };
+
+    // Score each recipe based on how well it matches preferences
+    const scoredRecipes = recipes.map(recipe => {
+        const recipeDiet = normalizeArray(recipe.diet || recipe.dietLabels || []);
+        const recipeHealth = normalizeArray(recipe.health || recipe.healthLabels || []);
+        const recipeCuisine = normalizeArray(Array.isArray(recipe.cuisineType)
+            ? recipe.cuisineType
+            : [recipe.cuisineType].filter(Boolean));
+
+        let score = 0;
+        let matches = {
+            cuisine: false,
+            diet: false,
+            health: false
+        };
+
+        // Check if we have all preference types
+        const hasAllPreferences = preferences.cuisineTypes?.length > 0 &&
+            preferences.dietLabels?.length > 0 &&
+            preferences.healthLabels?.length > 0;
+
+        if (hasAllPreferences) {
+            // Case 2: All preferences stated - prioritize cuisine first
+            if (hasMatchingLabel(recipeCuisine, preferences.cuisineTypes)) {
+                score += 1;
+                matches.cuisine = true;
+            }
+            if (hasMatchingLabel(recipeDiet, preferences.dietLabels)) {
+                score += 2;
+                matches.diet = true;
+            }
+            if (hasMatchingLabel(recipeHealth, preferences.healthLabels)) {
+                score += 3;
+                matches.health = true;
+            }
+        } else {
+            // Case 1: Some empty preferences - prioritize what user has specified
+            if (preferences.cuisineTypes?.length && hasMatchingLabel(recipeCuisine, preferences.cuisineTypes)) {
+                score += 3;
+                matches.cuisine = true;
+            }
+            if (preferences.dietLabels?.length && hasMatchingLabel(recipeDiet, preferences.dietLabels)) {
+                score += 3;
+                matches.diet = true;
+            }
+            if (preferences.healthLabels?.length && hasMatchingLabel(recipeHealth, preferences.healthLabels)) {
+                score += 3;
+                matches.health = true;
+            }
+        }
+
+        return {
+            recipe,
+            score,
+            matches
+        };
+    });
+
+    // Sort recipes by score (highest first)
+    const sortedRecipes = scoredRecipes.sort((a, b) => b.score - a.score);
+
+    // Group recipes by score to shuffle within same-score groups
+    const scoreGroups = {};
+    sortedRecipes.forEach(item => {
+        if (!scoreGroups[item.score]) {
+            scoreGroups[item.score] = [];
+        }
+        scoreGroups[item.score].push(item.recipe);
+    });
+
+    // Reconstruct the final array with shuffled same-score groups
+    const finalRecipes = Object.entries(scoreGroups)
+        .sort(([scoreA], [scoreB]) => Number(scoreB) - Number(scoreA))
+        .flatMap(([_, recipes]) => shuffleArray(recipes));
+
+    return finalRecipes;
+}
+
+function normalizeString(str) {
+    if (!str) return '';
+    return str.toLowerCase().trim();
+}
+
+// Helper function to normalize arrays for consistent comparison
+function normalizeArray(arr) {
+    if (!arr) return [];
+    return Array.isArray(arr) ? arr.map(item => normalizeString(item)) : [normalizeString(arr)];
+}
+function matchRecipeToPreferences(recipe, preferences) {
+    if (!preferences) return true;
+
+    // Normalize recipe labels - handle different possible data structures
+    const recipeDiet = normalizeArray(recipe.diet || recipe.dietLabels || []);
+    const recipeHealth = normalizeArray(recipe.health || recipe.healthLabels || []);
+    const recipeCuisine = normalizeArray(Array.isArray(recipe.cuisineType)
+        ? recipe.cuisineType
+        : [recipe.cuisineType].filter(Boolean));
+
+    // Normalize preference labels
+    const prefDiet = normalizeArray(preferences.dietLabels || []);
+    const prefHealth = normalizeArray(preferences.healthLabels || []);
+    const prefCuisine = normalizeArray(preferences.cuisineTypes || []);
+
+    console.log('Matching Recipe:', {
+        name: recipe.label,
+        diet: recipeDiet,
+        health: recipeHealth,
+        cuisine: recipeCuisine
+    });
+
+    console.log('Against Preferences:', {
+        diet: prefDiet,
+        health: prefHealth,
+        cuisine: prefCuisine
+    });
+
+    // Helper function to check if a recipe label matches any preference
+    const hasMatchingLabel = (recipeLabels, prefLabels) => {
+        if (prefLabels.length === 0) return true;
+
+        return prefLabels.some(pref =>
+            recipeLabels.some(label => {
+                // Handle special cases and variations
+                const normalizedPref = pref.replace(/-/g, '').toLowerCase();
+                const normalizedLabel = label.replace(/-/g, '').toLowerCase();
+
+                // Check for exact match or contained string
+                const isMatch =
+                    normalizedLabel === normalizedPref ||
+                    normalizedLabel.includes(normalizedPref) ||
+                    normalizedPref.includes(normalizedLabel);
+
+                console.log(`Comparing: ${normalizedLabel} with ${normalizedPref} - Match: ${isMatch}`);
+                return isMatch;
+            })
+        );
+    };
+
+    // Diet match - recipe must include ANY of the preferred diet labels
+    const dietMatch = hasMatchingLabel(recipeDiet, prefDiet);
+    console.log('Diet Match Result:', dietMatch);
+
+    // Health match - recipe must include ANY of the preferred health labels
+    const healthMatch = hasMatchingLabel(recipeHealth, prefHealth);
+    console.log('Health Match Result:', healthMatch);
+
+    // Cuisine match - recipe must match ANY of the preferred cuisine types
+    const cuisineMatch = hasMatchingLabel(recipeCuisine, prefCuisine);
+    console.log('Cuisine Match Result:', cuisineMatch);
+
+    const matchResult = dietMatch && healthMatch && cuisineMatch;
+
+    console.log('Final Match Result:', {
+        recipeName: recipe.label,
+        dietMatch,
+        healthMatch,
+        cuisineMatch,
+        overall: matchResult
+    });
+
+    return matchResult;
+}
+
+function shuffleArray(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
+
+
 async function fetchUserPreferences() {
     if (!user) return null;
 
-    const userRef = doc(db, 'users', user.uid);
-    const userDoc = await getDoc(userRef);
+    try {
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
 
-    if (userDoc.exists()) {
-        return {
-            dietLabels: Array.isArray(userDoc.data().dietaryPreferences) ? userDoc.data().dietaryPreferences : [],
-            healthLabels: Array.isArray(userDoc.data().healthGoals) ? userDoc.data().healthGoals : [],
-            cuisineTypes: Array.isArray(userDoc.data().cuisineTypes) ? userDoc.data().cuisineTypes : []
-        };
+        if (userDoc.exists()) {
+            const data = userDoc.data();
+            return {
+                dietLabels: normalizeArray(data.dietaryPreferences),
+                healthLabels: normalizeArray(data.healthGoals),
+                cuisineTypes: normalizeArray(data.cuisineTypes)
+            };
+        }
+    } catch (error) {
+        console.error('Error fetching user preferences:', error);
     }
 
-    return {
-        dietLabels: [],
-        healthLabels: [],
-        cuisineTypes: []
-    };
+    return null;
 }
 
-// Fetches recipes from the API without filtering, then applies user preferences locally
 async function fetchAndFilterRecipes() {
     isLoading.value = true;
     recommendations.value = [];
-    const preferences = await fetchUserPreferences();
-    const params = {
-        app_id: appId,
-        app_key: apiKey,
-        from: 0,
-        to: 100,
-        q: 'recipe',
-    };
 
     try {
-        const response = await axios.get(apiUrl, { params });
-        const recipes = response.data.hits.map(hit => hit.recipe);
-        console.log('All recipes:', recipes);
-        console.log('User preferences:', preferences);
+        const preferences = await fetchUserPreferences();
+        console.log('Fetched User Preferences:', preferences);
 
-        const filteredRecipes = recipes.filter(recipe => {
-            // First, let's log the actual values we're working with
-            console.log('Recipe:', {
-                dietLabels: recipe.dietLabels,
-                healthLabels: recipe.healthLabels,
-                cuisineType: recipe.cuisineType
-            });
-            console.log('User Preferences:', preferences);
-
-            // Normalize the data (handle potential undefined values)
-            const recipeDietLabels = (recipe.dietLabels || []).map(d => d.toLowerCase());
-            const recipeHealthLabels = (recipe.healthLabels || []).map(h => h.toLowerCase());
-            const recipeCuisineTypes = (recipe.cuisineType || []).map(c => c.toLowerCase());
-
-            const userDietLabels = (preferences.dietLabels || []).map(d => d.toLowerCase());
-            const userHealthLabels = (preferences.healthLabels || []).map(d => d.toLowerCase());
-            const userCuisineTypes = (preferences.cuisineTypes || []).map(d => d.toLowerCase());
-
-            // Diet label matching
-            const dietMatch = userDietLabels.length === 0 || userDietLabels.some(userLabel => {
-
-                return recipeDietLabels.includes(userLabel);
-            });
-
-            // Health label matching
-            const healthMatch = userHealthLabels.length === 0 || userHealthLabels.some(userLabel => {
-
-                return recipeHealthLabels.includes(userLabel.toLowerCase());
-            });
-
-            // Cuisine type matching
-            const cuisineMatch = userCuisineTypes.length === 0 || userCuisineTypes.some(userType => {
-
-                return recipeCuisineTypes.includes(userType);
-            });
-            // Return true if ANY of the conditions match (not all)
-            return dietMatch || healthMatch || cuisineMatch;  // Changed from AND (&&) to OR (||)
+        // Simple API call to get general recipes
+        const response = await axios.get(apiUrl, {
+            params: {
+                app_id: appId,
+                app_key: apiKey,
+                q: 'main course',  // General query for main dishes
+                from: 0,
+                to: 100
+            }
         });
 
-        recommendations.value = filteredRecipes.slice(0, 10);
-        console.log('Filtered recipes:', recommendations.value);
+        console.log('API Response:', response.data);
+
+        // Get all recipes from response
+        const allRecipes = response.data.hits.map(hit => hit.recipe);
+        const prioritizedRecipes = prioritizeRecipes(allRecipes, preferences);
+        recommendations.value = prioritizedRecipes.slice(0, 10);
+        console.log('Final Recommendations:', recommendations.value);
+        console.log('Total Recipes Fetched:', allRecipes.length);
+
+
     } catch (error) {
-        console.error('Error fetching recommended recipes:', error);
+        console.error('Error in fetchAndFilterRecipes:', error);
+        recommendations.value = [];
     } finally {
         isLoading.value = false;
     }
 }
+const hasRecommendations = computed(() => {
+    return recommendations.value.length > 0;
+});
 onMounted(fetchAndFilterRecipes);
+
+
 </script>
 <style scoped>
 .recommendations {
@@ -240,13 +410,16 @@ onMounted(fetchAndFilterRecipes);
     height: 200px;
     overflow: hidden;
     position: relative;
-    margin: 0 auto; 
+    margin: 0 auto;
 }
-img{
-    width: 100%; /* Ensure the image fills the width of the container */
+
+img {
+    width: 100%;
+    /* Ensure the image fills the width of the container */
     height: 100%;
     object-fit: cover;
 }
+
 .recipe-image {
     width: 100%;
     height: 100%;
@@ -285,8 +458,8 @@ img{
     transform: translateY(-50%);
     width: 40px;
     height: 40px;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
+    color: rgba(0, 0, 0);
+
     border: none;
     border-radius: 50%;
     font-size: 24px;
@@ -299,7 +472,7 @@ img{
 }
 
 .carousel__navigation-button:hover {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: #dae2bc;
 }
 
 .carousel__navigation-button.prev {
@@ -313,9 +486,11 @@ img{
 /* Responsive Adjustments */
 @media (max-width: 576px) {
     .image-container {
-        width: 200px; /* Adjust width for small screens */
+        width: 200px;
+        /* Adjust width for small screens */
         height: 150px;
     }
+
     .recommendations {
         padding: 10px;
     }
@@ -332,12 +507,31 @@ img{
         height: 180px;
     }
 }
+
 @media (min-width: 577px) and (max-width: 768px) {
     .image-container {
-        width: 240px; /* Adjust width for medium screens */
+        width: 240px;
+        /* Adjust width for medium screens */
+        height: 180px;
+    }
+
+    .recommendations {
+        padding: 10px;
+    }
+
+    .carousel-container {
+        padding: 0 30px;
+    }
+
+    .carousel__slide {
+        height: 340px;
+    }
+
+    .image-container {
         height: 180px;
     }
 }
+
 @media (min-width: 577px) and (max-width: 768px) {
     .carousel__slide {
         height: 360px;
