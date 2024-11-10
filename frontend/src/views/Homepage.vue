@@ -5,7 +5,7 @@
     <div class="scroll-progress" ref="scrollProgress"></div>
     <section class="hero">
       <div class="hero-content">
-        <h1 class="hero-title" ref="heroTitle">Welcome back to Mealmate</h1>
+        <h1 class="hero-title title" ref="heroTitle">Welcome back to Mealmate</h1>
         <!-- <p ref="heroSubtitle">Your personal assistant for meal planning, grocery shopping, and nutrition</p> -->
         <TypeWriter ref="heroSubtitle"/>
       </div>
@@ -22,7 +22,7 @@
     </section>
     
     <section class="features" ref="featuresSection">
-    <h2 class="feature-header">Your meals for today</h2>
+    <h2 class="feature-header title">Your meals for today</h2>
     <div class="features-grid">
       <div 
         class="feature" 
@@ -53,7 +53,7 @@
 
     
     <section class="how-it-works" ref="howItWorksSection">
-      <h2 class="quick-action-title">Quick Actions</h2>
+      <h2 class="quick-action-title title">Quick Actions</h2>
       <div class="steps">
         <div class="step" v-for="(step, index) in steps" :key="index" ref="stepItems">
 
@@ -65,7 +65,7 @@
     </section>
     
     <section class="recommended-recipes" ref="recommendedRecipesSection">
-      <h2 class="recommended-recipes-title">Recommended Recipes</h2>
+      <h2 class="recommended-recipes-title title">Recommended Recipes</h2>
       <Recommendation />
       <!-- <Carousel v-bind="carouselConfig">
         <Slide v-for="(recipe, index) in recommendedRecipes" :key="index">
@@ -238,7 +238,7 @@ const getTodayMeals = async () => {
     { 
       title: 'Change Meal Preferences', 
       description: 'Tell us about your dietary preferences, allergies, and favourite type of cuisines.', 
-      path: '/profile' 
+      path: '/meal-preferences' 
     },
     { 
       title: 'View weekly meal plan', 
@@ -375,6 +375,11 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+.title {
+  color: rgba(0, 90, 0, 1);
+  font-weight:bold;
+}
+
 .bowl-container {
   position: relative;
   width: 100%; 
@@ -387,8 +392,6 @@ body {
 
 .feature-header {
   margin-top: 20px;
-  color: #4A5240;
-  font-weight:bold;
 }
 .spoon {
   position: absolute;
@@ -471,8 +474,6 @@ p {
   z-index: 2;
 }
 .hero-title {
-  color: #4A5240;
-  font-weight: bold;
   margin-bottom:40px
 ;
 }
@@ -579,7 +580,6 @@ p {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.3s ease, transform 0.3s ease;
-  color: #4A5240;
 }
 
 .feature-description {
@@ -651,17 +651,13 @@ p {
   margin-bottom: 1rem;
 }
 
-.quick-action-title {
-  color:#4A5240;
-  font-weight:bold;
-}
-
 .quick-action-btn {
   background-color: #DAE2BC;
 }
 
 .quick-action-btn:hover {
-  background-color: #dffb7b;
+  background-color: rgba(0, 90, 0, 1);
+  color: #DAE2BC;
 }
 
 
@@ -747,11 +743,6 @@ p {
   .float-object {
     max-width: 40px;
   }
-}
-
-.recommended-recipes-title {
-  color: #4A5240;
-  font-weight:bold;
 }
 /* 
 .recommended-recipes {
