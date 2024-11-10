@@ -1,9 +1,10 @@
 <template>
+  <Navbar />
   <div class="row">
     <div class="col-lg-1 col-md-1 col-sm-0"></div>
   <div class="col-lg-10 col-md-10 col-sm-12">
     <div class="home-page">
-    <Navbar />
+    
   <div class="components-wrapper">
     <div class="mx-4 my-4">
     <MealPlanCard />
