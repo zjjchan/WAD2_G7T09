@@ -171,9 +171,9 @@ const handleGoogleSignIn = async () => {
 }
 
 .auth-title {
-  font-family: 'Lily Script One', Verdana, Geneva, Tahoma, sans-serif;
+  font-family: 'Shrikhand', cursive;
   font-size: 3rem;
-  color: #85ca6a;
+  color: rgb(9, 56, 9);
   margin-bottom: 0.5rem;
 }
 
@@ -246,48 +246,4 @@ const handleGoogleSignIn = async () => {
   }
 }
 
-@media (max-width: 768px) {
-  .auth-container {
-    align-items: flex-start;
-    background: #ffffff;
-  }
-
-  .auth-card {
-    box-shadow: none;
-  }
-
-  .auth-image {
-    height: 25vh;
-  }
-
-  .auth-form {
-    padding: 1.5rem 1rem;
-  }
-
-  .auth-title {
-    font-size: 2.5rem;
-  }
-
-  .auth-subtitle {
-    font-size: 1.25rem;
-  }
-
-  .form-control, .btn-success, .btn-outline-dark {
-    padding: 0.5rem 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .auth-image {
-    height: 20vh;
-  }
-
-  .auth-title {
-    font-size: 2rem;
-  }
-
-  .auth-subtitle {
-    font-size: 1rem;
-  }
-}
 </style>
