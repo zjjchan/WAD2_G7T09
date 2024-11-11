@@ -20,7 +20,7 @@
     let editItemIndex = -1;
     let isLoading = ref(false); // loading for amazon listings
     let isLoadingGen = ref(false); // loading for list generation
-    let isListEmpty = ref(false);
+    let isListEmpty = ref(false); // checks if grocerylist is empty
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -294,7 +294,7 @@
                             amazonList.value.push([name, image, price, asin, item.quantity]);
                         }
                     }
-                })
+                });
             }
         } catch (error) {
             alert("There was an error in getting the amazon listings. Please try again later.");
@@ -355,8 +355,8 @@
                     <tbody v-if="isListEmpty && !isLoadingGen">
                         <tr>
                             <td colspan="4" class="table-temps text-center">
-                                <DotLottieVue class="mx-auto d-block" style="height: 300px; width: 300px" autoplay loop src="https://lottie.host/e287e782-0510-484b-8612-6b1c2e6f99d6/bGsUZrJ03m.json" />
-                                <h5>There's nothing here. Add some items to buy!</h5>
+                                <DotLottieVue class="mx-auto d-block" style="height: 300px; width: 300px" autoplay loop src="https://lottie.host/e287e782-0510-484b-8612-6b1c2e6f99d6/bGsUZrJ03m.json"/>
+                                <h5>There's nothing here. Add some items you plan to buy!</h5>
                             </td>
                         </tr>
                     </tbody>
@@ -397,18 +397,18 @@
                                 }
                             }
                         }" class="info text-end">{{ i.quantity }}</td>
-                            <td class="delete-item"><button type="button" class="btn-close" @click="removeItem(i.itemname)" aria-label="Delete"></button></td>
-                            <td class="edit-item"><svg @click="editItemProcess(i.itemname, i.quantity, index)" tabindex="0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                            <td class="delete-item"><button type="button" class="btn-close" @click="removeItem(i.itemname)" aria-label="Delete Item" title="Delete"></button></td>
+                            <td class="edit-item" title="Edit"><svg @click="editItemProcess(i.itemname, i.quantity, index)" tabindex="0" aria-label="Edit item" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
   <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
 </svg></td>
                         </tr>
                         <tr v-if="isAddingItem" class="add-item">
                             <td colspan="4">
                                 <div class="input-group add-input">
-                                    <input type="text" aria-label="Item" class="form-control" style="width: 30%" v-model="itemAdded" placeholder="Item Name">
-                                    <input type="number" aria-label="Quantity" class="form-control" v-model="quantityAdded" placeholder="Qty">
+                                    <input type="text" aria-label="Item" class="form-control" style="width: 30%" v-model="itemAdded" placeholder="Item Name" maxlength="27">
+                                    <input type="number" aria-label="Quantity" class="form-control" v-model="quantityAdded" placeholder="Qty" min="1" max="99">
                                     <button v-if="isEditingItem" class="btn btn-warning" type="button" @click="addItem(itemAdded, quantityAdded)" :disabled="itemAdded.trim() == '' || quantityAdded == ''">Edit</button>
-                                    <button v-else class="btn btn-primary" type="button" @click="addItem(itemAdded, quantityAdded)" :disabled="itemAdded.trim() == '' || quantityAdded == ''">Add</button>
+                                    <button v-else class="btn btn-primary" type="button" @click="addItem(itemAdded, quantityAdded)" :disabled="itemAdded.trim() == '' || quantityAdded == '' || quantityAdded < 1 || quantityAdded > 99 || quantityAdded.toString().length > 4">Add</button>
                                     <button class="btn btn-danger" type="button" @click="cancelAddItem">Cancel</button>
                                 </div>
                             </td>
@@ -434,7 +434,7 @@
             <div class="col-md-1"></div>
         </div>
         <div class="row" style="height: 50px"></div>
-        <div class="modal fade" id="genRec" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal fade" id="genRec" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="GenerateListConfirmLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -451,7 +451,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="checkout" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal fade" id="checkout" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -599,6 +599,7 @@
     .edit-item svg {
         height: 18px;
         width: 18px;
+        cursor: pointer;
     }
 
     .edit-item svg:focus {
