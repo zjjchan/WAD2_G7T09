@@ -141,7 +141,6 @@ const onDragEnd = () => {
   position: sticky;
   top: 0;
   background-color: #DAE2BC;
-  padding: 0.5rem;
   z-index: 1;
 }
 
@@ -156,7 +155,7 @@ const onDragEnd = () => {
   gap: 1rem;
   width: 100%;
   grid-template-columns: 1fr;
-  padding-bottom: 1rem;
+  padding: 1rem;
 }
 
 @media (min-width: 640px) {

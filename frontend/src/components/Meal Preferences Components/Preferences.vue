@@ -82,7 +82,7 @@ const openModal = () => {
   border-radius: 1.5rem;
   max-width: 750px;
   margin: auto;
-  padding: 1rem;
+  padding: 1.5rem;
   height: 310px;
   display: flex;
   flex-direction: column;
@@ -92,7 +92,7 @@ const openModal = () => {
 
 .preferences-title {
   color: #4A5240;
-  font-size: 1.3rem;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
   font-weight: bold;
   margin-bottom: 0.5rem;
   text-align: center;
