@@ -166,7 +166,7 @@ const carouselConfig = {
 
 // Set default features in case data is not fetched yet
 const features = ref([
-  { icon: 'images/breakfasticon.png', title: 'Breakfast', description: 'test', image: '' },
+  { icon: 'images/breakfasticon.png', title: 'Breakfast', description: '', image: '' },
   { icon: 'images/lunchicon.png', title: 'Lunch', description: '', image: '' },
   { icon: 'images/dinnericon.png', title: 'Dinner', description: '', image: '' },
 ]);
