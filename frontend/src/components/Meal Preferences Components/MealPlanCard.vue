@@ -1,13 +1,24 @@
 <template>
   <div class="meal-plan-card">
-    <h3 class="title">Weekly Meal Plan</h3> 
-    <button type="button" class="btn tool-tip"
-      data-bs-toggle="tooltip" data-bs-placement="top"
-      data-bs-custom-class="custom-tooltip"
-      data-bs-title="Drag and drop from your saved recipes!">
-      i
-    </button>
-    
+    <div class="container header-container">
+  <div class="row">
+    <div class="col-12 d-flex align-items-center justify-content-between flex-md-row flex-column">
+      <h3 class="title col-lg-10 mb-2">Weekly Meal Plan</h3> 
+      <div class="d-flex align-items-center">
+        <button type="button" class="btn clear-all-btn me-4" @click="clearAllMeals">
+          Clear All
+        </button>
+        <button type="button" class="btn tool-tip" 
+          data-bs-toggle="tooltip" data-bs-placement="top"
+          data-bs-custom-class="custom-tooltip"
+          data-bs-title="Drag and drop from your saved recipes!">
+          i
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
     <div class="scroll-wrapper">
       <div class="meal-plan-grid">
         <div v-for="day in days" :key="day" class="day-column">
@@ -146,6 +157,15 @@ const loadMealPlan = async () => {
   }
 };
 
+const clearAllMeals = async () => {
+  for (const day in mealPlan.value) {
+    for (const mealTime in mealPlan.value[day]) {
+      mealPlan.value[day][mealTime] = [];
+    }
+  }
+  await saveMealPlan();
+};
+
 onMounted(() => {
   const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   tooltipTriggerList.forEach(tooltipTriggerEl => {
@@ -160,7 +180,6 @@ auth.onAuthStateChanged((user) => {
 
 <style scoped>
 .meal-plan-card {
-  position: relative; /* Enable absolute positioning inside */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -169,11 +188,14 @@ auth.onAuthStateChanged((user) => {
   padding: 40px;
   height: 100%;
 }
+.clear-all-btn {
+  background-color: #f44336;
+  color: white;
+  font-size: 8px;
+}
+
 
 .tool-tip {
-  position: absolute;
-  top: 45px;
-  right: 50px;
   background-color: #4A5240;
   color: white; 
   border: none;

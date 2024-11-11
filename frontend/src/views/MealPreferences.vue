@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="sign-out-container col-12">
-        <button @click="handleSignOut" class="btn btn-danger">
+        <button @click="handleSignOut" class="btn sign-out-btn">
           Sign Out
         </button>
     </div>
@@ -122,6 +122,11 @@ const handleSignOut = async () => {
   margin-top: 10px;
   display: flex;
   justify-content: center;
+}
+
+.sign-out-btn {
+  background-color: #f44336;
+  color: white;
 }
 
   /* .container-wrapper {
