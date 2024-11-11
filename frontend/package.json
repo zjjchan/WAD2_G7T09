@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@floating-ui/vue": "^1.1.5",
     "@fontsource/shrikhand": "^5.1.0",
     "@lottiefiles/dotlottie-vue": "^0.4.18",
     "axios": "^1.7.7",
