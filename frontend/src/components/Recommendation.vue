@@ -70,7 +70,6 @@ const handleNextClick = (next) => {
 const handlePrevClick = (prev, next) => {
     next();
 };
-
 const carouselConfig = {
     itemsToShow: 4,
     snapAlign: 'center',
@@ -80,6 +79,7 @@ const carouselConfig = {
     autoplayTimeout: 2500,
     mouseDrag: true,
     touchDrag: true,
+    spacing: 20, // Add consistent spacing between slides
     breakpoints: {
         // Extra small devices
         320: {
@@ -89,26 +89,25 @@ const carouselConfig = {
         // Small devices
         576: {
             itemsToShow: 1,
-            snapAlign: 'start',
+            snapAlign: 'center',
         },
         // Medium devices
         768: {
             itemsToShow: 2,
             snapAlign: 'start',
+            spacing: 20,
         },
         // Large devices
-        1000: {
-            itemsToShow: 2,
+        992: {
+            itemsToShow: 3,
             snapAlign: 'start',
+            spacing: 20,
         },
         // Extra large devices
         1200: {
-            itemsToShow: 2.5,
+            itemsToShow: 4,
             snapAlign: 'start',
-        },
-        1600: {
-            itemsToShow: 3.75,
-            snapAlign: 'start',
+            spacing: 20,
         }
     },
 };
@@ -302,59 +301,59 @@ onMounted(fetchAndFilterRecipes);
 .recommendations {
     padding: 20px;
     background-color: #ffffff;
-    position: relative;
-    overflow: hidden;
+    width: 100%;
 }
 
 .carousel-container {
     position: relative;
-    padding: 0 40px;
-    margin: 0 auto;
     max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
 }
 
-/* Card Sizing */
+.carousel {
+    position: relative;
+}
+
+/* Force all slides to be exactly the same size */
 .carousel__slide {
+    display: block;
     box-sizing: border-box;
-    height: 380px;
-    padding: 8px;
+    width: 280px !important; /* Fixed width */
+    height: 360px !important; /* Fixed height */
+    margin: 0 10px;
+    flex: 0 0 auto !important; /* Prevent flex growth/shrink */
 }
 
 .carousel__item {
+    position: relative;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
 .image-container {
-    width: 280px;
-    height: 200px;
-    overflow: hidden;
     position: relative;
-    margin: 0 auto;
-}
-
-img {
     width: 100%;
-    /* Ensure the image fills the width of the container */
-    height: 100%;
-    object-fit: cover;
+    height: 200px; /* Fixed height */
+    overflow: hidden;
 }
 
 .recipe-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 10px 10px 0 0;
+    border-radius: 8px 8px 0 0;
 }
 
 .content-container {
     padding: 16px;
-    flex-grow: 1;
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -364,10 +363,12 @@ img {
     margin: 0 0 8px 0;
     font-size: 1rem;
     line-height: 1.4;
+    font-weight: 600;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    height: 2.8em; /* Fixed height for title */
 }
 
 .cuisine-type {
@@ -376,15 +377,14 @@ img {
     color: #666;
 }
 
-/* Navigation Styling */
+/* Navigation buttons */
 .carousel__navigation-button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     width: 40px;
     height: 40px;
-    color: rgba(0, 0, 0);
-
+    background-color: #ffffff;
     border: none;
     border-radius: 50%;
     font-size: 24px;
@@ -393,83 +393,28 @@ img {
     align-items: center;
     justify-content: center;
     z-index: 2;
-    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .carousel__navigation-button:hover {
-    background-color: #dae2bc;
+    background-color: #f5f5f5;
 }
 
 .carousel__navigation-button.prev {
-    left: -50px;
+    left: -20px;
 }
 
 .carousel__navigation-button.next {
-    right: -50px;
+    right: -20px;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 576px) {
-    .image-container {
-        width: 200px;
-        /* Adjust width for small screens */
-        height: 150px;
-    }
-
-    .recommendations {
-        padding: 10px;
-    }
-
-    .carousel-container {
-        padding: 0 30px;
-    }
-
-    .carousel__slide {
-        height: 340px;
-    }
-
-    .image-container {
-        height: 180px;
-    }
+/* Track and viewport styles */
+.carousel__track {
+    display: flex;
+    gap: 0 !important;
+    transform-style: preserve-3d;
 }
 
-@media (min-width: 577px) and (max-width: 768px) {
-    .image-container {
-        width: 240px;
-        /* Adjust width for medium screens */
-        height: 180px;
-    }
-
-    .recommendations {
-        padding: 10px;
-    }
-
-    .carousel-container {
-        padding: 0 30px;
-    }
-
-    .carousel__slide {
-        height: 340px;
-    }
-
-    .image-container {
-        height: 180px;
-    }
-}
-
-@media (min-width: 577px) and (max-width: 768px) {
-    .carousel__slide {
-        height: 360px;
-    }
-}
-
-@media (min-width: 769px) {
-    .carousel-container {
-        padding: 0 50px;
-    }
-}
-
-/* Hide scrollbar but keep functionality */
 .carousel__viewport {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -479,7 +424,7 @@ img {
     display: none;
 }
 
-/* Link styling */
+/* Link styles */
 .card-link {
     text-decoration: none;
     color: inherit;
@@ -487,9 +432,24 @@ img {
     height: 100%;
 }
 
-/* Track styling */
-.carousel__track {
-    gap: 0 !important;
-    transform-style: preserve-3d;
+/* Responsive container padding */
+@media (max-width: 576px) {
+    .carousel-container {
+        padding: 0 30px;
+    }
+    
+    .carousel__navigation-button.prev {
+        left: -15px;
+    }
+    
+    .carousel__navigation-button.next {
+        right: -15px;
+    }
+}
+
+@media (min-width: 577px) {
+    .carousel-container {
+        padding: 0 40px;
+    }
 }
 </style>
