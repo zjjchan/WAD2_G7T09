@@ -72,47 +72,38 @@ const handlePrevClick = (prev, next) => {
 };
 const carouselConfig = {
     itemsToShow: 4,
-    snapAlign: 'center',
+    snapAlign: 'center', // Changed to center alignment
     wrapAround: true,
-    autoplay: true,
-    pauseAutoplayOnHover: true,
-    autoplayTimeout: 2500,
+    autoplay: false,
     mouseDrag: true,
     touchDrag: true,
-    spacing: 20, // Add consistent spacing between slides
+    modelValue: 0,
     breakpoints: {
-        // Extra small devices
-        320: {
+        0: {
             itemsToShow: 1,
             snapAlign: 'center',
         },
-        // Small devices
-        576: {
-            itemsToShow: 1,
-            snapAlign: 'center',
+        550: {
+            itemsToShow: 2,
+            snapAlign: 'start',
         },
-        // Medium devices
         768: {
             itemsToShow: 2,
             snapAlign: 'start',
-            spacing: 20,
         },
-        // Large devices
         992: {
             itemsToShow: 3,
             snapAlign: 'start',
-            spacing: 20,
         },
-        // Extra large devices
         1200: {
             itemsToShow: 4,
             snapAlign: 'start',
-            spacing: 20,
         }
     },
 };
 
 function prioritizeRecipes(recipes, preferences) {
+    console.log(preferences)
     if (!preferences || (!preferences.dietLabels?.length && !preferences.healthLabels?.length && !preferences.cuisineTypes?.length)) {
         // Case 3: No preferences at all - return random recipes
         return shuffleArray(recipes);
@@ -120,16 +111,23 @@ function prioritizeRecipes(recipes, preferences) {
 
     // Helper function to check if a recipe matches any preference
     const hasMatchingLabel = (recipeLabels, prefLabels) => {
-        if (!prefLabels?.length) return true;
-        return prefLabels.some(pref =>
-            recipeLabels.some(label => {
+        // if (!prefLabels?.length) return true;
+        for (let pref of prefLabels) {
+            for (let label of recipeLabels) {
                 const normalizedPref = pref.replace(/-/g, '').toLowerCase();
                 const normalizedLabel = label.replace(/-/g, '').toLowerCase();
-                return normalizedLabel === normalizedPref ||
+
+                if (
+                    normalizedLabel === normalizedPref ||
                     normalizedLabel.includes(normalizedPref) ||
-                    normalizedPref.includes(normalizedLabel);
-            })
-        );
+                    normalizedPref.includes(normalizedLabel)
+                ) {
+                    return true;  // Match found, return true immediately
+                }
+            }
+        }
+        return false;
+
     };
 
     // Score each recipe based on how well it matches preferences
@@ -139,6 +137,7 @@ function prioritizeRecipes(recipes, preferences) {
         const recipeCuisine = normalizeArray(Array.isArray(recipe.cuisineType)
             ? recipe.cuisineType
             : [recipe.cuisineType].filter(Boolean));
+
 
         let score = 0;
         let matches = {
@@ -173,6 +172,7 @@ function prioritizeRecipes(recipes, preferences) {
                 matches.cuisine = true;
             }
             if (preferences.dietLabels?.length && hasMatchingLabel(recipeDiet, preferences.dietLabels)) {
+                // console.log(recipeDiet);
                 score += 3;
                 matches.diet = true;
             }
@@ -242,8 +242,8 @@ async function fetchUserPreferences() {
         if (userDoc.exists()) {
             const data = userDoc.data();
             return {
-                dietLabels: normalizeArray(data.dietaryPreferences),
-                healthLabels: normalizeArray(data.healthGoals),
+                dietLabels: normalizeArray(data.healthGoals),
+                healthLabels: normalizeArray(data.dietaryPreferences),
                 cuisineTypes: normalizeArray(data.cuisineTypes)
             };
         }
@@ -297,34 +297,42 @@ onMounted(fetchAndFilterRecipes);
 
 
 </script>
+
 <style scoped>
 .recommendations {
-    padding: 20px;
+    padding: 10px;
     background-color: #ffffff;
     width: 100%;
+    overflow: hidden;
+    /* Prevent horizontal scroll */
+    min-height: 420px;
+    /* Ensure enough height for card */
 }
 
 .carousel-container {
     position: relative;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 20px;
+    /* Reduced side padding */
 }
 
 .carousel {
     position: relative;
-    padding-bottom: 20px; /* Added padding at bottom of carousel */
+    padding-bottom: 20px;
 }
 
-/* Force all slides to be exactly the same size */
+/* Card sizing */
 .carousel__slide {
     display: block;
     box-sizing: border-box;
-    width: 280px !important;
-    height: 380px !important; /* Increased height to accommodate content */
-    margin: 0 10px;
+    width: 260px !important;
+    /* Reduced width */
+    height: 380px !important;
+    margin: 0 auto;
+    /* Center the slide */
     flex: 0 0 auto !important;
-    padding-bottom: 10px; /* Added padding to bottom of slide */
+    padding: 5px;
 }
 
 .carousel__item {
@@ -342,7 +350,8 @@ onMounted(fetchAndFilterRecipes);
 .image-container {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 180px;
+    /* Slightly reduced height */
     overflow: hidden;
 }
 
@@ -355,7 +364,7 @@ onMounted(fetchAndFilterRecipes);
 
 .content-container {
     padding: 16px;
-    padding-bottom: 24px; /* Increased bottom padding */
+    padding-bottom: 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -363,35 +372,40 @@ onMounted(fetchAndFilterRecipes);
 }
 
 .recipe-title {
-    margin: 0 0 12px 0; /* Increased bottom margin */
-    font-size: 1rem;
+    margin: 0 0 12px 0;
+    font-size: 0.95rem;
+    /* Slightly reduced font size */
     line-height: 1.4;
     font-weight: 600;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 2.8em;
+    height: auto;
+    /* Allow natural height */
+    max-height: 2.8em;
 }
 
 .cuisine-type {
     margin: 0;
-    padding-bottom: 8px; /* Added padding at bottom */
-    font-size: 0.9rem;
+    padding-bottom: 8px;
+    font-size: 0.85rem;
+    /* Slightly reduced font size */
     color: #666;
 }
 
-/* Rest of the styles remain the same */
+/* Navigation buttons */
 .carousel__navigation-button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    /* Slightly smaller buttons */
+    height: 36px;
     background-color: #ffffff;
     border: none;
     border-radius: 50%;
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -405,22 +419,27 @@ onMounted(fetchAndFilterRecipes);
 }
 
 .carousel__navigation-button.prev {
-    left: -20px;
+    left: -12px;
 }
 
 .carousel__navigation-button.next {
-    right: -20px;
+    right: -12px;
 }
 
+/* Track and viewport styles */
 .carousel__track {
     display: flex;
     gap: 0 !important;
     transform-style: preserve-3d;
+    margin: 0 auto;
+    /* Center the track */
 }
 
 .carousel__viewport {
     scrollbar-width: none;
     -ms-overflow-style: none;
+    overflow: visible;
+    /* Allow content to be fully visible */
 }
 
 .carousel__viewport::-webkit-scrollbar {
@@ -434,23 +453,38 @@ onMounted(fetchAndFilterRecipes);
     height: 100%;
 }
 
-@media (max-width: 576px) {
+/* Responsive adjustments */
+@media (max-width: 360px) {
+    .carousel__slide {
+        width: 240px !important;
+        /* Even smaller for very small screens */
+    }
+
     .carousel-container {
-        padding: 0 30px;
+        padding: 0 15px;
     }
-    
-    .carousel__navigation-button.prev {
-        left: -15px;
+
+    .image-container {
+        height: 160px;
     }
-    
-    .carousel__navigation-button.next {
-        right: -15px;
+}
+
+@media (min-width: 361px) and (max-width: 576px) {
+    .carousel-container {
+        padding: 0 20px;
     }
 }
 
 @media (min-width: 577px) {
     .carousel-container {
-        padding: 0 40px;
+        padding: 0 30px;
     }
+}
+
+/* Ensure container doesn't collapse */
+.carousel,
+.carousel__viewport,
+.carousel__track {
+    min-height: 380px;
 }
 </style>
