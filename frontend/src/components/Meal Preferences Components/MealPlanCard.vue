@@ -12,7 +12,7 @@
           data-bs-toggle="tooltip" data-bs-placement="top"
           data-bs-custom-class="custom-tooltip"
           data-bs-title="Drag and drop from your saved recipes!">
-          i
+          ?
         </button>
       </div>
     </div>
