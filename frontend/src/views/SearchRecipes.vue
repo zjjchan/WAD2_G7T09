@@ -188,7 +188,7 @@ export default {
         HealthLabels: false,
         CuisineTypes: false
       },
-      
+
       // Filter sections with default options
       filterSections: {
         MealTypes: ["Breakfast", "Brunch", "Lunch", "Dinner", "Snack", "Teatime"],
@@ -527,12 +527,7 @@ export default {
 }
 
 
-#right-section {
-  margin-left: 250px;
-  width: calc(100% - 250px);
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-}
+
 
 /* Recommendations section */
 #right-section>div>.card-columns {
@@ -592,45 +587,6 @@ export default {
   margin-top: 5px;
 }
 
-@media (max-width: 576px) {
-
-  /* Phone layout */
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    z-index: 1000;
-    transition: left 0.3s ease;
-    height: 100vh;
-  }
-
-  .sidebar.d-md-block {
-    display: none !important;
-  }
-
-  .sidebar.show {
-    left: 0;
-  }
-
-  .row {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
-  }
-
-  #right-section {
-    margin-left: 0;
-    width: 100%;
-    padding: 10px;
-  }
-
-
-  /* Show filter button for mobile */
-  .filter-button {
-    display: block;
-
-  }
-
-}
 
 @media (min-width: 769px) {
   .filter-button {
@@ -651,46 +607,6 @@ export default {
   }
 }
 
-@media (min-width: 577px) and (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    left: 0;
-    width: 100%;
-    transform: translateX(-100%);
-    height: 100%;
-    background: #b5c7ae;
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-  }
-
-  .filter-section {
-    justify-content: center;
-    margin: auto;
-    border-top: #727272 solid 1.5px;
-    width: 150px;
-  }
-
-  .sidebar.d-md-block {
-    display: none !important;
-  }
-
-  /* When filter is shown */
-  .sidebar:not(.d-none) {
-    transform: translateX(0);
-    display: block !important;
-  }
-
-  /* Ensure the back button is visible */
-  .d-md-none {
-    display: block !important;
-  }
-
-  #right-section {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-}
 
 
 
@@ -877,7 +793,7 @@ body section .row {
   }
 
   .card .cover h1 {
-    font-size: 1.6em;
+    font-size: 1.4em;
   }
 
 }
@@ -891,6 +807,19 @@ body section .row {
     max-width: 350px;
     margin: 0 auto 20px;
   }
+
+  .recipe-card-wrapper {
+    padding: 0 15px;
+  }
+
+  /* Ensure content inside card maintains square ratio */
+  .card .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 
@@ -899,11 +828,12 @@ body section .row {
   width: 100%;
   padding-bottom: 100%;
   border-radius: 12px;
-  /* Slightly increased */
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  /* Enhanced shadow */
   transform-style: preserve-3d;
+  perspective: 1000px;
+  background: transparent;
+  /* Changed from implicit white to transparent */
 }
 
 .card .cover {
@@ -917,7 +847,11 @@ body section .row {
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  backface-visibility: hidden;
+  background-color: transparent;
+  /* Added transparent background */
 }
+
 
 .card-link {
   position: absolute;
@@ -935,12 +869,14 @@ body section .row {
 .favorite-button {
   position: absolute;
   top: 15px;
-  /* Slightly adjusted */
   right: 15px;
   z-index: 100;
+  transform-style: preserve-3d;
+  transition: ease all 1s;
   transform: translateZ(100px);
   cursor: pointer;
   pointer-events: all;
+  backface-visibility: hidden;
 }
 
 .favorite-button-area {
@@ -954,13 +890,14 @@ body section .row {
   pointer-events: all;
 }
 
+.card:hover .favorite-button {
+  transform: translateZ(100px) rotateY(-180deg);
+}
 
 /* Make sure RouterLink doesn't interfere with button clicks */
 .card-link {
   pointer-events: all;
 }
-
-
 
 .card .cover:before {
   content: "";
@@ -975,6 +912,7 @@ body section .row {
   transition: ease all 1.1s;
   transform-style: preserve-3d;
   transform: translateZ(0px);
+  backface-visibility: hidden;
 }
 
 .card .cover:after {
@@ -987,6 +925,7 @@ body section .row {
   z-index: 2;
   transition: ease all 1.1s;
   background: rgba(0, 0, 0, 0.4);
+  backface-visibility: hidden;
 }
 
 .card .cover h1 {
@@ -997,10 +936,15 @@ body section .row {
   right: 35px;
   color: white;
   transform-style: preserve-3d;
-  transition: ease all 1.3s;
+  transition: ease all 1s;
   z-index: 3;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
   transform: translateZ(0px);
+}
+
+.card .cover h1,
+.card-sub {
+  backface-visibility: hidden;
 }
 
 .card-sub {
@@ -1031,13 +975,15 @@ body section .row {
   align-items: center;
   justify-content: center;
   z-index: 3;
+  backface-visibility: hidden;
 }
 
 .card-back-content {
   text-align: center;
   padding: 20px;
   color: #333;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
+
 }
 
 /* Card flip animation */
@@ -1058,23 +1004,13 @@ body section .row {
 }
 
 .sidebar {
-  position: relative;
-  /* Remove fixed positioning */
-  height: 100%;
-  /* Full height of the sidebar container */
-  overflow-y: auto;
-  /* Enable scrolling if content overflows */
   background-color: #fff;
   padding: 20px;
   border-right: 1px solid #e0e0e0;
   width: 250px;
-  z-index: 1000;
-  transition: transform 0.3s ease;
-
-  /* Optional: Hide scrollbar styles for a cleaner look */
-  scrollbar-width: thin;
-  /* for Firefox */
-  scrollbar-color: transparent transparent;
+  transition: all 0.3s ease;
+  overflow-y: auto;
+  height: 100%;
 }
 
 
@@ -1083,6 +1019,16 @@ body section .row {
   width: calc(100% - 250px);
   padding: 20px;
   transition: margin-left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#right-section>div {
+  width: 100%;
+  max-width: 1200px;
+  /* Adjust this value based on your needs */
+  margin: 0 auto;
 }
 
 /* Base sidebar styles */
@@ -1095,7 +1041,6 @@ body section .row {
   overflow-y: auto;
 }
 
-/* Phone layout (max-width: 576px) */
 @media (max-width: 576px) {
   .sidebar {
     position: fixed;
@@ -1104,19 +1049,33 @@ body section .row {
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 300px;
-    height: auto;
+    height: 80vh;
     max-height: 80vh;
     border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-  }
-
-  .sidebar.d-md-block {
-    display: none !important;
+    background: #fff;
+    overflow-y: auto;
+    display: none;
   }
 
   .sidebar.show {
     display: block !important;
+  }
+
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  .sidebar.show+.mobile-overlay {
+    display: block;
   }
 
   #right-section {
@@ -1124,27 +1083,62 @@ body section .row {
     width: 100%;
     padding: 10px;
   }
+
+  .filter-section {
+    margin: 0 auto;
+    padding: 10px 0;
+  }
 }
+
 
 /* Tablet layout (577px - 768px) */
 @media (min-width: 577px) and (max-width: 768px) {
   .sidebar {
     position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    transform: translateX(-100%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 400px;
+    height: 80vh;
     background: #fff;
+    z-index: 1000;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: none;
   }
 
   .sidebar.show {
-    transform: translateX(0);
+    display: block !important;
+  }
+
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  .sidebar.show+.mobile-overlay {
+    display: block;
   }
 
   #right-section {
     margin-left: 0 !important;
     width: 100% !important;
   }
+
+  .filter-section {
+    margin: 0 auto;
+    width: 90%;
+    max-width: 300px;
+  }
+
+
 }
 
 /* Desktop layout (min-width: 769px) */
@@ -1167,6 +1161,7 @@ body section .row {
     margin-left: 250px;
     width: calc(100% - 250px);
   }
+
 }
 
 /* Overlay for mobile filter */
@@ -1191,6 +1186,75 @@ body section .row {
   .sidebar.show+.mobile-overlay {
     opacity: 1;
   }
+}
+
+.sidebar {
+  position: fixed;
+  top: 10;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #fff;
+  padding: 20px;
+  border-right: 1px solid #e0e0e0;
+  width: 250px;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+  padding-bottom: 100px;
+  /* Add extra padding at bottom */
+}
+
+/* Ensure the content wrapper takes full height */
+.content-wrapper {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Maintain responsive layout */
+@media (max-width: 768px) {
+  #right-section {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+}
+
+/* Adjust card layout */
+.card-columns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.row.justify-content-center {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Ensure search bar is centered */
+.search-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Ensure pagination is centered */
+.pagination-controls {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding-bottom: 30px;
 }
 
 /* 
@@ -1288,4 +1352,5 @@ body section .row {
 
   }
 } */
+
 </style>
