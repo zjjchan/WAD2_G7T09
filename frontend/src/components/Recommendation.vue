@@ -15,15 +15,17 @@
                                 </div>
                                 <div class="content-container">
                                     <h6 class="recipe-title">{{ recipe.label }}</h6>
-                                    <p class="cuisine-type" v-if="recipe.matchedCuisineTypes.length">
-                                        <strong>Cuisine:</strong> {{ recipe.matchedCuisineTypes.join(', ') }}
-                                    </p>
-                                    <p class="matched-labels" v-if="recipe.matchedHealthLabels.length">
-                                        <strong>Matched Health Labels:</strong> {{ recipe.matchedHealthLabels.join(', ') }}
-                                    </p>
-                                    <p class="matched-labels" v-if="recipe.matchedDietLabels.length">
-                                        <strong>Matched Diet Labels:</strong> {{ recipe.matchedDietLabels.join(', ') }}
-                                    </p>
+                                    <div class="card-sub">
+                                        <p class="cuisine-type" v-if="recipe.matchedCuisineTypes.length">
+                                            <strong>Cuisine:</strong> {{ recipe.matchedCuisineTypes.join(', ') }}
+                                        </p>
+                                        <p class="matched-labels" v-if="recipe.matchedHealthLabels.length">
+                                            <strong>Health Labels:</strong> {{ recipe.matchedHealthLabels.join(', ') }}
+                                        </p>
+                                        <p class="matched-labels" v-if="recipe.matchedDietLabels.length">
+                                            <strong>Diet Labels:</strong> {{ recipe.matchedDietLabels.join(', ') }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </RouterLink>
@@ -34,7 +36,8 @@
                                 <button class="carousel__navigation-button next" @click="handleNextClick">›</button>
                             </template>
                             <template #prev>
-                                <button class="carousel__navigation-button prev" @click="handlePrevClick">‹</button> <!-- Changed to left arrow -->
+                                <button class="carousel__navigation-button prev" @click="handlePrevClick">‹</button>
+                                <!-- Changed to left arrow -->
                             </template>
                         </Navigation>
                     </template>
@@ -295,14 +298,18 @@ onMounted(fetchAndFilterRecipes);
     position: relative;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 40px; /* Increased padding to accommodate navigation buttons */
+    padding: 0 40px;
+    /* Increased padding to accommodate navigation buttons */
 }
 
 .carousel {
     position: relative;
     padding-bottom: 20px;
 }
-
+.card-sub{
+    padding-top: 10px;
+    text-align: justify;
+}
 /* Base card sizing */
 .carousel__slide {
     display: block;
@@ -395,13 +402,17 @@ onMounted(fetchAndFilterRecipes);
 }
 
 .carousel__navigation-button.prev {
-    left: -50px; /* Position left arrow outside the carousel container */
+    left: -50px;
+    /* Position left arrow outside the carousel container */
 }
 
 .carousel__navigation-button.next {
-    right: -50px; /* Position right arrow outside the carousel container */
+    right: -50px;
+    /* Position right arrow outside the carousel container */
 }
-
+h6{
+    font-size: larger;
+}
 /* Ensure no horizontal scrolling */
 .carousel__viewport {
     scrollbar-width: none;
@@ -423,7 +434,8 @@ onMounted(fetchAndFilterRecipes);
 /* Mobile-specific styles */
 @media (max-width: 576px) {
     .carousel-container {
-        padding: 0 60px; /* Increased padding to accommodate navigation buttons on mobile */
+        padding: 0 60px;
+        /* Increased padding to accommodate navigation buttons on mobile */
     }
 
     .carousel__slide {
@@ -450,11 +462,13 @@ onMounted(fetchAndFilterRecipes);
 
     /* Adjust navigation buttons for mobile */
     .carousel__navigation-button.prev {
-        left: -40px; /* Adjusted position for smaller screens */
+        left: -40px;
+        /* Adjusted position for smaller screens */
     }
 
     .carousel__navigation-button.next {
-        right: -40px; /* Adjusted position for smaller screens */
+        right: -40px;
+        /* Adjusted position for smaller screens */
     }
 }
 
