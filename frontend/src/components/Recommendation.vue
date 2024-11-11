@@ -313,16 +313,18 @@ onMounted(fetchAndFilterRecipes);
 
 .carousel {
     position: relative;
+    padding-bottom: 20px; /* Added padding at bottom of carousel */
 }
 
 /* Force all slides to be exactly the same size */
 .carousel__slide {
     display: block;
     box-sizing: border-box;
-    width: 280px !important; /* Fixed width */
-    height: 360px !important; /* Fixed height */
+    width: 280px !important;
+    height: 380px !important; /* Increased height to accommodate content */
     margin: 0 10px;
-    flex: 0 0 auto !important; /* Prevent flex growth/shrink */
+    flex: 0 0 auto !important;
+    padding-bottom: 10px; /* Added padding to bottom of slide */
 }
 
 .carousel__item {
@@ -340,7 +342,7 @@ onMounted(fetchAndFilterRecipes);
 .image-container {
     position: relative;
     width: 100%;
-    height: 200px; /* Fixed height */
+    height: 200px;
     overflow: hidden;
 }
 
@@ -353,6 +355,7 @@ onMounted(fetchAndFilterRecipes);
 
 .content-container {
     padding: 16px;
+    padding-bottom: 24px; /* Increased bottom padding */
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -360,7 +363,7 @@ onMounted(fetchAndFilterRecipes);
 }
 
 .recipe-title {
-    margin: 0 0 8px 0;
+    margin: 0 0 12px 0; /* Increased bottom margin */
     font-size: 1rem;
     line-height: 1.4;
     font-weight: 600;
@@ -368,16 +371,17 @@ onMounted(fetchAndFilterRecipes);
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 2.8em; /* Fixed height for title */
+    height: 2.8em;
 }
 
 .cuisine-type {
     margin: 0;
+    padding-bottom: 8px; /* Added padding at bottom */
     font-size: 0.9rem;
     color: #666;
 }
 
-/* Navigation buttons */
+/* Rest of the styles remain the same */
 .carousel__navigation-button {
     position: absolute;
     top: 50%;
@@ -408,7 +412,6 @@ onMounted(fetchAndFilterRecipes);
     right: -20px;
 }
 
-/* Track and viewport styles */
 .carousel__track {
     display: flex;
     gap: 0 !important;
@@ -424,7 +427,6 @@ onMounted(fetchAndFilterRecipes);
     display: none;
 }
 
-/* Link styles */
 .card-link {
     text-decoration: none;
     color: inherit;
@@ -432,7 +434,6 @@ onMounted(fetchAndFilterRecipes);
     height: 100%;
 }
 
-/* Responsive container padding */
 @media (max-width: 576px) {
     .carousel-container {
         padding: 0 30px;
