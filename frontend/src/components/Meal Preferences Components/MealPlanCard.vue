@@ -1,6 +1,13 @@
 <template>
   <div class="meal-plan-card">
-    <h3 class="title">Weekly Meal Plan</h3>
+    <h3 class="title">Weekly Meal Plan</h3> 
+    <button type="button" class="btn tool-tip"
+      data-bs-toggle="tooltip" data-bs-placement="top"
+      data-bs-custom-class="custom-tooltip"
+      data-bs-title="Drag and drop from your saved recipes!">
+      i
+    </button>
+    
     <div class="scroll-wrapper">
       <div class="meal-plan-grid">
         <div v-for="day in days" :key="day" class="day-column">
@@ -55,10 +62,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted} from 'vue';
 import Draggable from 'vuedraggable';
 import { getAuth } from 'firebase/auth';
 import { doc, updateDoc, getFirestore, getDoc } from 'firebase/firestore';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const db = getFirestore();
 const auth = getAuth();
@@ -138,6 +146,13 @@ const loadMealPlan = async () => {
   }
 };
 
+onMounted(() => {
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltipTriggerList.forEach(tooltipTriggerEl => {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+});
+
 auth.onAuthStateChanged((user) => {
   if (user) loadMealPlan();
 });
@@ -145,6 +160,7 @@ auth.onAuthStateChanged((user) => {
 
 <style scoped>
 .meal-plan-card {
+  position: relative; /* Enable absolute positioning inside */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -153,6 +169,40 @@ auth.onAuthStateChanged((user) => {
   padding: 40px;
   height: 100%;
 }
+
+.tool-tip {
+  position: absolute;
+  top: 45px;
+  right: 50px;
+  background-color: #4A5240;
+  color: white; 
+  border: none;
+  border-radius: 50%; 
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.tool-tip:hover {
+  background-color: #4CAF50;
+  color: #4A5240; 
+}
+
+/* .custom-tooltip .tooltip-inner {
+  background-color: #4A5240; 
+  color: #ffffff; 
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
+}
+.custom-tooltip .tooltip-arrow {
+  color: #4A5240; 
+} */
 
 .title {
   color: #4A5240;
