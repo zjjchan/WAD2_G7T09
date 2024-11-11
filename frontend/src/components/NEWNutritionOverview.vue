@@ -1,10 +1,12 @@
 <template>
     <div>
         <canvas v-if="hasData" class="targetchart" id="overviewchart2" style="width:100%; max-width:100%; max-height:450px;"></canvas>
-        <p v-else class="placeholder-text">Nothing has been added to your Meal Planner yet.
+        <p v-else class="placeholder-text">
+            <br><br><br><br>
+            <h3>Nothing has been added to your Meal Planner yet.</h3>
             <br>
-            <br>
-            Please add your meals to view your calorie consumption for each meal and day of the week.</p>
+            <h3>Please add your meals to view your calorie consumption for each meal and day of the week.</h3>
+            </p>
     </div>
 </template>
 
