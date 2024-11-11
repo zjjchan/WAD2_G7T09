@@ -46,11 +46,17 @@ import { gsap } from "gsap";
 import { getAuth, signOut } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 
+
+
 const router = useRouter();
 const auth = getAuth();
 
 // onMounted(() => {
-//   gsap.to(".components-wrapper", { duration: 1, y: -20 });
+//   // gsap.to(".components-wrapper", { duration: 1, y: -20 });
+//   const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+//   tooltipTriggerList.forEach(tooltipTriggerEl => {
+//     new bootstrap.Tooltip(tooltipTriggerEl);
+//   });
 // });
 
 const handleSignOut = async () => {
@@ -61,6 +67,8 @@ const handleSignOut = async () => {
     console.error('Error signing out:', error);
   }
 };
+
+
 </script>
 
 <style scoped>
@@ -111,7 +119,7 @@ const handleSignOut = async () => {
 } */
 
 .sign-out-container {
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
 }
