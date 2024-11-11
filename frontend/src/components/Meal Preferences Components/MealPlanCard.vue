@@ -150,14 +150,15 @@ auth.onAuthStateChanged((user) => {
   flex-direction: column;
   background-color: #DAE2BC;
   border-radius: 2.5rem;
-  padding: 20px;
+  padding: 40px;
+  height: 100%;
 }
 
 .title {
   color: #4A5240;
   font-size: clamp(1.25rem, 2vw, 1.5rem);
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 10px;
 }
 
 .scroll-wrapper {
@@ -169,7 +170,7 @@ auth.onAuthStateChanged((user) => {
 .meal-plan-grid {
   display: grid;
   gap: 0.5rem;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(150px, 1fr));
   grid-template-rows: auto;
   overflow-x: auto;
   min-width: min-content;
@@ -178,6 +179,8 @@ auth.onAuthStateChanged((user) => {
 .day-column {
   display: flex;
   flex-direction: column;
+  min-width: 150px;
+  max-width: 200px;
 }
 
 .day-title-wrapper {
@@ -208,13 +211,16 @@ auth.onAuthStateChanged((user) => {
 }
 
 .meal-slot {
-  background-color:#FFFFFF ;
+  background-color: #FFFFFF;
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin-bottom: 10px;
-  height: 80px;
+  height: 80px; /* Fixed height */
+  min-height: 80px; /* Ensure minimum height */
+  max-height: 80px; /* Enforce maximum height */
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Prevent content from expanding the slot */
 }
 
 .meal-header {
@@ -222,37 +228,38 @@ auth.onAuthStateChanged((user) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.25rem;
+  height: 20px; /* Fixed height for header */
+  min-height: 20px;
 }
 
 .meal-time-title {
   font-size: 0.75rem;
   margin: 0;
-}
-
-.meal-name {
-  font-size: 0.75rem;
-  margin: 0;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
 }
 
-.dropdown-toggle {
-  background-color: #4A5240;
-  color: white;
-  border: none;
-  border-radius: 0.25rem;
-  padding: 0.125rem 0.25rem;
-  font-size: 0.625rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
+.meal-drop-zone {
+  height: 40px !important; /* Fixed height */
+  min-height: 40px !important;
+  max-height: 40px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.2s ease !important;
+  background-color: transparent !important;
 }
 
-.dropdown-toggle:hover {
-  background-color: #5a6350;
+.meal-drop-zone:empty {
+  border: 1px dashed #ccc !important;
+  border-radius: 0.25rem !important;
+  padding: 5px !important;
+  height: 50px !important; /* Adjust for padding */
+  min-height: 30px !important;
+  max-height: 50px !important;
 }
-
 .meal-item {
   background-color: white;
   border-radius: 0.25rem;
@@ -263,22 +270,34 @@ auth.onAuthStateChanged((user) => {
   gap: 0.25rem;
   width: 100%;
   box-sizing: border-box;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  height: 40px;
-  overflow: hidden;
+  height: 40px !important; /* Fixed height */
+  min-height: 40px !important;
+  max-height: 40px !important;
+  overflow: hidden !important;
 }
 
 .meal-image {
   width: 32px;
   height: 32px;
+  min-width: 32px; /* Prevent image from shrinking */
   object-fit: cover;
   border-radius: 0.25rem;
   flex-shrink: 0;
 }
 
 .meal-details {
-  flex-grow: 1;
+  flex: 1;
+  min-width: 0; /* Allow text container to shrink */
   overflow: hidden;
+}
+
+.meal-name {
+  font-size: 0.75rem;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .remove-btn {
@@ -288,6 +307,7 @@ auth.onAuthStateChanged((user) => {
   border-radius: 50%;
   width: 18px;
   height: 18px;
+  min-width: 18px; /* Prevent button from shrinking */
   font-size: 0.75rem;
   display: flex;
   align-items: center;
@@ -296,32 +316,20 @@ auth.onAuthStateChanged((user) => {
   flex-shrink: 0;
 }
 
-.meal-drop-zone {
-  min-height: 40px;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
-}
-
-.meal-drop-zone:empty {
-  padding: 5px;
-  border: 1px dashed #ccc;
-  border-radius: 0.25rem;
-}
-
 .ghost-item {
   opacity: 0.5;
   transform: scale(0.95);
   background: #c8ebfb;
+  height: 40px !important;
+  max-height: 40px !important;
 }
 
 .dragging-item {
   cursor: grabbing;
   transform: scale(1.05);
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  height: 40px !important;
+  max-height: 40px !important;
 }
 
 .meal-item:hover {
