@@ -164,7 +164,8 @@ const onDragEnd = () => {
   }
 }
 
-@media (min-width: 400px) {
+
+@media (min-width: 434px) {
   .recipes-grid {
     grid-template-columns: repeat(2, 1fr);
   }
