@@ -3,11 +3,9 @@
         <div v-if="isLoading">
             <Loading />
         </div>
-
         <div v-else>
             <div v-if="hasRecommendations" class="carousel-container">
-                <Carousel v-bind="carouselConfig" :wrap-around="true" :transition="1000" :autoplay="3000"
-                    class="carousel">
+                <Carousel v-bind="carouselConfig" :wrap-around="true" class="carousel">
                     <Slide v-for="(recipe, index) in recommendations" :key="index" class="carousel__slide">
                         <RouterLink :to="{ name: 'recipe', params: { uri: encodeURIComponent(recipe.uri) } }"
                             class="card-link">
@@ -17,21 +15,26 @@
                                 </div>
                                 <div class="content-container">
                                     <h6 class="recipe-title">{{ recipe.label }}</h6>
-                                    <p class="cuisine-type">
-                                        <strong>Cuisine:</strong> {{ recipe.cuisineType.join(', ') }}
+                                    <p class="cuisine-type" v-if="recipe.matchedCuisineTypes.length">
+                                        <strong>Cuisine:</strong> {{ recipe.matchedCuisineTypes.join(', ') }}
+                                    </p>
+                                    <p class="matched-labels" v-if="recipe.matchedHealthLabels.length">
+                                        <strong>Matched Health Labels:</strong> {{ recipe.matchedHealthLabels.join(', ') }}
+                                    </p>
+                                    <p class="matched-labels" v-if="recipe.matchedDietLabels.length">
+                                        <strong>Matched Diet Labels:</strong> {{ recipe.matchedDietLabels.join(', ') }}
                                     </p>
                                 </div>
                             </div>
                         </RouterLink>
                     </Slide>
-
                     <template #addons>
                         <Navigation>
                             <template #next>
                                 <button class="carousel__navigation-button next" @click="handleNextClick">›</button>
                             </template>
                             <template #prev>
-                                <button class="carousel__navigation-button prev" @click="handlePrevClick">‹</button>
+                                <button class="carousel__navigation-button prev" @click="handlePrevClick">‹</button> <!-- Changed to left arrow -->
                             </template>
                         </Navigation>
                     </template>
@@ -41,7 +44,6 @@
         </div>
     </div>
 </template>
-
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
@@ -61,7 +63,6 @@ const isLoading = ref(false);
 const apiUrl = 'https://api.edamam.com/search';
 const apiKey = import.meta.env.VITE_EDAMAM_API_KEY;
 const appId = import.meta.env.VITE_EDAMAM_APP_ID;
-// Custom navigation handlers
 const handleNextClick = (next) => {
     // Always move forward
     next();
@@ -72,9 +73,11 @@ const handlePrevClick = (prev, next) => {
 };
 const carouselConfig = {
     itemsToShow: 4,
-    snapAlign: 'center', // Changed to center alignment
+    snapAlign: 'center',
     wrapAround: true,
-    autoplay: false,
+    autoplay: 4000, // Increased autoplay duration for smoothness
+    transition: 1500, // Slower transition for smoother movement
+    easing: 'ease-in-out', // Smoother easing effect
     mouseDrag: true,
     touchDrag: true,
     modelValue: 0,
@@ -82,6 +85,7 @@ const carouselConfig = {
         0: {
             itemsToShow: 1,
             snapAlign: 'center',
+            itemsToScroll: 1,
         },
         550: {
             itemsToShow: 2,
@@ -112,6 +116,7 @@ function prioritizeRecipes(recipes, preferences) {
     // Helper function to check if a recipe matches any preference
     const hasMatchingLabel = (recipeLabels, prefLabels) => {
         // if (!prefLabels?.length) return true;
+
         for (let pref of prefLabels) {
             for (let label of recipeLabels) {
                 const normalizedPref = pref.replace(/-/g, '').toLowerCase();
@@ -138,54 +143,34 @@ function prioritizeRecipes(recipes, preferences) {
             ? recipe.cuisineType
             : [recipe.cuisineType].filter(Boolean));
 
-
         let score = 0;
-        let matches = {
-            cuisine: false,
-            diet: false,
-            health: false
-        };
+        const matchedDietLabels = [];
+        const matchedHealthLabels = [];
+        const matchedCuisineTypes = [];
 
-        // Check if we have all preference types
-        const hasAllPreferences = preferences.cuisineTypes?.length > 0 &&
-            preferences.dietLabels?.length > 0 &&
-            preferences.healthLabels?.length > 0;
+        if (hasMatchingLabel(recipeCuisine, preferences.cuisineTypes)) {
+            score += 3;
+            matchedCuisineTypes.push(...preferences.cuisineTypes.filter(type => recipeCuisine.includes(type)));
+        }
 
-        if (hasAllPreferences) {
-            // Case 2: All preferences stated - prioritize cuisine first
-            if (hasMatchingLabel(recipeCuisine, preferences.cuisineTypes)) {
-                score += 1;
-                matches.cuisine = true;
-            }
-            if (hasMatchingLabel(recipeDiet, preferences.dietLabels)) {
-                score += 2;
-                matches.diet = true;
-            }
-            if (hasMatchingLabel(recipeHealth, preferences.healthLabels)) {
-                score += 3;
-                matches.health = true;
-            }
-        } else {
-            // Case 1: Some empty preferences - prioritize what user has specified
-            if (preferences.cuisineTypes?.length && hasMatchingLabel(recipeCuisine, preferences.cuisineTypes)) {
-                score += 3;
-                matches.cuisine = true;
-            }
-            if (preferences.dietLabels?.length && hasMatchingLabel(recipeDiet, preferences.dietLabels)) {
-                // console.log(recipeDiet);
-                score += 3;
-                matches.diet = true;
-            }
-            if (preferences.healthLabels?.length && hasMatchingLabel(recipeHealth, preferences.healthLabels)) {
-                score += 3;
-                matches.health = true;
-            }
+        if (hasMatchingLabel(recipeDiet, preferences.dietLabels)) {
+            score += 3;
+            matchedDietLabels.push(...preferences.dietLabels.filter(diet => recipeDiet.includes(diet)));
+        }
+
+        if (hasMatchingLabel(recipeHealth, preferences.healthLabels)) {
+            score += 3;
+            matchedHealthLabels.push(...preferences.healthLabels.filter(health => recipeHealth.includes(health)));
         }
 
         return {
-            recipe,
-            score,
-            matches
+            recipe: {
+                ...recipe,
+                matchedDietLabels,
+                matchedHealthLabels,
+                matchedCuisineTypes
+            },
+            score
         };
     });
 
@@ -297,24 +282,20 @@ onMounted(fetchAndFilterRecipes);
 
 
 </script>
-
 <style scoped>
 .recommendations {
     padding: 10px;
     background-color: #ffffff;
     width: 100%;
     overflow: hidden;
-    /* Prevent horizontal scroll */
     min-height: 420px;
-    /* Ensure enough height for card */
 }
 
 .carousel-container {
     position: relative;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 20px;
-    /* Reduced side padding */
+    padding: 0 40px; /* Increased padding to accommodate navigation buttons */
 }
 
 .carousel {
@@ -322,15 +303,13 @@ onMounted(fetchAndFilterRecipes);
     padding-bottom: 20px;
 }
 
-/* Card sizing */
+/* Base card sizing */
 .carousel__slide {
     display: block;
     box-sizing: border-box;
     width: 260px !important;
-    /* Reduced width */
     height: 380px !important;
     margin: 0 auto;
-    /* Center the slide */
     flex: 0 0 auto !important;
     padding: 5px;
 }
@@ -351,7 +330,6 @@ onMounted(fetchAndFilterRecipes);
     position: relative;
     width: 100%;
     height: 180px;
-    /* Slightly reduced height */
     overflow: hidden;
 }
 
@@ -364,34 +342,32 @@ onMounted(fetchAndFilterRecipes);
 
 .content-container {
     padding: 16px;
-    padding-bottom: 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 8px;
 }
 
 .recipe-title {
-    margin: 0 0 12px 0;
+    margin: 0;
     font-size: 0.95rem;
-    /* Slightly reduced font size */
     line-height: 1.4;
     font-weight: 600;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: auto;
-    /* Allow natural height */
-    max-height: 2.8em;
 }
 
-.cuisine-type {
+.cuisine-type,
+.matched-labels {
     margin: 0;
-    padding-bottom: 8px;
     font-size: 0.85rem;
-    /* Slightly reduced font size */
     color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* Navigation buttons */
@@ -400,7 +376,6 @@ onMounted(fetchAndFilterRecipes);
     top: 50%;
     transform: translateY(-50%);
     width: 36px;
-    /* Slightly smaller buttons */
     height: 36px;
     background-color: #ffffff;
     border: none;
@@ -412,6 +387,7 @@ onMounted(fetchAndFilterRecipes);
     justify-content: center;
     z-index: 2;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
 }
 
 .carousel__navigation-button:hover {
@@ -419,27 +395,18 @@ onMounted(fetchAndFilterRecipes);
 }
 
 .carousel__navigation-button.prev {
-    left: -12px;
+    left: -50px; /* Position left arrow outside the carousel container */
 }
 
 .carousel__navigation-button.next {
-    right: -12px;
+    right: -50px; /* Position right arrow outside the carousel container */
 }
 
-/* Track and viewport styles */
-.carousel__track {
-    display: flex;
-    gap: 0 !important;
-    transform-style: preserve-3d;
-    margin: 0 auto;
-    /* Center the track */
-}
-
+/* Ensure no horizontal scrolling */
 .carousel__viewport {
     scrollbar-width: none;
     -ms-overflow-style: none;
     overflow: visible;
-    /* Allow content to be fully visible */
 }
 
 .carousel__viewport::-webkit-scrollbar {
@@ -451,6 +418,44 @@ onMounted(fetchAndFilterRecipes);
     color: inherit;
     display: block;
     height: 100%;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 576px) {
+    .carousel-container {
+        padding: 0 60px; /* Increased padding to accommodate navigation buttons on mobile */
+    }
+
+    .carousel__slide {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 10px;
+        margin: 0;
+        height: auto !important;
+    }
+
+    .carousel__item {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+    }
+
+    .image-container {
+        height: 200px;
+    }
+
+    .content-container {
+        padding: 12px;
+    }
+
+    /* Adjust navigation buttons for mobile */
+    .carousel__navigation-button.prev {
+        left: -40px; /* Adjusted position for smaller screens */
+    }
+
+    .carousel__navigation-button.next {
+        right: -40px; /* Adjusted position for smaller screens */
+    }
 }
 
 /* Responsive adjustments */
@@ -478,6 +483,10 @@ onMounted(fetchAndFilterRecipes);
 @media (min-width: 577px) {
     .carousel-container {
         padding: 0 30px;
+    }
+
+    .carousel__slide {
+        width: 260px !important;
     }
 }
 

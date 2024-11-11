@@ -64,7 +64,7 @@
           <div col-md-5 v-else>
             <div class="card-columns col-lg-11">
               <div v-if="showRecommendations">
-                <h4>Recipes For You</h4>
+                <h4 style="margin-left: 40px;">Recipes For You</h4>
                 <Recommendation />
               </div>
               <div v-if="filteredRecipes.length === 0" class="text-center py-8">
