@@ -620,7 +620,8 @@ p {
 }
 
 .quick-action-btn {
-  background-color: #DAE2BC;
+  background-color: #4CAF50;
+  color: white;
 }
 
 .quick-action-btn:hover {

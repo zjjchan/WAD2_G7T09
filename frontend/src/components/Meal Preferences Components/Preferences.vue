@@ -119,7 +119,7 @@ const openModal = () => {
 }
 
 .edit-button {
-  background-color: #4A5240;
+  background-color: #4CAF50;
   color: #fff;
   border: none;
   padding: 0.5rem 1.25rem;
