@@ -112,8 +112,12 @@ const carouselConfig = {
 function prioritizeRecipes(recipes, preferences) {
     console.log(preferences)
     if (!preferences || (!preferences.dietLabels?.length && !preferences.healthLabels?.length && !preferences.cuisineTypes?.length)) {
-        // Case 3: No preferences at all - return random recipes
-        return shuffleArray(recipes);
+        return shuffleArray(recipes).map(recipe => ({
+            ...recipe,
+            matchedDietLabels: [],
+            matchedHealthLabels: [],
+            matchedCuisineTypes: []
+        }));
     }
 
     // Helper function to check if a recipe matches any preference
@@ -306,10 +310,12 @@ onMounted(fetchAndFilterRecipes);
     position: relative;
     padding-bottom: 20px;
 }
-.card-sub{
+
+.card-sub {
     padding-top: 10px;
     text-align: justify;
 }
+
 /* Base card sizing */
 .carousel__slide {
     display: block;
@@ -410,9 +416,11 @@ onMounted(fetchAndFilterRecipes);
     right: -50px;
     /* Position right arrow outside the carousel container */
 }
-h6{
+
+h6 {
     font-size: larger;
 }
+
 /* Ensure no horizontal scrolling */
 .carousel__viewport {
     scrollbar-width: none;
