@@ -10,7 +10,7 @@
       </div>
 
       <div class="auth-form">
-        <h1 class="auth-title">MealMate</h1>
+        <h1 class="auth-title">Mealmate</h1>
         <h2 class="auth-subtitle">{{ isLogin ? 'Welcome Back!' : 'Join Us Today!' }}</h2>
         <VueTyper text='Hello World! I was registered globally!'></VueTyper>
         <form @submit.prevent="handleSubmit">
@@ -108,7 +108,7 @@ const handleSubmit = async () => {
     } else if (error.code === 'auth/too-many-requests') {
       passwordError.value = 'Too many failed attempts. Try again later.';
     } else {
-      emailError.value = error.message;
+      // emailError.value = error.message;
     }
   }
 };
