@@ -66,14 +66,14 @@ const isLoading = ref(false);
 const apiUrl = 'https://api.edamam.com/search';
 const apiKey = import.meta.env.VITE_EDAMAM_API_KEY;
 const appId = import.meta.env.VITE_EDAMAM_APP_ID;
-const handleNextClick = (next) => {
-    // Always move forward
-    next();
-};
+// const handleNextClick = (next) => {
+//     // Always move forward
+//     next();
+// };
 
-const handlePrevClick = (prev, next) => {
-    next();
-};
+// const handlePrevClick = (prev, next) => {
+//     next();
+// };
 const carouselConfig = {
     itemsToShow: 4,
     snapAlign: 'center',
