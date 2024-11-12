@@ -11,7 +11,6 @@ const isActiveLink = (routePath) => route.path.startsWith(routePath);
 // Track the dropdown state
 const dropdownOpen = ref(false);
 
-// Watch route changes and animate links
 watch(
   () => route.path,
   () => {
@@ -23,16 +22,28 @@ watch(
   }
 );
 
-// Dropdown open/close animation
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
 
-  gsap.fromTo(
-    '.dropdown-menu',
-    { x: 20, opacity: 0, display: 'none' },
-    { x: 0, opacity: 1, display: 'block', duration: 0.4, ease: 'back.out(1.7)' }
-  );
+  if (dropdownOpen.value) {
+    // gsap.fromTo(
+    //   '.dropdown-menu',
+    //   { x: 20, opacity: 0, display: 'none' },
+    //   { x: 0, opacity: 1, display: 'block', duration: 0.4, ease: 'back.out(1.7)' }
+    // );
+  } else {
+    gsap.to('.dropdown-menu', { opacity: 0, display: 'none', duration: 0.2 });
+  }
 };
+
+// Close dropdown if clicking outside
+document.addEventListener('click', (event) => {
+  const navBar = document.querySelector('.navbar-toggler');
+  if (!navBar.contains(event.target) && dropdownOpen.value) {
+    dropdownOpen.value = false;
+    gsap.to('.dropdown-menu', { opacity: 0, display: 'none', duration: 0.2 });
+  }
+});
 
 // Profile picture hover effect with bounce-in
 onMounted(() => {
@@ -54,16 +65,14 @@ onMounted(() => {
       <button
         class="navbar-toggler"
         type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
+        @click="toggleDropdown"
         aria-expanded="false"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-
       <RouterLink to="/" class="nav-logo navbar-brand">Mealmate</RouterLink>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse" :class="{ show: dropdownOpen }" id="navbarSupportedContent">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <RouterLink to="/search-recipes" class="nav-link" :class="{ active: isActiveLink('/search-recipes') }">
