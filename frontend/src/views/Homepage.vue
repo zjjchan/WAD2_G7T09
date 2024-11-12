@@ -258,7 +258,11 @@ const getTodayMeals = async () => {
   ];
 
   const navigateTo = (path) => {
-    router.push(path);  
+    if (path === '/meal-preferences') {
+    router.push({ path, query: { openModal: 'true' } });
+  } else {
+    router.push(path);
+  }
   };
 
 onMounted(async() => {

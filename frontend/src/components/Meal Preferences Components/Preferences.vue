@@ -35,6 +35,8 @@ import WelcomeModal from '@/components/WelcomeModal.vue';
 import { ref, onMounted } from 'vue';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
 const showModal = ref(false);
 const auth = getAuth();
@@ -65,7 +67,14 @@ const fetchUserData = async () => {
   }
 };
 
-onMounted(fetchUserData);
+// onMounted(fetchUserData) ;
+
+onMounted(() => {
+  fetchUserData();
+  if (route.query.openModal === 'true') {
+    showModal.value = true;
+  }
+});
 
 const openModal = () => {
   showModal.value = true;
