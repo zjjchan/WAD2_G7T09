@@ -52,7 +52,7 @@
 
           <h3>{{ step.title }}</h3>
           <p>{{ step.description }}</p>
-          <button class="quick-action-btn btn" @click="navigateTo(step.path)">Go to {{ step.title }}</button>
+          <button class="quick-action-btn btn" @click="navigateTo(step.path)">{{ step.title }}</button>
         </div>
       </div>
     </section>
@@ -200,7 +200,7 @@ const getTodayMeals = async () => {
       path: '/meal-preferences' 
     },
     { 
-      title: 'Grocery List', 
+      title: 'Create Grocery List', 
       description: 'Use our smart grocery list for efficient shopping.', 
       path: '/grocery-list' 
     },
