@@ -93,7 +93,7 @@
                         </span>
                         <div class="card-back">
                           <div class="card-back-content">
-                            <p id="health-labels"><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}
+                            <p id="health-labels"><strong>Health Labels:</strong><br> {{ recipe.healthLabels.join(', ') }}
                             </p>
                             <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
                           </div>
@@ -736,10 +736,19 @@ body section .row {
 
 #health-labels {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+@media (min-width: 940px) {
+  #health-labels {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
 
 @media (min-width: 1400px) {
   .col-lg-4 {
@@ -753,7 +762,7 @@ body section .row {
 
   #health-labels {
     display: -webkit-box;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -823,8 +832,21 @@ body section .row {
   .card-back-content {
     padding: 15px;
     width: 100%;
+    
 
   }
+  .card-back-content p{
+    font-size: larger;
+  }
+
+  #health-labels {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    
+  }
+
 
   /* Adjust row spacing */
   .row.justify-content-center {
@@ -873,7 +895,7 @@ body section .row {
 
 @media (min-width: 576px) and (max-width: 767px) {
   .recipe-card-wrapper {
-    width: 80%;
+    width: 70%;
     margin: 0 auto 20px;
   }
 }
@@ -895,7 +917,7 @@ body section .row {
     bottom: 50px;
   }
 .card-back-content{
-  font-size: 1.2em
+  font-size: 1.6em
 }
 
 }
@@ -1060,7 +1082,7 @@ body section .row {
   text-align: center;
   padding: 20px;
   color: #333;
-  font-size: 0.9rem;
+  font-size: 1rem;
 
 }
 
