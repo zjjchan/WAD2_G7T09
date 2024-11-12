@@ -6,19 +6,12 @@
     <section class="hero">
       <div class="hero-content">
         <h1 class="hero-title title" ref="heroTitle">Welcome back to Mealmate</h1>
-        <!-- <p ref="heroSubtitle">Your personal assistant for meal planning, grocery shopping, and nutrition</p> -->
         <TypeWriter ref="heroSubtitle"/>
       </div>
-      <!-- <img ref="heroImage" src="/images/alphabetsoup.png" alt="MealMate Hero" class="hero-image" /> -->
       <div ref="heroImage" class="bowl-container">
         <img src="/images/bowl.png" class="bowl">
         <img src="/images/spoon.png" class="spoon" ref="food1">
       </div>
-      <!-- <div class="floating-objects">
-        <img src="/images/food1.png" alt="Fruit" class="float-object food-1" ref="food1" />
-        <img src="/images/food2.png" alt="Vegetable" class="float-object food-2" ref="food2" />
-        <img src="/images/food3.png" alt="Fruit" class="float-object food-3" ref="food3" />
-      </div> -->
     </section>
     
     <section class="features" ref="featuresSection">
@@ -67,19 +60,6 @@
     <section class="recommended-recipes" ref="recommendedRecipesSection">
       <h2 class="recommended-recipes-title title">Recommended Recipes</h2>
       <Recommendation />
-      <!-- <Carousel v-bind="carouselConfig">
-        <Slide v-for="(recipe, index) in recommendedRecipes" :key="index">
-          <div class="carousel__item">
-            <img :src="recipe.image" :alt="recipe.title" class="recipe-image" />
-            <h3>{{ recipe.title }}</h3>
-            <p>{{ recipe.cuisine }}</p>
-          </div>
-        </Slide>
-
-        <template #addons>
-          <Navigation />
-        </template>
-      </Carousel> -->
     </section>
   </div>
 </template>
@@ -141,30 +121,6 @@ const carouselConfig = {
   },
 };
 
-// const recommendedRecipes = ref([
-//   { 
-//     title: "Korean Rice with Vegetables & Beef", 
-//     cuisine: "Korean", 
-//     image: "/images/masterchef.jpg"
-//   },
-//   { 
-//     title: "Korean Rice with Vegetables & Beef", 
-//     cuisine: "Korean", 
-//     image: "/images/masterchef.jpg"
-//   },
-//   { 
-//     title: "Korean Rice with Vegetables & Beef", 
-//     cuisine: "Korean", 
-//     image: "/images/masterchef.jpg"
-//   },
-//   { 
-//     title: "Korean Rice with Vegetables & Beef", 
-//     cuisine: "Korean", 
-//     image: "/images/masterchef.jpg"
-//   },
-// ]);
-
-// Set default features in case data is not fetched yet
 const features = ref([
   { icon: 'images/breakfasticon.png', title: 'Breakfast', description: '', image: '' },
   { icon: 'images/lunchicon.png', title: 'Lunch', description: '', image: '' },
@@ -183,7 +139,7 @@ const getTodayMeals = async () => {
       return;
     }
 
-    const userDocRef = doc(db, 'users', user.uid); //getting current user id
+    const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
     
     if (!userDoc.exists()) {
@@ -192,7 +148,7 @@ const getTodayMeals = async () => {
     }
 
     const userData = userDoc.data();
-    const todayMeals = userData.mealPlan[daysOfWeek[todayIndex]] || {}; //to get individual day
+    const todayMeals = userData.mealPlan[daysOfWeek[todayIndex]] || {};
 
 
     const meals = {
@@ -206,8 +162,6 @@ const getTodayMeals = async () => {
       lunch: "No image",
       dinner: "No image",
     }
-
-    //accessing the meal data
 
     if (todayMeals.Breakfast[0] && todayMeals.Breakfast[0].label) { 
       meals.breakfast = todayMeals.Breakfast[0].label;
@@ -270,21 +224,16 @@ onMounted(async() => {
  const isNewUser = localStorage.getItem('isNewUser');
 
   if (isNewUser) {
-    showModal.value = true; // Show the modal
+    showModal.value = true; 
     localStorage.removeItem('isNewUser')
   };
-  // Hero section animations
+
   gsap.from(heroTitle.value, { opacity: 0, y: 50, duration: 1, delay: 0.5 });
   gsap.from(heroSubtitle.value, { opacity: 0, y: 50, duration: 1, delay: 0.7 });
-  gsap.from(ctaButton.value, { opacity: 0, y: 50, duration: 1, delay: 0.9 });
   gsap.from(heroImage.value, { opacity: 0, x: 100, duration: 1, delay: 1.1 });
 
-  // Floating objects animations
   gsap.to(food1.value, { y: -30, rotation: 20, duration: 2, repeat: -1, yoyo: true, ease: "power1.inOut" });
-  // gsap.to(food2.value, { y: 30, rotation: -5, duration: 2.5, repeat: -1, yoyo: true, ease: "power1.inOut" });
-  // gsap.to(food3.value, { y: -35, rotation: -12, duration: 1.8, repeat: -1, yoyo: true, ease: "power1.inOut" });
 
-  // Bidirectional scroll animations
   const animateSections = (elements, props) => {
     elements.forEach((el, index) => {
       gsap.fromTo(el, 
@@ -304,36 +253,16 @@ onMounted(async() => {
     });
   };
 
-  // Features section animations
   animateSections(featureItems.value, {
     from: () => ({ y: 50 }),
     to: { y: 0 }
   });
 
-  // How It Works section animations
   animateSections(stepItems.value, {
     from: (index) => ({ x: index % 2 === 0 ? -50 : 50 }),
     to: { x: 0 }
   });
 
-
-  // gsap.fromTo(recommendedRecipesSection.value,
-  //   { opacity: 1, y: 50 },
-  //   {
-  //     opacity: 1,
-  //     y: 0,
-  //     scrollTrigger: {
-  //       trigger: recommendedRecipesSection.value,
-  //       start: "top 80%",
-  //       end: "top 20%",
-  //       scrub: true,
-  //       toggleActions: "play reverse play reverse"
-  //     }
-  //   }
-  // );
-
-
-  // CTA section animations
   gsap.fromTo(ctaSection.value,
     { opacity: 1, y: 50 },
     {
@@ -349,7 +278,6 @@ onMounted(async() => {
     }
   );
 
-  // Scroll progress indicator
   gsap.to(scrollProgress.value, {
     scaleX: 1,
     ease: 'none',
@@ -362,7 +290,6 @@ onMounted(async() => {
   });
 });
 
-// Clean up ScrollTrigger on component unmount
 onUnmounted(() => {
   ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 });
