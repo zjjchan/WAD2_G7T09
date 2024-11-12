@@ -14,9 +14,7 @@
           'sidebar',
           'd-md-block',
           {
-            'd-none': !showFilter,
-            'show': showFilter,
-            'mobile-sidebar': showFilter
+            'show': showFilter
           }
         ]">
           <div class="d-md-none">
@@ -587,24 +585,7 @@ export default {
 }
 
 
-@media (min-width: 769px) {
-  .filter-button {
-    display: none;
-  }
 
-  .sidebar {
-    position: fixed;
-    left: 0;
-    width: 240px;
-    transform: none;
-
-  }
-
-  #right-section {
-    margin-left: 250px;
-    width: calc(100% - 250px);
-  }
-}
 
 
 
@@ -782,7 +763,7 @@ body section .row {
   }
 
   .card-sub {
-    font-size: 1.1em;
+    font-size: 1.2em;
   }
 }
 
@@ -816,23 +797,66 @@ body section .row {
   }
 
   .card .cover h1 {
-    font-size: 1.4em;
+    font-size: 1.2em;
   }
 
 }
 
 @media (max-width: 767px) {
   .col-sm-12 {
-    width: calc(100% - 20px);
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  /* Ensure back content fits square */
+  .card-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-back-content {
+    padding: 15px;
+    width: 100%;
+
+  }
+
+  /* Adjust row spacing */
+  .row.justify-content-center {
+    margin: 0;
+    width: 100%;
+  }
+
+  .card .cover h1 {
+    font-size: 1.4em;
+    bottom: 60px;
+    left: 20px;
+    right: 20px;
+  }
+
+  .card-sub {
+    font-size: 1.2em;
+    bottom: 20px;
+    left: 20px;
   }
 
   .card {
-    max-width: 350px;
-    margin: 0 auto 20px;
+    width: 100%;
+    padding-bottom: 100%;
+    /* Maintain square ratio */
+    max-width: none;
+    /* Remove max-width constraint */
+    margin: 0 auto;
   }
 
   .recipe-card-wrapper {
     padding: 0 15px;
+    margin-bottom: 20px;
   }
 
   /* Ensure content inside card maintains square ratio */
@@ -842,9 +866,39 @@ body section .row {
     left: 0;
     width: 100%;
     height: 100%;
+    background-size: cover;
+    background-position: center;
   }
 }
 
+@media (min-width: 576px) and (max-width: 767px) {
+  .recipe-card-wrapper {
+    width: 80%;
+    margin: 0 auto 20px;
+  }
+}
+
+@media (max-width: 575px) {
+  .recipe-card-wrapper {
+    width: 90%;
+    margin: 0 auto 20px;
+  }
+
+  .card-sub {
+    font-size: 1.3em;
+    bottom: 20px;
+    left: 20px;
+  }
+
+  .card .cover h1 {
+    font-size: 1.4em;
+    bottom: 50px;
+  }
+.card-back-content{
+  font-size: 1.2em
+}
+
+}
 
 .card {
   position: relative;
@@ -972,7 +1026,7 @@ body section .row {
 }
 
 .card-sub {
-  font-weight: 300;
+  font-weight: 400;
   position: absolute;
   bottom: 25px;
   left: 35px;
@@ -1066,22 +1120,7 @@ body section .row {
 }
 
 @media (max-width: 576px) {
-  .sidebar {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 300px;
-    height: 80vh;
-    max-height: 80vh;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    background: #fff;
-    overflow-y: auto;
-    display: none;
-  }
+
 
   .sidebar.show {
     display: block !important;
@@ -1116,7 +1155,7 @@ body section .row {
 
 
 /* Tablet layout (577px - 768px) */
-@media (min-width: 577px) and (max-width: 768px) {
+@media (min-width: 577px) and (max-width: 767px) {
   .sidebar {
     width: 100%;
     max-width: none;
@@ -1188,59 +1227,7 @@ body section .row {
 }
 
 
-/* Maintain responsive layout */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    top: 60px; /* Adjust this value to match your navbar height */
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 60px); /* Subtract navbar height */
-    transform: translateX(-100%);
-    padding: 20px;
-    margin: 0;
-    border: none;
-    box-shadow: none;
-  }
 
-  .sidebar.show {
-    transform: translateX(0);
-  }
-
-  /* Mobile overlay */
-  .mobile-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .sidebar.show + .mobile-overlay {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  /* Close button positioning */
-  .sidebar .btn-link {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 10px;
-    font-size: 1.2rem;
-    color: #333;
-  }
-
-  /* Ensure content doesn't scroll when sidebar is open */
-  body.sidebar-open {
-    overflow: hidden;
-  }
-}
 
 /* Adjust card layout */
 .card-columns {
@@ -1331,7 +1318,7 @@ body section .row {
   }
 }
 
-@media (min-width: 769px) and (max-width: 897px) {
+@media (min-width: 768px) and (max-width: 897px) {
   .pagination-controls {
     display: flex;
     justify-content: center;
@@ -1385,6 +1372,242 @@ body section .row {
     min-width: 60px;
   }
 }
+
+@media (min-width: 768px) {
+
+  .sidebar {
+    position: fixed;
+
+    display: block !important;
+    width: 240px;
+    transform: none;
+
+  }
+
+  #right-section {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+  }
+
+  .filter-button-container,
+  .filter-button {
+    display: none !important;
+  }
+
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    display: block !important;
+    /* Force sidebar to show on desktop */
+    position: fixed;
+    transform: none;
+    width: 250px;
+  }
+
+  #right-section {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+  }
+
+  .filter-button {
+    display: none;
+  }
+}
+
+/* Mobile and tablet styles (768px and below) */
+@media (max-width: 767px) {
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    transform: translateX(-100%);
+    display: none;
+    padding: 20px;
+    margin: 0;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+    display: block !important;
+  }
+
+  #right-section {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  /* Mobile overlay */
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar.show+.mobile-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Ensure body doesn't scroll when sidebar is open */
+  body.sidebar-open {
+    overflow: hidden;
+  }
+}
+
+/* Ensure proper layout for right section */
+#right-section {
+  transition: margin-left 0.3s ease;
+  padding: 20px;
+}
+
+/* Handle body scroll when sidebar is open */
+body.sidebar-open {
+  overflow: hidden;
+}
+
+/* Filter section styles */
+.filter-section {
+  border-top: #727272 solid 1.5px;
+  width: 150px;
+  margin-bottom: 20px;
+}
+
+/* Maintain responsive layout */
+@media (max-width: 767px) {
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    /* Adjust this value to match your navbar height */
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    /* Subtract navbar height */
+    transform: translateX(-100%);
+    padding: 20px;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  h5 {
+    text-align: center;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  /* Mobile overlay */
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar.show+.mobile-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Close button positioning */
+  .sidebar .btn-link {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    font-size: 1.2rem;
+    color: #333;
+  }
+
+  /* Ensure content doesn't scroll when sidebar is open */
+  body.sidebar-open {
+    overflow: hidden;
+  }
+}
+
+/* Specific adjustments for medium screens */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar {
+    width: 240px;
+  }
+
+  #right-section {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+  }
+}
+
+/* Mobile Styles (768px and below) */
+@media (max-width: 767px) {
+  .filter-button-container {
+    display: block !important;
+  }
+
+  .filter-button {
+    display: flex !important;
+  }
+
+  #right-section {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    z-index: 1000;
+  }
+}
+
+
+/* Base styles for filter button */
+.filter-button-container {
+  width: 100%;
+  padding: 10px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: #fff;
+}
+
+.filter-button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+
 
 
 /* 
