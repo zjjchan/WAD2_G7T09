@@ -47,6 +47,10 @@ import NEWPolarAreaChart from "@/components/NEWPolarAreaChart.vue";
 </script>
 
 <style>
+body {
+    overflow-x: hidden;
+}
+
 .chart-container {
     overflow: hidden;
     height: 500px;

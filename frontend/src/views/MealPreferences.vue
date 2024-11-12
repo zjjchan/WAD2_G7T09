@@ -72,6 +72,10 @@ const handleSignOut = async () => {
 </script>
 
 <style scoped>
+body {
+  overflow-x: hidden;
+}
+
 .home-page {
   background-color: #ffffff;
   font-family: 'Poppins', sans-serif;
