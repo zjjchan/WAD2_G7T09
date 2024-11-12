@@ -28,9 +28,9 @@
           <h5><strong>Recipe Filters</strong></h5>
           <div class="filter-section" v-for="(items, section) in filterSections" :key="section">
             <p id="section_name">{{ formatSectionName(section) }}</p>
-            <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item">
+            <div v-for="(item, index) in items.slice(0, filterExpand[section] ? items.length : 3)" :key="item" class="filter-item">
               <input :id="item" type="checkbox" :value="item" v-model="selectedFilters[section]">
-              <label id="filters_name" :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)">
+              <label id="filters_name" :for="item" @click.prevent="toggleCheckbox(selectedFilters[section], item)"class="label-adjust">
                 {{ item }}
               </label>
             </div>
@@ -585,11 +585,6 @@ export default {
 }
 
 
-
-
-
-
-
 .filter-section {
   border-top: #727272 solid 1.5px;
   width: 150px;
@@ -701,7 +696,15 @@ button {
   margin: 0;
   z-index: 1;
 }
+.filter-item {
+  display: flex;
+  align-items: center; /* Aligns label with checkbox vertically */
+  gap: 1px; /* Adds space between the checkbox and label */
+}
 
+.filter-item input[type="checkbox"] {
+  margin: 0;
+}
 .suggestions-dropdown li {
   padding: 10px;
   cursor: pointer;
@@ -1217,6 +1220,9 @@ body section .row {
 
 
 }
+.label-adjust {
+  margin-top: 5px; /* Adjust this value as needed for better alignment */
+}
 
 
 /* Overlay for mobile filter */
@@ -1247,9 +1253,6 @@ body section .row {
   min-height: 100vh;
   position: relative;
 }
-
-
-
 
 /* Adjust card layout */
 .card-columns {
