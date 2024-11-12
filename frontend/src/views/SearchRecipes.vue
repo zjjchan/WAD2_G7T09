@@ -112,6 +112,7 @@
                   </button>
                   <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
                 </div>
+
               </div>
             </div>
             <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
@@ -670,10 +671,18 @@ button {
 
 .pagination-controls button {
   margin: 0 5px;
+  min-width: 40px;
+  height: 40px;
   padding: 5px 10px;
   border: 1px #ddd;
   border-radius: 5px;
   cursor: pointer;
+  background-color: #fff;
+  font-size: 14px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pagination-controls button:disabled {
@@ -828,8 +837,9 @@ body section .row {
   width: 100%;
   padding-bottom: 100%;
   border-radius: 12px;
+  border: 2px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); */
   transform-style: preserve-3d;
   perspective: 1000px;
   background: transparent;
@@ -1255,8 +1265,63 @@ body section .row {
   justify-content: center;
   margin-top: 20px;
   padding-bottom: 30px;
+
+  align-items: center;
+  gap: 8px;
+  margin: 20px auto;
+  padding: 15px 0 30px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 10;
 }
 
+
+
+@media (max-width: 800px) {
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    margin: 15px auto;
+    padding: 10px 5px;
+    flex-wrap: wrap;
+  }
+
+  /* Smaller buttons for mobile */
+  .pagination-controls button {
+    min-width: 30px;
+    height: 30px;
+    padding: 3px 6px;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  /* Ensure Previous/Next buttons have enough space for text */
+  .pagination-controls button:first-child,
+  .pagination-controls button:last-child {
+    min-width: 60px;
+  }
+}
+
+/* Additional size reduction for very small screens */
+@media (max-width: 400px) {
+  .pagination-controls {
+    gap: 3px;
+  }
+
+  .pagination-controls button {
+    min-width: 25px;
+    height: 25px;
+    font-size: 11px;
+  }
+
+  .pagination-controls button:first-child,
+  .pagination-controls button:last-child {
+    min-width: 50px;
+  }
+}
 /* 
 
 @media (max-width: 750px) {
