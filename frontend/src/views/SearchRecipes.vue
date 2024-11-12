@@ -95,7 +95,8 @@
                         </span>
                         <div class="card-back">
                           <div class="card-back-content">
-                            <p><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}</p>
+                            <p id="health-labels"><strong>Health Labels:</strong> {{ recipe.healthLabels.join(', ') }}
+                            </p>
                             <p><strong>Diet Labels:</strong> {{ recipe.dietLabels.join(', ') }}</p>
                           </div>
                         </div>
@@ -527,9 +528,6 @@ export default {
   margin-left: auto;
 }
 
-
-
-
 /* Recommendations section */
 #right-section>div>.card-columns {
   display: flex;
@@ -755,6 +753,13 @@ body section .row {
   padding: 0 10px;
 }
 
+#health-labels {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 @media (min-width: 1400px) {
   .col-lg-4 {
     width: calc(33.333% - 24px);
@@ -763,6 +768,13 @@ body section .row {
   .card {
     max-width: 500px;
     margin: 0 auto 30px;
+  }
+
+  #health-labels {
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .card .cover h1 {
@@ -779,6 +791,8 @@ body section .row {
   .col-lg-4 {
     width: calc(33.333% - 24px);
   }
+
+
 
   .card {
     max-width: 450px;
@@ -1104,18 +1118,10 @@ body section .row {
 /* Tablet layout (577px - 768px) */
 @media (min-width: 577px) and (max-width: 768px) {
   .sidebar {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    max-width: 400px;
-    height: 80vh;
-    background: #fff;
-    z-index: 1000;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    display: none;
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .sidebar.show {
@@ -1151,52 +1157,13 @@ body section .row {
 
 }
 
-/* Desktop layout (min-width: 769px) */
-@media (min-width: 769px) {
-  .content-wrapper {
-    position: relative;
-    display: flex;
-    width: 100%;
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 10;
-    left: 0;
-    height: 100vh;
-    transform: none;
-  }
-
-  #right-section {
-    margin-left: 250px;
-    width: calc(100% - 250px);
-  }
-
-}
 
 /* Overlay for mobile filter */
 .mobile-overlay {
   display: none;
 }
 
-@media (max-width: 768px) {
-  .mobile-overlay {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
 
-  .sidebar.show+.mobile-overlay {
-    opacity: 1;
-  }
-}
 
 .sidebar {
   position: fixed;
@@ -1220,19 +1187,58 @@ body section .row {
   position: relative;
 }
 
+
 /* Maintain responsive layout */
 @media (max-width: 768px) {
-  #right-section {
-    margin-left: 0;
-    width: 100%;
-  }
-
   .sidebar {
+    position: fixed;
+    top: 60px; /* Adjust this value to match your navbar height */
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px); /* Subtract navbar height */
     transform: translateX(-100%);
+    padding: 20px;
+    margin: 0;
+    border: none;
+    box-shadow: none;
   }
 
   .sidebar.show {
     transform: translateX(0);
+  }
+
+  /* Mobile overlay */
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar.show + .mobile-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Close button positioning */
+  .sidebar .btn-link {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    font-size: 1.2rem;
+    color: #333;
+  }
+
+  /* Ensure content doesn't scroll when sidebar is open */
+  body.sidebar-open {
+    overflow: hidden;
   }
 }
 
@@ -1305,6 +1311,8 @@ body section .row {
   }
 }
 
+
+
 /* Additional size reduction for very small screens */
 @media (max-width: 400px) {
   .pagination-controls {
@@ -1322,6 +1330,63 @@ body section .row {
     min-width: 50px;
   }
 }
+
+@media (min-width: 769px) and (max-width: 897px) {
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    margin: 15px auto;
+    padding: 10px 5px;
+    flex-wrap: nowrap;
+  }
+
+  .pagination-controls button {
+    min-width: 35px;
+    height: 35px;
+    padding: 3px;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  /* Ensure Previous/Next buttons fit */
+  .pagination-controls button:first-child,
+  .pagination-controls button:last-child {
+    min-width: 70px;
+  }
+}
+
+@media (max-width: 800px) {
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    margin: 15px auto;
+    padding: 10px 5px;
+    flex-wrap: nowrap;
+  }
+
+  /* Smaller buttons for mobile */
+  .pagination-controls button {
+    min-width: 30px;
+    height: 30px;
+    padding: 3px 6px;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  /* Ensure Previous/Next buttons have enough space for text */
+  .pagination-controls button:first-child,
+  .pagination-controls button:last-child {
+    min-width: 60px;
+  }
+}
+
+
 /* 
 
 @media (max-width: 750px) {
@@ -1417,5 +1482,4 @@ body section .row {
 
   }
 } */
-
 </style>
