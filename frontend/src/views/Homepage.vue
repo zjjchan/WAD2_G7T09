@@ -200,7 +200,7 @@ const getTodayMeals = async () => {
       path: '/meal-preferences' 
     },
     { 
-      title: 'Create Grocery List', 
+      title: 'View Grocery List', 
       description: 'Use our smart grocery list for efficient shopping.', 
       path: '/grocery-list' 
     },
