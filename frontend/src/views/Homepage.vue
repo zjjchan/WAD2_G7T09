@@ -195,7 +195,7 @@ const getTodayMeals = async () => {
       path: '/meal-preferences' 
     },
     { 
-      title: 'View weekly meal plan', 
+      title: 'Plan Weekly Meals', 
       description: 'Plan your meals for the week', 
       path: '/meal-preferences' 
     },
@@ -205,7 +205,7 @@ const getTodayMeals = async () => {
       path: '/grocery-list' 
     },
     { 
-      title: 'Find recipes', 
+      title: 'Find Recipes', 
       description: 'Follow our easy recipes and enjoy delicious, healthy meals.', 
       path: '/search-recipes' 
     },

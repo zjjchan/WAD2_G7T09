@@ -157,5 +157,9 @@ onMounted(async () => {
   box-sizing: border-box;
   overflow: hidden;
 }
-
+@media (max-width: 485px) {
+  h3 {
+    font-size: 20px;
+    padding-left: 10px;
+  }}
 </style>
