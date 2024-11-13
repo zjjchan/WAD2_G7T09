@@ -416,7 +416,7 @@
                         <tr v-else class="add-item">
                             <td colspan="4">
                                 <div class="d-grid">
-                                    <button class="btn btn-success" type="button" @click="showAddItem">+ add an item</button>
+                                    <button class="btn btn-success" type="button" @click="showAddItem">Add an item</button>
                                 </div>
                             </td>
                         </tr>
