@@ -21,7 +21,7 @@
         <Preferences />
       </div>
     </div>
-    <div class="sign-out-container col-12">
+    <div class="sign-out-container col-12 pb-2">
         <button @click="handleSignOut" class="btn sign-out-btn">
           Sign Out
         </button>
